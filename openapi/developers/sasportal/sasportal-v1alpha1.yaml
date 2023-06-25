@@ -1,0 +1,3940 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: SAS Portal API
+  description: ''
+  version: v1alpha1
+  x-discovery-doc-revision: '20230612'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/spectrum-access-system/
+servers:
+  - url: https://sasportal.googleapis.com
+components:
+  schemas:
+    SasPortalOperation:
+      properties:
+        name:
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+        response:
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+        error:
+          $ref: '#/components/schemas/SasPortalStatus'
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+        done:
+          type: boolean
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+      id: SasPortalOperation
+      type: object
+    SasPortalProvisionDeploymentRequest:
+      id: SasPortalProvisionDeploymentRequest
+      properties:
+        newOrganizationDisplayName:
+          type: string
+          description: >-
+            Optional. If this field is set, and a new SAS Portal Organization
+            needs to be created, its display name will be set to the value of
+            this field.
+        organizationId:
+          format: int64
+          type: string
+          description: >-
+            Optional. If this field is set then a new deployment will be created
+            under the organization specified by this id.
+        newDeploymentDisplayName:
+          type: string
+          description: >-
+            Optional. If this field is set, and a new SAS Portal Deployment
+            needs to be created, its display name will be set to the value of
+            this field.
+      description: >-
+        Request for [ProvisionDeployment].
+        [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. GCP
+        Project, Organization Info, and caller’s GAIA ID should be retrieved
+        from the RPC handler, and used as inputs to create a new SAS
+        organization (if not exists) and a new SAS deployment.
+      type: object
+    SasPortalAssignment:
+      id: SasPortalAssignment
+      properties:
+        members:
+          items:
+            type: string
+          type: array
+          description: >-
+            The identities the role is assigned to. It can have the following
+            values: * `{user_email}`: An email address that represents a
+            specific Google account. For example: `alice@gmail.com`. *
+            `{group_email}`: An email address that represents a Google group.
+            For example, `viewers@gmail.com`.
+        role:
+          description: Required. Role that is assigned to `members`.
+          type: string
+      description: Associates `members` with a `role`.
+      type: object
+    SasPortalUpdateSignedDeviceRequest:
+      id: SasPortalUpdateSignedDeviceRequest
+      type: object
+      description: Request for UpdateSignedDevice.
+      properties:
+        encodedDevice:
+          type: string
+          description: >-
+            Required. The JSON Web Token signed using a CPI private key. Payload
+            must be the JSON encoding of the device. The user_id field must be
+            set.
+          format: byte
+        installerId:
+          type: string
+          description: >-
+            Required. Unique installer ID (CPI ID) from the Certified
+            Professional Installers database.
+    SasPortalStatus:
+      type: object
+      id: SasPortalStatus
+      properties:
+        code:
+          description: The status code, which should be an enum value of google.rpc.Code.
+          format: int32
+          type: integer
+        details:
+          type: array
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          items:
+            type: object
+            additionalProperties:
+              description: Properties of the object. Contains field @type with type URL.
+              type: any
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+    SasPortalInstallationParams:
+      id: SasPortalInstallationParams
+      type: object
+      description: Information about the device installation parameters.
+      properties:
+        antennaBeamwidth:
+          description: >-
+            3-dB antenna beamwidth of the antenna in the horizontal-plane in
+            degrees. This parameter is an unsigned integer having a value
+            between 0 and 360 (degrees) inclusive; it is optional for Category A
+            devices and conditional for Category B devices.
+          type: integer
+          format: int32
+        antennaGainNewField:
+          description: As above, but as a DoubleValue.
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+          description: >-
+            Device antenna height in meters. When the `heightType` parameter
+            value is "AGL", the antenna height should be given relative to
+            ground level. When the `heightType` parameter value is "AMSL", it is
+            given with respect to WGS84 datum.
+        heightType:
+          description: Specifies how the height is measured.
+          enum:
+            - HEIGHT_TYPE_UNSPECIFIED
+            - HEIGHT_TYPE_AGL
+            - HEIGHT_TYPE_AMSL
+          type: string
+          enumDescriptions:
+            - Unspecified height type.
+            - AGL height is measured relative to the ground level.
+            - AMSL height is measured relative to the mean sea level.
+        latitude:
+          type: number
+          description: >-
+            Latitude of the device antenna location in degrees relative to the
+            WGS 84 datum. The allowed range is from -90.000000 to +90.000000.
+            Positive values represent latitudes north of the equator; negative
+            values south of the equator.
+          format: double
+        verticalAccuracy:
+          description: >-
+            A positive number in meters to indicate accuracy of the device
+            antenna vertical location. This optional parameter should only be
+            present if its value is less than the FCC requirement of 3 meters.
+          format: double
+          type: number
+        eirpCapabilityNewField:
+          description: As above, but as a DoubleValue.
+          type: number
+          format: double
+        antennaAzimuth:
+          format: int32
+          description: >-
+            Boresight direction of the horizontal plane of the antenna in
+            degrees with respect to true north. The value of this parameter is
+            an integer with a value between 0 and 359 inclusive. A value of 0
+            degrees means true north; a value of 90 degrees means east. This
+            parameter is optional for Category A devices and conditional for
+            Category B devices.
+          type: integer
+        antennaDowntilt:
+          type: integer
+          format: int32
+          description: >-
+            Antenna downtilt in degrees and is an integer with a value between
+            -90 and +90 inclusive; a negative value means the antenna is tilted
+            up (above horizontal). This parameter is optional for Category A
+            devices and conditional for Category B devices.
+        horizontalAccuracy:
+          description: >-
+            A positive number in meters to indicate accuracy of the device
+            antenna horizontal location. This optional parameter should only be
+            present if its value is less than the FCC requirement of 50 meters.
+          format: double
+          type: number
+        cpeCbsdIndication:
+          description: >-
+            If present, this parameter specifies whether the CBSD is a CPE-CBSD
+            or not.
+          type: boolean
+        indoorDeployment:
+          description: >-
+            Whether the device antenna is indoor or not. `true`: indoor.
+            `false`: outdoor.
+          type: boolean
+        eirpCapability:
+          type: integer
+          description: >-
+            This parameter is the maximum device EIRP in units of dBm/10MHz and
+            is an integer with a value between -127 and +47 (dBm/10 MHz)
+            inclusive. If not included, SAS interprets it as maximum allowable
+            EIRP in units of dBm/10MHz for device category.
+          format: int32
+        antennaModel:
+          type: string
+          description: >-
+            If an external antenna is used, the antenna model is optionally
+            provided in this field. The string has a maximum length of 128
+            octets.
+        antennaGain:
+          type: integer
+          description: >-
+            Peak antenna gain in dBi. This parameter is an integer with a value
+            between -127 and +128 (dBi) inclusive.
+          format: int32
+        longitude:
+          description: >-
+            Longitude of the device antenna location in degrees relative to the
+            WGS 84 datum. The allowed range is from -180.000000 to +180.000000.
+            Positive values represent longitudes east of the prime meridian;
+            negative values west of the prime meridian.
+          type: number
+          format: double
+    SasPortalDevice:
+      id: SasPortalDevice
+      type: object
+      properties:
+        serialNumber:
+          type: string
+          description: A serial number assigned to the device by the device manufacturer.
+        currentChannels:
+          description: Output only. Current channels with scores.
+          items:
+            $ref: '#/components/schemas/SasPortalChannelWithScore'
+          readOnly: true
+          type: array
+        fccId:
+          description: The FCC identifier of the device.
+          type: string
+        activeConfig:
+          $ref: '#/components/schemas/SasPortalDeviceConfig'
+          description: >-
+            Output only. Current configuration of the device as registered to
+            the SAS.
+        preloadedConfig:
+          description: Configuration of the device, as specified via SAS Portal API.
+          $ref: '#/components/schemas/SasPortalDeviceConfig'
+        name:
+          description: Output only. The resource path name.
+          type: string
+        grantRangeAllowlists:
+          type: array
+          items:
+            $ref: '#/components/schemas/SasPortalFrequencyRange'
+          description: >-
+            Only ranges that are within the allowlists are available for new
+            grants.
+        displayName:
+          type: string
+          description: Device display name.
+        grants:
+          description: Output only. Grants held by the device.
+          type: array
+          items:
+            $ref: '#/components/schemas/SasPortalDeviceGrant'
+        deviceMetadata:
+          description: >-
+            Device parameters that can be overridden by both SAS Portal and SAS
+            registration requests.
+          $ref: '#/components/schemas/SasPortalDeviceMetadata'
+        state:
+          description: Output only. Device state.
+          enum:
+            - DEVICE_STATE_UNSPECIFIED
+            - RESERVED
+            - REGISTERED
+            - DEREGISTERED
+          type: string
+          enumDescriptions:
+            - Unspecified state.
+            - >-
+              Device created in the SAS Portal, however, not yet registered with
+              SAS.
+            - Device registered with SAS.
+            - Device de-registered with SAS.
+    SasPortalDeviceConfig:
+      properties:
+        state:
+          enumDescriptions:
+            - ''
+            - ''
+            - ''
+          description: State of the configuration.
+          type: string
+          enum:
+            - DEVICE_CONFIG_STATE_UNSPECIFIED
+            - DRAFT
+            - FINAL
+        installationParams:
+          $ref: '#/components/schemas/SasPortalInstallationParams'
+          description: Installation parameters for the device.
+        model:
+          $ref: '#/components/schemas/SasPortalDeviceModel'
+          description: Information about this device model.
+        callSign:
+          description: The call sign of the device operator.
+          type: string
+        category:
+          description: FCC category of the device.
+          enum:
+            - DEVICE_CATEGORY_UNSPECIFIED
+            - DEVICE_CATEGORY_A
+            - DEVICE_CATEGORY_B
+          type: string
+          enumDescriptions:
+            - Unspecified device category.
+            - Category A.
+            - Category B.
+        userId:
+          type: string
+          description: The identifier of a device user.
+        airInterface:
+          $ref: '#/components/schemas/SasPortalDeviceAirInterface'
+          description: Information about this device's air interface.
+        updateTime:
+          format: google-datetime
+          type: string
+          description: Output only. The last time the device configuration was edited.
+        measurementCapabilities:
+          type: array
+          items:
+            enumDescriptions:
+              - ''
+              - ''
+              - ''
+            type: string
+            enum:
+              - MEASUREMENT_CAPABILITY_UNSPECIFIED
+              - MEASUREMENT_CAPABILITY_RECEIVED_POWER_WITH_GRANT
+              - MEASUREMENT_CAPABILITY_RECEIVED_POWER_WITHOUT_GRANT
+          description: Measurement reporting capabilities of the device.
+        isSigned:
+          type: boolean
+          description: Output only. Whether the configuration has been signed by a CPI.
+      id: SasPortalDeviceConfig
+      type: object
+      description: Information about the device configuration.
+    SasPortalFrequencyRange:
+      id: SasPortalFrequencyRange
+      properties:
+        lowFrequencyMhz:
+          format: double
+          type: number
+          description: The lowest frequency of the frequency range in MHz.
+        highFrequencyMhz:
+          description: The highest frequency of the frequency range in MHz.
+          type: number
+          format: double
+      description: Frequency range from `low_frequency` to `high_frequency`.
+      type: object
+    SasPortalDeviceMetadata:
+      properties:
+        nrqzValidated:
+          type: boolean
+          description: >-
+            Output only. Set to `true` if a CPI has validated that they have
+            coordinated with the National Quiet Zone office.
+          readOnly: true
+        interferenceCoordinationGroup:
+          type: string
+          description: >-
+            Interference Coordination Group (ICG). A group of CBSDs that manage
+            their own interference with the group. For more details, see
+            [CBRSA-TS-2001
+            V3.0.0](https://ongoalliance.org/wp-content/uploads/2020/02/CBRSA-TS-2001-V3.0.0_Approved-for-publication.pdf).
+        antennaModel:
+          type: string
+          description: >-
+            If populated, the Antenna Model Pattern to use. Format is:
+            `RecordCreatorId:PatternId`
+        nrqzValidation:
+          description: Output only. National Radio Quiet Zone validation info.
+          $ref: '#/components/schemas/SasPortalNrqzValidation'
+          readOnly: true
+        commonChannelGroup:
+          description: >-
+            Common Channel Group (CCG). A group of CBSDs in the same ICG
+            requesting a common primary channel assignment. For more details,
+            see [CBRSA-TS-2001
+            V3.0.0](https://ongoalliance.org/wp-content/uploads/2020/02/CBRSA-TS-2001-V3.0.0_Approved-for-publication.pdf).
+          type: string
+      description: Device data overridable by both SAS Portal and registration requests.
+      type: object
+      id: SasPortalDeviceMetadata
+    SasPortalGetPolicyRequest:
+      description: Request message for `GetPolicy` method.
+      properties:
+        resource:
+          description: Required. The resource for which the policy is being requested.
+          type: string
+      id: SasPortalGetPolicyRequest
+      type: object
+    SasPortalTestPermissionsRequest:
+      id: SasPortalTestPermissionsRequest
+      properties:
+        resource:
+          description: >-
+            Required. The resource for which the permissions are being
+            requested.
+          type: string
+        permissions:
+          description: The set of permissions to check for the `resource`.
+          type: array
+          items:
+            type: string
+      type: object
+      description: Request message for `TestPermissions` method.
+    SasPortalMoveDeploymentRequest:
+      id: SasPortalMoveDeploymentRequest
+      type: object
+      properties:
+        destination:
+          description: >-
+            Required. The name of the new parent resource node or customer to
+            reparent the deployment under.
+          type: string
+      description: Request for MoveDeployment.
+    SasPortalListNodesResponse:
+      type: object
+      properties:
+        nextPageToken:
+          description: >-
+            A pagination token returned from a previous call to ListNodes that
+            indicates from where listing should continue. If the field is
+            missing or empty, it means there is no more nodes.
+          type: string
+        nodes:
+          items:
+            $ref: '#/components/schemas/SasPortalNode'
+          type: array
+          description: The nodes that match the request.
+      description: Response for ListNodes.
+      id: SasPortalListNodesResponse
+    SasPortalDeviceAirInterface:
+      id: SasPortalDeviceAirInterface
+      description: Information about the device's air interface.
+      properties:
+        radioTechnology:
+          enumDescriptions:
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+          description: >-
+            Conditional. This field specifies the radio access technology that
+            is used for the CBSD.
+          type: string
+          enum:
+            - RADIO_TECHNOLOGY_UNSPECIFIED
+            - E_UTRA
+            - CAMBIUM_NETWORKS
+            - FOUR_G_BBW_SAA_1
+            - NR
+            - DOODLE_CBRS
+            - CW
+            - REDLINE
+            - TARANA_WIRELESS
+        supportedSpec:
+          description: >-
+            Optional. This field is related to the `radioTechnology` and
+            provides the air interface specification that the CBSD is compliant
+            with at the time of registration.
+          type: string
+      type: object
+    SasPortalDeployment:
+      id: SasPortalDeployment
+      description: The Deployment.
+      type: object
+      properties:
+        frns:
+          description: >-
+            Output only. The FCC Registration Numbers (FRNs) copied from its
+            direct parent.
+          items:
+            type: string
+          readOnly: true
+          type: array
+        displayName:
+          type: string
+          description: The deployment's display name.
+        sasUserIds:
+          type: array
+          description: >-
+            User ID used by the devices belonging to this deployment. Each
+            deployment should be associated with one unique user ID.
+          items:
+            type: string
+        name:
+          readOnly: true
+          description: Output only. Resource name.
+          type: string
+    SasPortalDpaMoveList:
+      id: SasPortalDpaMoveList
+      type: object
+      description: An entry in a DPA's move list.
+      properties:
+        dpaId:
+          type: string
+          description: The ID of the DPA.
+        frequencyRange:
+          $ref: '#/components/schemas/SasPortalFrequencyRange'
+          description: The frequency range that the move list affects.
+    SasPortalChannelWithScore:
+      id: SasPortalChannelWithScore
+      description: The channel with score.
+      type: object
+      properties:
+        score:
+          type: number
+          format: double
+          description: The channel score, normalized to be in the range [0,100].
+        frequencyRange:
+          description: The frequency range of the channel.
+          $ref: '#/components/schemas/SasPortalFrequencyRange'
+    SasPortalTestPermissionsResponse:
+      type: object
+      description: Response message for `TestPermissions` method.
+      id: SasPortalTestPermissionsResponse
+      properties:
+        permissions:
+          items:
+            type: string
+          type: array
+          description: A set of permissions that the caller is allowed.
+    SasPortalProvisionDeploymentResponse:
+      properties:
+        errorMessage:
+          type: string
+          description: >-
+            Optional. Optional error message if the provisioning request is not
+            successful.
+      type: object
+      id: SasPortalProvisionDeploymentResponse
+      description: >-
+        Response for [ProvisionDeployment].
+        [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment].
+    SasPortalCreateSignedDeviceRequest:
+      description: Request for CreateSignedDevice.
+      properties:
+        encodedDevice:
+          format: byte
+          description: >-
+            Required. JSON Web Token signed using a CPI private key. Payload
+            must be the JSON encoding of the device. The user_id field must be
+            set.
+          type: string
+        installerId:
+          description: >-
+            Required. Unique installer id (CPI ID) from the Certified
+            Professional Installers database.
+          type: string
+      type: object
+      id: SasPortalCreateSignedDeviceRequest
+    SasPortalGenerateSecretRequest:
+      id: SasPortalGenerateSecretRequest
+      properties: {}
+      type: object
+      description: Request for GenerateSecret.
+    SasPortalPolicy:
+      description: Defines an access control policy to the resources.
+      type: object
+      properties:
+        etag:
+          format: byte
+          type: string
+          description: >-
+            The etag is used for optimistic concurrency control as a way to help
+            prevent simultaneous updates of a policy from overwriting each
+            other. It is strongly suggested that systems make use of the etag in
+            the read-modify-write cycle to perform policy updates in order to
+            avoid race conditions: An etag is returned in the response to
+            GetPolicy, and systems are expected to put that etag in the request
+            to SetPolicy to ensure that their change will be applied to the same
+            version of the policy. If no etag is provided in the call to
+            GetPolicy, then the existing policy is overwritten blindly.
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SasPortalAssignment'
+          description: List of assignments
+      id: SasPortalPolicy
+    SasPortalSetPolicyRequest:
+      id: SasPortalSetPolicyRequest
+      properties:
+        policy:
+          description: Required. The policy to be applied to the `resource`.
+          $ref: '#/components/schemas/SasPortalPolicy'
+        disableNotification:
+          type: boolean
+          description: >-
+            Optional. Set the field as `true` to disable the onboarding
+            notification.
+        resource:
+          type: string
+          description: >-
+            Required. The resource for which the policy is being specified. This
+            policy replaces any existing policy.
+      description: Request message for `SetPolicy` method.
+      type: object
+    SasPortalNrqzValidation:
+      id: SasPortalNrqzValidation
+      type: object
+      properties:
+        latitude:
+          description: Device latitude that's associated with the validation.
+          type: number
+          format: double
+        state:
+          type: string
+          enum:
+            - STATE_UNSPECIFIED
+            - DRAFT
+            - FINAL
+          enumDescriptions:
+            - Unspecified state.
+            - Draft state.
+            - Final state.
+          description: State of the NRQZ validation info.
+        longitude:
+          format: double
+          description: Device longitude that's associated with the validation.
+          type: number
+        caseId:
+          description: Validation case ID.
+          type: string
+        cpiId:
+          type: string
+          description: CPI who signed the validation.
+      description: Information about National Radio Quiet Zone validation.
+    SasPortalEmpty:
+      id: SasPortalEmpty
+      type: object
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      properties: {}
+    SasPortalDeviceGrant:
+      properties:
+        moveList:
+          type: array
+          description: The DPA move lists on which this grant appears.
+          items:
+            $ref: '#/components/schemas/SasPortalDpaMoveList'
+        state:
+          enum:
+            - GRANT_STATE_UNSPECIFIED
+            - GRANT_STATE_GRANTED
+            - GRANT_STATE_TERMINATED
+            - GRANT_STATE_SUSPENDED
+            - GRANT_STATE_AUTHORIZED
+            - GRANT_STATE_EXPIRED
+          type: string
+          enumDescriptions:
+            - ''
+            - >-
+              The grant has been granted but the device is not heartbeating on
+              it.
+            - The grant has been terminated by the SAS.
+            - The grant has been suspended by the SAS.
+            - The device is currently transmitting.
+            - The grant has expired.
+          description: State of the grant.
+        grantId:
+          type: string
+          description: Grant Id.
+        maxEirp:
+          type: number
+          description: >-
+            Maximum Equivalent Isotropically Radiated Power (EIRP) permitted by
+            the grant. The maximum EIRP is in units of dBm/MHz. The value of
+            `maxEirp` represents the average (RMS) EIRP that would be measured
+            by the procedure defined in FCC part 96.41(e)(3).
+          format: double
+        frequencyRange:
+          $ref: '#/components/schemas/SasPortalFrequencyRange'
+          description: The transmission frequency range.
+        expireTime:
+          type: string
+          description: The expiration time of the grant.
+          format: google-datetime
+        channelType:
+          enumDescriptions:
+            - ''
+            - ''
+            - ''
+          enum:
+            - CHANNEL_TYPE_UNSPECIFIED
+            - CHANNEL_TYPE_GAA
+            - CHANNEL_TYPE_PAL
+          description: Type of channel used.
+          type: string
+        lastHeartbeatTransmitExpireTime:
+          type: string
+          format: google-datetime
+          description: The transmit expiration time of the last heartbeat.
+        suspensionReason:
+          items:
+            type: string
+          type: array
+          description: If the grant is suspended, the reason(s) for suspension.
+      type: object
+      description: >-
+        Device grant. It is an authorization provided by the Spectrum Access
+        System to a device to transmit using specified operating parameters
+        after a successful heartbeat by the device.
+      id: SasPortalDeviceGrant
+    SasPortalMoveNodeRequest:
+      id: SasPortalMoveNodeRequest
+      description: Request for MoveNode.
+      properties:
+        destination:
+          type: string
+          description: >-
+            Required. The name of the new parent resource node or customer to
+            reparent the node under.
+      type: object
+    SasPortalListDevicesResponse:
+      properties:
+        devices:
+          items:
+            $ref: '#/components/schemas/SasPortalDevice'
+          type: array
+          description: The devices that match the request.
+        nextPageToken:
+          description: >-
+            A pagination token returned from a previous call to ListDevices that
+            indicates from where listing should continue. If the field is
+            missing or empty, it means there is no more devices.
+          type: string
+      description: Response for ListDevices.
+      id: SasPortalListDevicesResponse
+      type: object
+    SasPortalValidateInstallerResponse:
+      id: SasPortalValidateInstallerResponse
+      properties: {}
+      description: Response for ValidateInstaller.
+      type: object
+    SasPortalListCustomersResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A pagination token returned from a previous call to ListCustomers
+            that indicates from where listing should continue. If the field is
+            missing or empty, it means there are no more customers.
+        customers:
+          description: The list of customers that match the request.
+          type: array
+          items:
+            $ref: '#/components/schemas/SasPortalCustomer'
+      description: Response for `ListCustomers`.
+      id: SasPortalListCustomersResponse
+      type: object
+    SasPortalCustomer:
+      description: Entity representing a SAS customer.
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: >-
+            Required. Name of the organization that the customer entity
+            represents.
+        sasUserIds:
+          description: User IDs used by the devices belonging to this customer.
+          items:
+            type: string
+          type: array
+        name:
+          type: string
+          description: Output only. Resource name of the customer.
+      id: SasPortalCustomer
+    SasPortalGenerateSecretResponse:
+      type: object
+      description: Response for GenerateSecret.
+      id: SasPortalGenerateSecretResponse
+      properties:
+        secret:
+          description: The secret generated by the string and used by ValidateInstaller.
+          type: string
+    SasPortalNode:
+      id: SasPortalNode
+      description: The Node.
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The node's display name.
+        name:
+          type: string
+          description: Output only. Resource name.
+        sasUserIds:
+          items:
+            type: string
+          type: array
+          description: User ids used by the devices belonging to this node.
+    SasPortalListDeploymentsResponse:
+      id: SasPortalListDeploymentsResponse
+      type: object
+      description: Response for ListDeployments.
+      properties:
+        nextPageToken:
+          description: >-
+            A pagination token returned from a previous call to ListDeployments
+            that indicates from where listing should continue. If the field is
+            missing or empty, it means there are no more deployments.
+          type: string
+        deployments:
+          items:
+            $ref: '#/components/schemas/SasPortalDeployment'
+          description: The deployments that match the request.
+          type: array
+    SasPortalMoveDeviceRequest:
+      description: Request for MoveDevice.
+      type: object
+      properties:
+        destination:
+          type: string
+          description: >-
+            Required. The name of the new parent resource node or customer to
+            reparent the device under.
+      id: SasPortalMoveDeviceRequest
+    SasPortalDeviceModel:
+      type: object
+      id: SasPortalDeviceModel
+      description: Information about the model of the device.
+      properties:
+        hardwareVersion:
+          description: The hardware version of the device.
+          type: string
+        softwareVersion:
+          type: string
+          description: The software version of the device.
+        firmwareVersion:
+          description: The firmware version of the device.
+          type: string
+        vendor:
+          description: The name of the device vendor.
+          type: string
+        name:
+          type: string
+          description: The name of the device model.
+    SasPortalSignDeviceRequest:
+      properties:
+        device:
+          description: >-
+            Required. The device to sign. The device fields name, fcc_id and
+            serial_number must be set. The user_id field must be set.
+          $ref: '#/components/schemas/SasPortalDevice'
+      id: SasPortalSignDeviceRequest
+      description: Request for SignDevice.
+      type: object
+    SasPortalValidateInstallerRequest:
+      description: Request for ValidateInstaller.
+      properties:
+        encodedSecret:
+          type: string
+          description: >-
+            Required. JSON Web Token signed using a CPI private key. Payload
+            must include a "secret" claim whose value is the secret.
+        secret:
+          type: string
+          description: Required. Secret returned by the GenerateSecret.
+        installerId:
+          description: >-
+            Required. Unique installer id (CPI ID) from the Certified
+            Professional Installers database.
+          type: string
+      id: SasPortalValidateInstallerRequest
+      type: object
+  parameters:
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/sasportal: Read, create, update, and delete your SAS Portal data.
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1alpha1/installer:validate:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/prettyPrint'
+    post:
+      description: Validates the identity of a Certified Professional Installer (CPI).
+      operationId: sasportal.installer.validate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalValidateInstallerRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalValidateInstallerResponse'
+      parameters: []
+      x-stackQL-resource: installer
+      x-stackQL-verb: exec
+  /v1alpha1/installer:generateSecret:
+    parameters: *ref_1
+    post:
+      description: Generates a secret to be used with the ValidateInstaller.
+      operationId: sasportal.installer.generateSecret
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalGenerateSecretRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalGenerateSecretResponse'
+      parameters: []
+      x-stackQL-resource: installer
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}:
+    parameters: *ref_1
+    get:
+      description: Returns a requested node.
+      operationId: sasportal.nodes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/devices:
+    parameters: *ref_1
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.nodes.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.nodes.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/devices/{devicesId}:updateSigned:
+    parameters: *ref_1
+    patch:
+      description: Updates a signed device.
+      operationId: sasportal.nodes.devices.updateSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalUpdateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/devices/{devicesId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a device.
+      operationId: sasportal.nodes.devices.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: delete
+    get:
+      description: Gets details about a device.
+      operationId: sasportal.nodes.devices.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+    patch:
+      description: Updates a device.
+      operationId: sasportal.nodes.devices.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.nodes.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/devices/{devicesId}:signDevice:
+    parameters: *ref_1
+    post:
+      description: Signs a device.
+      operationId: sasportal.nodes.devices.signDevice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalSignDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/devices/{devicesId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a device under another node or customer.
+      operationId: sasportal.nodes.devices.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/deployments/{deploymentsId}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.nodes.deployments.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/deployments/{deploymentsId}/devices:
+    parameters: *ref_1
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.nodes.deployments.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.nodes.deployments.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/deployments/{deploymentsId}:
+    parameters: *ref_1
+    get:
+      description: Returns a requested deployment.
+      operationId: sasportal.nodes.deployments.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a deployment.
+      operationId: sasportal.nodes.deployments.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: delete
+    patch:
+      description: Updates an existing deployment.
+      operationId: sasportal.nodes.deployments.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/deployments:
+    parameters: *ref_1
+    get:
+      description: Lists deployments.
+      operationId: sasportal.nodes.deployments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDeploymentsResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/deployments/{deploymentsId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a deployment under another node or customer.
+      operationId: sasportal.nodes.deployments.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveDeploymentRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: exec
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}/deployments:
+    parameters: *ref_1
+    post:
+      description: Creates a new deployment.
+      operationId: sasportal.nodes.nodes.deployments.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: insert
+    get:
+      description: Lists deployments.
+      operationId: sasportal.nodes.nodes.deployments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDeploymentsResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}/nodes:
+    parameters: *ref_1
+    get:
+      description: Lists nodes.
+      operationId: sasportal.nodes.nodes.nodes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListNodesResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    post:
+      description: Creates a new node.
+      operationId: sasportal.nodes.nodes.nodes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.nodes.nodes.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}/devices:
+    parameters: *ref_1
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.nodes.nodes.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.nodes.nodes.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+  /v1alpha1/nodes/{nodesId}/nodes:
+    parameters: *ref_1
+    post:
+      description: Creates a new node.
+      operationId: sasportal.nodes.nodes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: insert
+    get:
+      description: Lists nodes.
+      operationId: sasportal.nodes.nodes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListNodesResponse'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a node.
+      operationId: sasportal.nodes.nodes.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: delete
+    patch:
+      description: Updates an existing node.
+      operationId: sasportal.nodes.nodes.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+    get:
+      description: Returns a requested node.
+      operationId: sasportal.nodes.nodes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+  /v1alpha1/nodes/{nodesId}/nodes/{nodesId1}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a node under another node or customer.
+      operationId: sasportal.nodes.nodes.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveNodeRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}/deployments/{deploymentsId}:
+    parameters: *ref_1
+    patch:
+      description: Updates an existing deployment.
+      operationId: sasportal.customers.deployments.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: exec
+    get:
+      description: Returns a requested deployment.
+      operationId: sasportal.customers.deployments.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a deployment.
+      operationId: sasportal.customers.deployments.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: delete
+  /v1alpha1/customers/{customersId}/deployments:
+    parameters: *ref_1
+    post:
+      description: Creates a new deployment.
+      operationId: sasportal.customers.deployments.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: insert
+    get:
+      description: Lists deployments.
+      operationId: sasportal.customers.deployments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDeploymentsResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+  /v1alpha1/customers/{customersId}/deployments/{deploymentsId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a deployment under another node or customer.
+      operationId: sasportal.customers.deployments.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveDeploymentRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}/deployments/{deploymentsId}/devices:
+    parameters: *ref_1
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.customers.deployments.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.customers.deployments.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+  /v1alpha1/customers/{customersId}/deployments/{deploymentsId}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.customers.deployments.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}/deployments:
+    parameters: *ref_1
+    post:
+      description: Creates a new deployment.
+      operationId: sasportal.customers.nodes.deployments.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: insert
+    get:
+      description: Lists deployments.
+      operationId: sasportal.customers.nodes.deployments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDeploymentsResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}/nodes:
+    parameters: *ref_1
+    get:
+      description: Lists nodes.
+      operationId: sasportal.customers.nodes.nodes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListNodesResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    post:
+      description: Creates a new node.
+      operationId: sasportal.customers.nodes.nodes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}/devices:
+    parameters: *ref_1
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.customers.nodes.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.customers.nodes.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.customers.nodes.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a node under another node or customer.
+      operationId: sasportal.customers.nodes.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveNodeRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}/nodes/{nodesId}:
+    parameters: *ref_1
+    patch:
+      description: Updates an existing node.
+      operationId: sasportal.customers.nodes.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+    get:
+      description: Returns a requested node.
+      operationId: sasportal.customers.nodes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a node.
+      operationId: sasportal.customers.nodes.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: delete
+  /v1alpha1/customers/{customersId}/nodes:
+    parameters: *ref_1
+    get:
+      description: Lists nodes.
+      operationId: sasportal.customers.nodes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListNodesResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    post:
+      description: Creates a new node.
+      operationId: sasportal.customers.nodes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalNode'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalNode'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/devices:createSigned:
+    parameters: *ref_1
+    post:
+      description: Creates a signed device under a node or customer.
+      operationId: sasportal.customers.devices.createSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCreateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices__signed
+      x-stackQL-verb: insert
+  /v1alpha1/customers/{customersId}/devices:
+    parameters: *ref_1
+    post:
+      description: Creates a device under a node or customer.
+      operationId: sasportal.customers.devices.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: insert
+    get:
+      description: Lists devices under a node or customer.
+      operationId: sasportal.customers.devices.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListDevicesResponse'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+  /v1alpha1/customers/{customersId}/devices/{devicesId}:
+    parameters: *ref_1
+    patch:
+      description: Updates a device.
+      operationId: sasportal.customers.devices.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+    get:
+      description: Gets details about a device.
+      operationId: sasportal.customers.devices.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a device.
+      operationId: sasportal.customers.devices.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: delete
+  /v1alpha1/customers/{customersId}/devices/{devicesId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a device under another node or customer.
+      operationId: sasportal.customers.devices.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}/devices/{devicesId}:updateSigned:
+    parameters: *ref_1
+    patch:
+      description: Updates a signed device.
+      operationId: sasportal.customers.devices.updateSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalUpdateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}/devices/{devicesId}:signDevice:
+    parameters: *ref_1
+    post:
+      description: Signs a device.
+      operationId: sasportal.customers.devices.signDevice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalSignDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/customers/{customersId}:
+    parameters: *ref_1
+    get:
+      description: Returns a requested customer.
+      operationId: sasportal.customers.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalCustomer'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customers
+      x-stackQL-verb: select
+    patch:
+      description: Updates an existing customer.
+      operationId: sasportal.customers.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalCustomer'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalCustomer'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: customers
+      x-stackQL-verb: exec
+  /v1alpha1/customers:
+    parameters: *ref_1
+    get:
+      description: Returns a list of requested customers.
+      operationId: sasportal.customers.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalListCustomersResponse'
+      parameters:
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: customers
+      x-stackQL-verb: select
+  /v1alpha1/customers:provisionDeployment:
+    parameters: *ref_1
+    post:
+      description: >-
+        Creates a new SAS deployment through the GCP workflow. Creates a SAS
+        organization if an organization match is not found.
+      operationId: sasportal.customers.provisionDeployment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalProvisionDeploymentRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalProvisionDeploymentResponse'
+      parameters: []
+      x-stackQL-resource: customers
+      x-stackQL-verb: exec
+  /v1alpha1/deployments/{deploymentsId}:
+    parameters: *ref_1
+    get:
+      description: Returns a requested deployment.
+      operationId: sasportal.deployments.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDeployment'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: deployments
+      x-stackQL-verb: select
+  /v1alpha1/deployments/{deploymentsId}/devices/{devicesId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a device.
+      operationId: sasportal.deployments.devices.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: delete
+    patch:
+      description: Updates a device.
+      operationId: sasportal.deployments.devices.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalDevice'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+    get:
+      description: Gets details about a device.
+      operationId: sasportal.deployments.devices.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+  /v1alpha1/deployments/{deploymentsId}/devices/{devicesId}:updateSigned:
+    parameters: *ref_1
+    patch:
+      description: Updates a signed device.
+      operationId: sasportal.deployments.devices.updateSigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalUpdateSignedDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalDevice'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/deployments/{deploymentsId}/devices/{devicesId}:signDevice:
+    parameters: *ref_1
+    post:
+      description: Signs a device.
+      operationId: sasportal.deployments.devices.signDevice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalSignDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalEmpty'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/deployments/{deploymentsId}/devices/{devicesId}:move:
+    parameters: *ref_1
+    post:
+      description: Moves a device under another node or customer.
+      operationId: sasportal.deployments.devices.move
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalMoveDeviceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalOperation'
+      parameters:
+        - in: path
+          name: deploymentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: exec
+  /v1alpha1/policies:test:
+    parameters: *ref_1
+    post:
+      description: Returns permissions that a caller has on the specified resource.
+      operationId: sasportal.policies.test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalTestPermissionsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalTestPermissionsResponse'
+      parameters: []
+      x-stackQL-resource: policies
+      x-stackQL-verb: exec
+  /v1alpha1/policies:set:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the access control policy on the specified resource. Replaces any
+        existing policy.
+      operationId: sasportal.policies.set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalSetPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalPolicy'
+      parameters: []
+      x-stackQL-resource: policies
+      x-stackQL-verb: exec
+  /v1alpha1/policies:get:
+    parameters: *ref_1
+    post:
+      description: >-
+        Gets the access control policy for a resource. Returns an empty policy
+        if the resource exists and does not have a policy set.
+      operationId: sasportal.policies.get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SasPortalGetPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/sasportal
+          Oauth2c:
+            - https://www.googleapis.com/auth/sasportal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SasPortalPolicy'
+      parameters: []
+      x-stackQL-resource: policies
+      x-stackQL-verb: select

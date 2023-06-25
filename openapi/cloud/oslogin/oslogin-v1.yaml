@@ -1,0 +1,512 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Cloud OS Login API
+  description: You can use OS Login to manage access to your VM instances using IAM roles.
+  version: v1
+  x-discovery-doc-revision: '20230603'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/compute/docs/oslogin/
+servers:
+  - url: https://oslogin.googleapis.com
+components:
+  schemas:
+    Empty:
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      properties: {}
+      type: object
+      id: Empty
+    PosixAccount:
+      properties:
+        shell:
+          type: string
+          description: The path to the logic shell for this account.
+        primary:
+          type: boolean
+          description: Only one POSIX account can be marked as primary.
+        homeDirectory:
+          description: The path to the home directory for this account.
+          type: string
+        systemId:
+          type: string
+          description: >-
+            System identifier for which account the username or uid applies to.
+            By default, the empty value is used.
+        gecos:
+          type: string
+          description: The GECOS (user information) entry for this account.
+        accountId:
+          readOnly: true
+          type: string
+          description: Output only. A POSIX account identifier.
+        gid:
+          type: string
+          format: int64
+          description: The default group ID.
+        uid:
+          format: int64
+          description: The user ID.
+          type: string
+        name:
+          type: string
+          readOnly: true
+          description: Output only. The canonical resource name.
+        username:
+          type: string
+          description: The username of the POSIX account.
+        operatingSystemType:
+          type: string
+          enum:
+            - OPERATING_SYSTEM_TYPE_UNSPECIFIED
+            - LINUX
+            - WINDOWS
+          description: The operating system type where this account applies.
+          enumDescriptions:
+            - >-
+              The operating system type associated with the user account
+              information is unspecified.
+            - Linux user account information.
+            - Windows user account information.
+      type: object
+      id: PosixAccount
+      description: The POSIX account information associated with a Google account.
+    SshPublicKey:
+      type: object
+      description: The SSH public key information associated with a Google account.
+      id: SshPublicKey
+      properties:
+        key:
+          description: Public key text in SSH format, defined by RFC4253 section 6.6.
+          type: string
+        expirationTimeUsec:
+          type: string
+          format: int64
+          description: An expiration time in microseconds since epoch.
+        fingerprint:
+          description: Output only. The SHA-256 fingerprint of the SSH public key.
+          type: string
+          readOnly: true
+        name:
+          type: string
+          description: Output only. The canonical resource name.
+          readOnly: true
+    ImportSshPublicKeyResponse:
+      id: ImportSshPublicKeyResponse
+      type: object
+      properties:
+        details:
+          description: Detailed information about import results.
+          type: string
+        loginProfile:
+          $ref: '#/components/schemas/LoginProfile'
+          description: The login profile information for the user.
+      description: A response message for importing an SSH public key.
+    LoginProfile:
+      description: >-
+        The user profile information used for logging in to a virtual machine on
+        Google Compute Engine.
+      id: LoginProfile
+      type: object
+      properties:
+        posixAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PosixAccount'
+          description: The list of POSIX accounts associated with the user.
+        name:
+          description: Required. A unique user ID.
+          type: string
+        sshPublicKeys:
+          additionalProperties:
+            $ref: '#/components/schemas/SshPublicKey'
+          type: object
+          description: A map from SSH public key fingerprint to the associated key object.
+  parameters:
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform.read-only: >-
+              View your data across Google Cloud services and see the email
+              address of your Google Account
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+            https://www.googleapis.com/auth/compute: View and manage your Google Compute Engine resources
+            https://www.googleapis.com/auth/compute.readonly: View your Google Compute Engine resources
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1/users/{usersId}/loginProfile:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/_.xgafv'
+    get:
+      description: >-
+        Retrieves the profile information used for logging in to a virtual
+        machine on Google Compute Engine.
+      operationId: oslogin.users.getLoginProfile
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform.read-only
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform.read-only
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginProfile'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: systemId
+          schema:
+            type: string
+        - in: query
+          name: projectId
+          schema:
+            type: string
+      x-stackQL-resource: users__login_profile
+      x-stackQL-verb: select
+  /v1/users/{usersId}:importSshPublicKey:
+    parameters: *ref_1
+    post:
+      description: >-
+        Adds an SSH public key and returns the profile information. Default
+        POSIX account information is set when no username and UID exist as part
+        of the login profile.
+      operationId: oslogin.users.importSshPublicKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SshPublicKey'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportSshPublicKeyResponse'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: projectId
+          schema:
+            type: string
+      x-stackQL-resource: users
+      x-stackQL-verb: exec
+  /v1/users/{usersId}/projects/{projectsId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a POSIX account.
+      operationId: oslogin.users.projects.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: projects
+      x-stackQL-verb: delete
+  /v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes an SSH public key.
+      operationId: oslogin.users.sshPublicKeys.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: sshPublicKeysId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: ssh_public_keys
+      x-stackQL-verb: delete
+    get:
+      description: Retrieves an SSH public key.
+      operationId: oslogin.users.sshPublicKeys.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SshPublicKey'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: sshPublicKeysId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: ssh_public_keys
+      x-stackQL-verb: select
+    patch:
+      description: >-
+        Updates an SSH public key and returns the profile information. This
+        method supports patch semantics.
+      operationId: oslogin.users.sshPublicKeys.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SshPublicKey'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SshPublicKey'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: sshPublicKeysId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: ssh_public_keys
+      x-stackQL-verb: exec
+  /v1/users/{usersId}/sshPublicKeys:
+    parameters: *ref_1
+    post:
+      description: Create an SSH public key
+      operationId: oslogin.users.sshPublicKeys.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SshPublicKey'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/compute
+          Oauth2c:
+            - https://www.googleapis.com/auth/compute
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SshPublicKey'
+      parameters:
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: ssh_public_keys
+      x-stackQL-verb: insert

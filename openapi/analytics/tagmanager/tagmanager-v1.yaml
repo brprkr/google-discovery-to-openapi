@@ -1,0 +1,3400 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Tag Manager API
+  description: >-
+    This API allows clients to access and modify container and tag
+    configuration.
+  version: v1
+  x-discovery-doc-revision: '20230621'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/tag-manager
+servers:
+  - url: https://tagmanager.googleapis.com
+components:
+  schemas:
+    TeardownTag:
+      id: TeardownTag
+      properties:
+        tagName:
+          description: The name of the teardown tag.
+          type: string
+        stopTeardownOnFailure:
+          type: boolean
+          description: >-
+            If true, fire the teardown tag if and only if the main tag fires
+            successfully. If false, fire the teardown tag regardless of main tag
+            firing status.
+      type: object
+    AccountAccess:
+      type: object
+      id: AccountAccess
+      description: Defines the Google Tag Manager Account access permissions.
+      properties:
+        permission:
+          description: >-
+            List of Account permissions. Valid account permissions are read and
+            manage. @mutable tagmanager.accounts.permissions.create @mutable
+            tagmanager.accounts.permissions.update
+          type: array
+          items:
+            enum:
+              - read
+              - edit
+              - publish
+              - delete
+              - manage
+              - editWorkspace
+            enumDescriptions:
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+            type: string
+          annotations:
+            required:
+              - tagmanager.accounts.permissions.create
+    Macro:
+      properties:
+        parameter:
+          items:
+            $ref: '#/components/schemas/Parameter'
+          description: >-
+            The macro's parameters. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+          type: array
+        macroId:
+          type: string
+          description: The Macro ID uniquely identifies the GTM Macro.
+        notes:
+          description: >-
+            User notes on how to apply this macro in the container. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+          type: string
+        containerId:
+          type: string
+          description: GTM Container ID.
+        name:
+          type: string
+          description: >-
+            Macro display name. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+        fingerprint:
+          type: string
+          description: >-
+            The fingerprint of the GTM Macro as computed at storage time. This
+            value is recomputed whenever the macro is modified.
+        accountId:
+          description: GTM Account ID.
+          type: string
+        scheduleStartMs:
+          type: string
+          format: int64
+          description: >-
+            The start timestamp in milliseconds to schedule a macro. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+        disablingRuleId:
+          type: array
+          items:
+            type: string
+          description: >-
+            For mobile containers only: A list of rule IDs for disabling
+            conditional macros; the macro is enabled if one of the enabling
+            rules is true while all the disabling rules are false. Treated as an
+            unordered set. @mutable tagmanager.accounts.containers.macros.create
+            @mutable tagmanager.accounts.containers.macros.update
+        parentFolderId:
+          description: Parent folder id.
+          type: string
+        type:
+          type: string
+          description: >-
+            GTM Macro Type. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+        scheduleEndMs:
+          format: int64
+          type: string
+          description: >-
+            The end timestamp in milliseconds to schedule a macro. @mutable
+            tagmanager.accounts.containers.macros.create @mutable
+            tagmanager.accounts.containers.macros.update
+        enablingRuleId:
+          description: >-
+            For mobile containers only: A list of rule IDs for enabling
+            conditional macros; the macro is enabled if one of the enabling
+            rules is true while all the disabling rules are false. Treated as an
+            unordered set. @mutable tagmanager.accounts.containers.macros.create
+            @mutable tagmanager.accounts.containers.macros.update
+          items:
+            type: string
+          type: array
+      type: object
+      description: Represents a Google Tag Manager Macro.
+      id: Macro
+    Trigger:
+      type: object
+      description: Represents a Google Tag Manager Trigger
+      id: Trigger
+      properties:
+        visiblePercentageMax:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            A visibility trigger maximum percent visibility. Only valid for AMP
+            Visibility trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        eventName:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            Name of the GTM event that is fired. Only valid for Timer triggers.
+            @mutable tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        autoEventFilter:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
+          description: >-
+            Used in the case of auto event tracking. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        name:
+          description: >-
+            Trigger display name. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.triggers.create
+              - tagmanager.accounts.containers.triggers.update
+        selector:
+          description: >-
+            A click trigger CSS selector (i.e. "a", "button" etc.). Only valid
+            for AMP Click trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          $ref: '#/components/schemas/Parameter'
+        maxTimerLengthSeconds:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            Max time to fire Timer Events (in seconds). Only valid for AMP Timer
+            trigger. @mutable tagmanager.accounts.containers.triggers.create
+            @mutable tagmanager.accounts.containers.triggers.update
+        waitForTags:
+          description: >-
+            Whether or not we should delay the form submissions or link opening
+            until all of the tags have fired (by preventing the default action
+            and later simulating the default action). Only valid for Form
+            Submission and Link Click triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          $ref: '#/components/schemas/Parameter'
+        verticalScrollPercentageList:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            List of integer percentage values for scroll triggers. The trigger
+            will fire when each percentage is reached when the view is scrolled
+            vertically. Only valid for AMP scroll triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        customEventFilter:
+          description: >-
+            Used in the case of custom event, which is fired iff all Conditions
+            are true. @mutable tagmanager.accounts.containers.triggers.create
+            @mutable tagmanager.accounts.containers.triggers.update
+          items:
+            $ref: '#/components/schemas/Condition'
+          type: array
+        continuousTimeMinMilliseconds:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            A visibility trigger minimum continuous visible time (in
+            milliseconds). Only valid for AMP Visibility trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        limit:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            Limit of the number of GTM events this Timer Trigger will fire. If
+            no limit is set, we will continue to fire GTM events until the user
+            leaves the page. Only valid for Timer triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        filter:
+          description: >-
+            The trigger will only fire iff all Conditions are true. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          items:
+            $ref: '#/components/schemas/Condition'
+          type: array
+        parentFolderId:
+          type: string
+          description: Parent folder id.
+        visibilitySelector:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            A visibility trigger CSS selector (i.e. "#id"). Only valid for AMP
+            Visibility trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        intervalSeconds:
+          description: >-
+            Time between Timer Events to fire (in seconds). Only valid for AMP
+            Timer trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          $ref: '#/components/schemas/Parameter'
+        parameter:
+          type: array
+          description: >-
+            Additional parameters. @mutable
+            tagmanager.accounts.containers.workspaces.triggers.create @mutable
+            tagmanager.accounts.containers.workspaces.triggers.update
+          items:
+            $ref: '#/components/schemas/Parameter'
+        containerId:
+          type: string
+          description: GTM Container ID.
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Trigger as computed at storage time. This
+            value is recomputed whenever the trigger is modified.
+          type: string
+        type:
+          description: >-
+            Defines the data layer event that causes this trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          enum:
+            - pageview
+            - domReady
+            - windowLoaded
+            - customEvent
+            - triggerGroup
+            - always
+            - formSubmission
+            - click
+            - linkClick
+            - jsError
+            - historyChange
+            - timer
+            - ampClick
+            - ampTimer
+            - ampScroll
+            - ampVisibility
+            - youTubeVideo
+            - scrollDepth
+            - elementVisibility
+          annotations:
+            required:
+              - tagmanager.accounts.containers.triggers.create
+          enumDescriptions:
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+          type: string
+        uniqueTriggerId:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            Globally unique id of the trigger that auto-generates this (a Form
+            Submit, Link Click or Timer listener) if any. Used to make
+            incompatible auto-events work together with trigger filtering based
+            on trigger ids. This value is populated during output generation
+            since the tags implied by triggers don't exist until then. Only
+            valid for Form Submit, Link Click and Timer triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        visiblePercentageMin:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            A visibility trigger minimum percent visibility. Only valid for AMP
+            Visibility trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        accountId:
+          description: GTM Account ID.
+          type: string
+        waitForTagsTimeout:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            How long to wait (in milliseconds) for tags to fire when
+            'waits_for_tags' above evaluates to true. Only valid for Form
+            Submission and Link Click triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        horizontalScrollPercentageList:
+          description: >-
+            List of integer percentage values for scroll triggers. The trigger
+            will fire when each percentage is reached when the view is scrolled
+            horizontally. Only valid for AMP scroll triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          $ref: '#/components/schemas/Parameter'
+        interval:
+          description: >-
+            Time between triggering recurring Timer Events (in milliseconds).
+            Only valid for Timer triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          $ref: '#/components/schemas/Parameter'
+        totalTimeMinMilliseconds:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            A visibility trigger minimum total visible time (in milliseconds).
+            Only valid for AMP Visibility trigger. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+        triggerId:
+          description: The Trigger ID uniquely identifies the GTM Trigger.
+          type: string
+        checkValidation:
+          $ref: '#/components/schemas/Parameter'
+          description: >-
+            Whether or not we should only fire tags if the form submit or link
+            click event is not cancelled by some other event handler (e.g.
+            because of validation). Only valid for Form Submission and Link
+            Click triggers. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+    ListContainerVersionsResponse:
+      description: List container versions response.
+      id: ListContainerVersionsResponse
+      type: object
+      properties:
+        containerVersion:
+          description: All versions of a GTM Container.
+          items:
+            $ref: '#/components/schemas/ContainerVersion'
+          type: array
+        containerVersionHeader:
+          items:
+            $ref: '#/components/schemas/ContainerVersionHeader'
+          type: array
+          description: All container version headers of a GTM Container.
+    PublishContainerVersionResponse:
+      id: PublishContainerVersionResponse
+      type: object
+      properties:
+        containerVersion:
+          description: The container version created.
+          $ref: '#/components/schemas/ContainerVersion'
+        compilerError:
+          description: Compiler errors or not.
+          type: boolean
+      description: Publish container version response.
+    ListContainersResponse:
+      description: List Containers Response.
+      properties:
+        containers:
+          items:
+            $ref: '#/components/schemas/Container'
+          description: All Containers of a GTM Account.
+          type: array
+      type: object
+      id: ListContainersResponse
+    Condition:
+      type: object
+      description: Represents a predicate.
+      properties:
+        type:
+          annotations:
+            required:
+              - tagmanager.accounts.containers.triggers.create
+              - tagmanager.accounts.containers.triggers.update
+          enumDescriptions:
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+          type: string
+          description: >-
+            The type of operator for this condition. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          enum:
+            - equals
+            - contains
+            - startsWith
+            - endsWith
+            - matchRegex
+            - greater
+            - greaterOrEquals
+            - less
+            - lessOrEquals
+            - cssSelector
+            - urlMatches
+        parameter:
+          description: >-
+            A list of named parameters (key/value), depending on the condition's
+            type. Notes: - For binary operators, include parameters named arg0
+            and arg1 for specifying the left and right operands, respectively. -
+            At this time, the left operand (arg0) must be a reference to a
+            variable. - For case-insensitive Regex matching, include a boolean
+            parameter named ignore_case that is set to true. If not specified or
+            set to any other value, the matching will be case sensitive. - To
+            negate an operator, include a boolean parameter named negate boolean
+            parameter that is set to true. @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update
+          type: array
+          annotations:
+            required:
+              - tagmanager.accounts.containers.triggers.create
+              - tagmanager.accounts.containers.triggers.update
+          items:
+            $ref: '#/components/schemas/Parameter'
+      id: Condition
+    Container:
+      description: Represents a Google Tag Manager Container.
+      type: object
+      properties:
+        notes:
+          description: >-
+            Container Notes. @mutable tagmanager.accounts.containers.create
+            @mutable tagmanager.accounts.containers.update
+          type: string
+        accountId:
+          description: GTM Account ID.
+          type: string
+        publicId:
+          description: Container Public ID.
+          type: string
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Container as computed at storage time.
+            This value is recomputed whenever the account is modified.
+          type: string
+        timeZoneCountryId:
+          type: string
+          description: >-
+            Container Country ID. @mutable tagmanager.accounts.containers.create
+            @mutable tagmanager.accounts.containers.update
+          annotations:
+            required:
+              - tagmanager.accounts.containers.create
+        usageContext:
+          items:
+            enumDescriptions:
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+            enum:
+              - web
+              - android
+              - ios
+              - androidSdk5
+              - iosSdk5
+              - amp
+            type: string
+          description: >-
+            List of Usage Contexts for the Container. Valid values include: web,
+            android, ios. @mutable tagmanager.accounts.containers.create
+            @mutable tagmanager.accounts.containers.update
+          type: array
+          annotations:
+            required:
+              - tagmanager.accounts.containers.create
+              - tagmanager.accounts.containers.update
+        domainName:
+          description: >-
+            Optional list of domain names associated with the Container.
+            @mutable tagmanager.accounts.containers.create @mutable
+            tagmanager.accounts.containers.update
+          type: array
+          items:
+            type: string
+        containerId:
+          description: The Container ID uniquely identifies the GTM Container.
+          type: string
+        enabledBuiltInVariable:
+          description: >-
+            List of enabled built-in variables. Valid values include: pageUrl,
+            pageHostname, pagePath, referrer, event, clickElement, clickClasses,
+            clickId, clickTarget, clickUrl, clickText, formElement, formClasses,
+            formId, formTarget, formUrl, formText, errorMessage, errorUrl,
+            errorLine, newHistoryFragment, oldHistoryFragment, newHistoryState,
+            oldHistoryState, historySource, containerVersion, debugMode,
+            randomNumber, containerId. @mutable
+            tagmanager.accounts.containers.create @mutable
+            tagmanager.accounts.containers.update
+          type: array
+          items:
+            enumDescriptions:
+              - ''
+              - ''
+              - ''
+              - ''
+              - For web or mobile.
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - For web or mobile.
+              - ''
+              - For web or mobile.
+              - For web or mobile.
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+            type: string
+            enum:
+              - pageUrl
+              - pageHostname
+              - pagePath
+              - referrer
+              - event
+              - clickElement
+              - clickClasses
+              - clickId
+              - clickTarget
+              - clickUrl
+              - clickText
+              - firstPartyServingUrl
+              - formElement
+              - formClasses
+              - formId
+              - formTarget
+              - formUrl
+              - formText
+              - environmentName
+              - errorMessage
+              - errorUrl
+              - errorLine
+              - newHistoryUrl
+              - oldHistoryUrl
+              - newHistoryFragment
+              - oldHistoryFragment
+              - newHistoryState
+              - oldHistoryState
+              - historySource
+              - containerVersion
+              - debugMode
+              - randomNumber
+              - containerId
+              - appId
+              - appName
+              - appVersionCode
+              - appVersionName
+              - language
+              - osVersion
+              - platform
+              - sdkVersion
+              - deviceName
+              - resolution
+              - advertiserId
+              - advertisingTrackingEnabled
+              - htmlId
+              - ampBrowserLanguage
+              - ampCanonicalPath
+              - ampCanonicalUrl
+              - ampCanonicalHost
+              - ampReferrer
+              - ampTitle
+              - ampClientId
+              - ampClientTimezone
+              - ampClientTimestamp
+              - ampClientScreenWidth
+              - ampClientScreenHeight
+              - ampClientScrollX
+              - ampClientScrollY
+              - ampClientMaxScrollX
+              - ampClientMaxScrollY
+              - ampTotalEngagedTime
+              - ampPageViewId
+              - ampPageLoadTime
+              - ampPageDownloadTime
+              - ampGtmEvent
+              - eventName
+              - firebaseEventParameterCampaign
+              - firebaseEventParameterCampaignAclid
+              - firebaseEventParameterCampaignAnid
+              - firebaseEventParameterCampaignClickTimestamp
+              - firebaseEventParameterCampaignContent
+              - firebaseEventParameterCampaignCp1
+              - firebaseEventParameterCampaignGclid
+              - firebaseEventParameterCampaignSource
+              - firebaseEventParameterCampaignTerm
+              - firebaseEventParameterCurrency
+              - firebaseEventParameterDynamicLinkAcceptTime
+              - firebaseEventParameterDynamicLinkLinkid
+              - firebaseEventParameterNotificationMessageDeviceTime
+              - firebaseEventParameterNotificationMessageId
+              - firebaseEventParameterNotificationMessageName
+              - firebaseEventParameterNotificationMessageTime
+              - firebaseEventParameterNotificationTopic
+              - firebaseEventParameterPreviousAppVersion
+              - firebaseEventParameterPreviousOsVersion
+              - firebaseEventParameterPrice
+              - firebaseEventParameterProductId
+              - firebaseEventParameterQuantity
+              - firebaseEventParameterValue
+              - videoProvider
+              - videoUrl
+              - videoTitle
+              - videoDuration
+              - videoPercent
+              - videoVisible
+              - videoStatus
+              - videoCurrentTime
+              - scrollDepthThreshold
+              - scrollDepthUnits
+              - scrollDepthDirection
+              - elementVisibilityRatio
+              - elementVisibilityTime
+              - elementVisibilityFirstTime
+              - elementVisibilityRecentTime
+        name:
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.create
+          description: >-
+            Container display name. @mutable
+            tagmanager.accounts.containers.create @mutable
+            tagmanager.accounts.containers.update
+        timeZoneId:
+          type: string
+          description: >-
+            Container Time Zone ID. @mutable
+            tagmanager.accounts.containers.create @mutable
+            tagmanager.accounts.containers.update
+          annotations:
+            required:
+              - tagmanager.accounts.containers.create
+      id: Container
+    CreateContainerVersionResponse:
+      type: object
+      id: CreateContainerVersionResponse
+      description: Create container versions response.
+      properties:
+        containerVersion:
+          $ref: '#/components/schemas/ContainerVersion'
+          description: The container version created.
+        compilerError:
+          type: boolean
+          description: Compiler errors or not.
+    Tag:
+      id: Tag
+      properties:
+        priority:
+          description: >-
+            User defined numeric priority of the tag. Tags are fired
+            asynchronously in order of priority. Tags with higher numeric value
+            fire first. A tag's priority can be a positive or negative value.
+            The default value is 0. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          $ref: '#/components/schemas/Parameter'
+        setupTag:
+          items:
+            $ref: '#/components/schemas/SetupTag'
+          description: The list of setup tags. Currently we only allow one.
+          type: array
+        name:
+          description: >-
+            Tag display name. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.tags.create
+              - tagmanager.accounts.containers.tags.update
+        type:
+          annotations:
+            required:
+              - tagmanager.accounts.containers.tags.create
+          type: string
+          description: >-
+            GTM Tag Type. @mutable tagmanager.accounts.containers.tags.create
+            @mutable tagmanager.accounts.containers.tags.update
+        tagFiringOption:
+          enum:
+            - unlimited
+            - oncePerEvent
+            - oncePerLoad
+          description: Option to fire this tag.
+          type: string
+          enumDescriptions:
+            - Tag can be fired multiple times per event.
+            - >-
+              Tag can only be fired per event but can be fired multiple times
+              per load (e.g., app load or page load).
+            - Tag can only be fired per load (e.g., app load or page load).
+        blockingRuleId:
+          description: >-
+            Blocking rule IDs. If any of the listed rules evaluate to true, the
+            tag will not fire. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: array
+          items:
+            type: string
+        notes:
+          description: >-
+            User notes on how to apply this tag in the container. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: string
+        liveOnly:
+          type: boolean
+          description: >-
+            If set to true, this tag will only fire in the live environment
+            (e.g. not in preview or debug mode). @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+        teardownTag:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeardownTag'
+          description: The list of teardown tags. Currently we only allow one.
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Tag as computed at storage time. This
+            value is recomputed whenever the tag is modified.
+          type: string
+        containerId:
+          type: string
+          description: GTM Container ID.
+        parentFolderId:
+          type: string
+          description: Parent folder id.
+        parameter:
+          items:
+            $ref: '#/components/schemas/Parameter'
+          type: array
+          description: >-
+            The tag's parameters. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+        firingTriggerId:
+          items:
+            type: string
+          description: >-
+            Firing trigger IDs. A tag will fire when any of the listed triggers
+            are true and all of its blockingTriggerIds (if any specified) are
+            false. @mutable tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: array
+        blockingTriggerId:
+          type: array
+          description: >-
+            Blocking trigger IDs. If any of the listed triggers evaluate to
+            true, the tag will not fire. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          items:
+            type: string
+        tagId:
+          type: string
+          description: The Tag ID uniquely identifies the GTM Tag.
+        firingRuleId:
+          items:
+            type: string
+          description: >-
+            Firing rule IDs. A tag will fire when any of the listed rules are
+            true and all of its blockingRuleIds (if any specified) are false.
+            @mutable tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: array
+        accountId:
+          description: GTM Account ID.
+          type: string
+        scheduleEndMs:
+          type: string
+          format: int64
+          description: >-
+            The end timestamp in milliseconds to schedule a tag. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+        scheduleStartMs:
+          type: string
+          description: >-
+            The start timestamp in milliseconds to schedule a tag. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          format: int64
+        paused:
+          description: >-
+            True if the tag is paused. @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: boolean
+      description: Represents a Google Tag Manager Tag.
+      type: object
+    UserAccess:
+      type: object
+      properties:
+        permissionId:
+          type: string
+          description: Account Permission ID.
+        containerAccess:
+          type: array
+          description: >-
+            GTM Container access permissions. @mutable
+            tagmanager.accounts.permissions.create @mutable
+            tagmanager.accounts.permissions.update
+          items:
+            $ref: '#/components/schemas/ContainerAccess'
+        accountAccess:
+          description: >-
+            GTM Account access permissions. @mutable
+            tagmanager.accounts.permissions.create @mutable
+            tagmanager.accounts.permissions.update
+          annotations:
+            required:
+              - tagmanager.accounts.permissions.create
+          $ref: '#/components/schemas/AccountAccess'
+        emailAddress:
+          annotations:
+            required:
+              - tagmanager.accounts.permissions.create
+          type: string
+          description: >-
+            User's email address. @mutable
+            tagmanager.accounts.permissions.create
+        accountId:
+          description: GTM Account ID.
+          type: string
+      description: Represents a user's permissions to an account and its container.
+      id: UserAccess
+    ListTriggersResponse:
+      id: ListTriggersResponse
+      properties:
+        triggers:
+          items:
+            $ref: '#/components/schemas/Trigger'
+          description: All GTM Triggers of a GTM Container.
+          type: array
+      description: List triggers response.
+      type: object
+    Environment:
+      description: >-
+        Represents a Google Tag Manager Environment. Note that a user can
+        create, delete and update environments of type USER, but can only update
+        the enable_debug and url fields of environments of other types.
+      properties:
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM environment as computed at storage time.
+            This value is recomputed whenever the environment is modified.
+          type: string
+        enableDebug:
+          description: >-
+            Whether or not to enable debug by default on for the environment.
+            @mutable tagmanager.accounts.containers.environments.create @mutable
+            tagmanager.accounts.containers.environments.update
+          type: boolean
+        containerId:
+          type: string
+          description: GTM Container ID.
+        type:
+          type: string
+          enumDescriptions:
+            - Used for user defined environments.
+            - >-
+              Used for Live environment, which points to the live published
+              container version.
+            - >-
+              Used for Latest environment, which points to the latest created
+              container version.
+            - >-
+              Used for Draft environment, which points to the single draft in
+              the container.
+          enum:
+            - user
+            - live
+            - latest
+            - draft
+          description: The type of this environment.
+        containerVersionId:
+          type: string
+        description:
+          description: >-
+            The environment description. Can be set or changed only on USER type
+            environments. @mutable
+            tagmanager.accounts.containers.environments.create @mutable
+            tagmanager.accounts.containers.environments.update
+          type: string
+        environmentId:
+          type: string
+          description: GTM Environment ID uniquely identifies the GTM Environment.
+        authorizationCode:
+          type: string
+          description: The environment authorization code.
+        url:
+          type: string
+          description: >-
+            Default preview page url for the environment. @mutable
+            tagmanager.accounts.containers.environments.create @mutable
+            tagmanager.accounts.containers.environments.update
+        accountId:
+          description: GTM Account ID.
+          type: string
+        authorizationTimestampMs:
+          type: string
+          description: The last update time-stamp for the authorization code.
+          format: int64
+        name:
+          description: >-
+            The environment display name. Can be set or changed only on USER
+            type environments. @mutable
+            tagmanager.accounts.containers.environments.create @mutable
+            tagmanager.accounts.containers.environments.update
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.environments.create
+              - tagmanager.accounts.containers.environments.update
+      id: Environment
+      type: object
+    ListTagsResponse:
+      type: object
+      description: List Tags Response.
+      properties:
+        tags:
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+          description: All GTM Tags of a GTM Container.
+      id: ListTagsResponse
+    CreateContainerVersionRequestVersionOptions:
+      id: CreateContainerVersionRequestVersionOptions
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the container version to be created.
+        notes:
+          type: string
+          description: The notes of the container version to be created.
+        quickPreview:
+          description: >-
+            The creation of this version may be for quick preview and shouldn't
+            be saved.
+          type: boolean
+      description: Options for new container versions.
+    Folder:
+      description: Represents a Google Tag Manager Folder.
+      properties:
+        name:
+          annotations:
+            required:
+              - tagmanager.accounts.containers.folders.create
+              - tagmanager.accounts.containers.folders.update
+          description: >-
+            Folder display name. @mutable
+            tagmanager.accounts.containers.folders.create @mutable
+            tagmanager.accounts.containers.folders.update
+          type: string
+        containerId:
+          type: string
+          description: GTM Container ID.
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Folder as computed at storage time. This
+            value is recomputed whenever the folder is modified.
+          type: string
+        accountId:
+          type: string
+          description: GTM Account ID.
+        folderId:
+          type: string
+          description: The Folder ID uniquely identifies the GTM Folder.
+      type: object
+      id: Folder
+    ContainerAccess:
+      type: object
+      description: Defines the Google Tag Manager Container access permissions.
+      properties:
+        containerId:
+          type: string
+          description: >-
+            GTM Container ID. @mutable tagmanager.accounts.permissions.create
+            @mutable tagmanager.accounts.permissions.update
+        permission:
+          description: >-
+            List of Container permissions. Valid container permissions are:
+            read, edit, delete, publish. @mutable
+            tagmanager.accounts.permissions.create @mutable
+            tagmanager.accounts.permissions.update
+          items:
+            enum:
+              - read
+              - edit
+              - publish
+              - delete
+              - manage
+              - editWorkspace
+            type: string
+            enumDescriptions:
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+              - ''
+          type: array
+      id: ContainerAccess
+    ListFoldersResponse:
+      type: object
+      properties:
+        folders:
+          type: array
+          description: All GTM Folders of a GTM Container.
+          items:
+            $ref: '#/components/schemas/Folder'
+      id: ListFoldersResponse
+      description: List Folders Response.
+    SetupTag:
+      type: object
+      properties:
+        stopOnSetupFailure:
+          type: boolean
+          description: >-
+            If true, fire the main tag if and only if the setup tag fires
+            successfully. If false, fire the main tag regardless of setup tag
+            firing status.
+        tagName:
+          type: string
+          description: The name of the setup tag.
+      id: SetupTag
+    ContainerVersion:
+      description: Represents a Google Tag Manager Container Version.
+      properties:
+        notes:
+          type: string
+          description: >-
+            User notes on how to apply this container version in the container.
+            @mutable tagmanager.accounts.containers.versions.update
+        folder:
+          description: The folders in the container that this version was taken from.
+          items:
+            $ref: '#/components/schemas/Folder'
+          type: array
+        rule:
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: The rules in the container that this version was taken from.
+          type: array
+        name:
+          description: >-
+            Container version display name. @mutable
+            tagmanager.accounts.containers.versions.update
+          type: string
+        containerVersionId:
+          description: >-
+            The Container Version ID uniquely identifies the GTM Container
+            Version.
+          type: string
+        container:
+          $ref: '#/components/schemas/Container'
+          description: The container that this version was taken from.
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Container Version as computed at storage
+            time. This value is recomputed whenever the container version is
+            modified.
+          type: string
+        trigger:
+          description: The triggers in the container that this version was taken from.
+          items:
+            $ref: '#/components/schemas/Trigger'
+          type: array
+        variable:
+          type: array
+          description: The variables in the container that this version was taken from.
+          items:
+            $ref: '#/components/schemas/Variable'
+        macro:
+          description: The macros in the container that this version was taken from.
+          items:
+            $ref: '#/components/schemas/Macro'
+          type: array
+        containerId:
+          type: string
+          description: GTM Container ID.
+        accountId:
+          description: GTM Account ID.
+          type: string
+        deleted:
+          description: A value of true indicates this container version has been deleted.
+          type: boolean
+        tag:
+          description: The tags in the container that this version was taken from.
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+      type: object
+      id: ContainerVersion
+    ContainerVersionHeader:
+      properties:
+        accountId:
+          description: GTM Account ID.
+          type: string
+        numMacros:
+          description: Number of macros in the container version.
+          type: string
+        name:
+          type: string
+          description: Container version display name.
+        numTags:
+          description: Number of tags in the container version.
+          type: string
+        containerVersionId:
+          type: string
+          description: >-
+            The Container Version ID uniquely identifies the GTM Container
+            Version.
+        containerId:
+          description: GTM Container ID.
+          type: string
+        deleted:
+          type: boolean
+          description: A value of true indicates this container version has been deleted.
+        numRules:
+          type: string
+          description: Number of rules in the container version.
+        numVariables:
+          type: string
+          description: Number of variables in the container version.
+        numTriggers:
+          type: string
+          description: Number of triggers in the container version.
+      id: ContainerVersionHeader
+      description: Represents a Google Tag Manager Container Version Header.
+      type: object
+    ListEnvironmentsResponse:
+      id: ListEnvironmentsResponse
+      properties:
+        environments:
+          items:
+            $ref: '#/components/schemas/Environment'
+          type: array
+          description: All Environments of a GTM Container.
+      type: object
+      description: List Environments Response.
+    Variable:
+      properties:
+        containerId:
+          type: string
+          description: GTM Container ID.
+        scheduleStartMs:
+          description: >-
+            The start timestamp in milliseconds to schedule a variable. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+          format: int64
+          type: string
+        parentFolderId:
+          type: string
+          description: Parent folder id.
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Variable as computed at storage time.
+            This value is recomputed whenever the variable is modified.
+          type: string
+        notes:
+          type: string
+          description: >-
+            User notes on how to apply this variable in the container. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+        accountId:
+          type: string
+          description: GTM Account ID.
+        enablingTriggerId:
+          description: >-
+            For mobile containers only: A list of trigger IDs for enabling
+            conditional variables; the variable is enabled if one of the
+            enabling triggers is true while all the disabling triggers are
+            false. Treated as an unordered set. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+          items:
+            type: string
+          type: array
+        type:
+          description: >-
+            GTM Variable Type. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.variables.create
+              - tagmanager.accounts.containers.variables.update
+        variableId:
+          type: string
+          description: The Variable ID uniquely identifies the GTM Variable.
+        name:
+          description: >-
+            Variable display name. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+          type: string
+          annotations:
+            required:
+              - tagmanager.accounts.containers.variables.create
+              - tagmanager.accounts.containers.variables.update
+        parameter:
+          type: array
+          description: >-
+            The variable's parameters. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+          items:
+            $ref: '#/components/schemas/Parameter'
+        disablingTriggerId:
+          type: array
+          items:
+            type: string
+          description: >-
+            For mobile containers only: A list of trigger IDs for disabling
+            conditional variables; the variable is enabled if one of the
+            enabling trigger is true while all the disabling trigger are false.
+            Treated as an unordered set. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+        scheduleEndMs:
+          type: string
+          format: int64
+          description: >-
+            The end timestamp in milliseconds to schedule a variable. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update
+      type: object
+      id: Variable
+      description: Represents a Google Tag Manager Variable.
+    FolderEntities:
+      type: object
+      description: Represents a Google Tag Manager Folder's contents.
+      properties:
+        tag:
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+          description: The list of tags inside the folder.
+        trigger:
+          description: The list of triggers inside the folder.
+          items:
+            $ref: '#/components/schemas/Trigger'
+          type: array
+        variable:
+          type: array
+          description: The list of variables inside the folder.
+          items:
+            $ref: '#/components/schemas/Variable'
+      id: FolderEntities
+    Account:
+      description: Represents a Google Tag Manager Account.
+      properties:
+        accountId:
+          description: The Account ID uniquely identifies the GTM Account.
+          type: string
+        name:
+          type: string
+          description: >-
+            Account display name. @mutable tagmanager.accounts.create @mutable
+            tagmanager.accounts.update
+        shareData:
+          description: >-
+            Whether the account shares data anonymously with Google and others.
+            @mutable tagmanager.accounts.create @mutable
+            tagmanager.accounts.update
+          type: boolean
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Account as computed at storage time. This
+            value is recomputed whenever the account is modified.
+          type: string
+      id: Account
+      type: object
+    ListAccountsResponse:
+      type: object
+      properties:
+        accounts:
+          items:
+            $ref: '#/components/schemas/Account'
+          type: array
+          description: List of GTM Accounts that a user has access to.
+      id: ListAccountsResponse
+      description: List Accounts Response.
+    ListAccountUsersResponse:
+      properties:
+        userAccess:
+          items:
+            $ref: '#/components/schemas/UserAccess'
+          type: array
+          description: All GTM AccountUsers of a GTM Account.
+      description: List AccountUsers Response.
+      type: object
+      id: ListAccountUsersResponse
+    Parameter:
+      description: Represents a Google Tag Manager Parameter.
+      id: Parameter
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Parameter'
+          description: >-
+            This list parameter's parameters (keys will be ignored). @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+        type:
+          enumDescriptions:
+            - May include variable references (such as "{{myVariable}}").
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+            - ''
+          description: >-
+            The parameter type. Valid values are: - boolean: The value
+            represents a boolean, represented as 'true' or 'false' - integer:
+            The value represents a 64-bit signed integer value, in base 10 -
+            list: A list of parameters should be specified - map: A map of
+            parameters should be specified - template: The value represents any
+            text; this can include variable references (even variable references
+            that might return non-string types) - trigger_reference: The value
+            represents a trigger, represented as the trigger id - tag_reference:
+            The value represents a tag, represented as the tag name @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          enum:
+            - template
+            - integer
+            - boolean
+            - list
+            - map
+            - triggerReference
+            - tagReference
+          annotations:
+            required:
+              - tagmanager.accounts.containers.tags.create
+              - tagmanager.accounts.containers.tags.update
+              - tagmanager.accounts.containers.triggers.create
+              - tagmanager.accounts.containers.triggers.update
+              - tagmanager.accounts.containers.variables.create
+              - tagmanager.accounts.containers.variables.update
+          type: string
+        key:
+          type: string
+          description: >-
+            The named key that uniquely identifies a parameter. Required for
+            top-level parameters, as well as map values. Ignored for list
+            values. @mutable tagmanager.accounts.containers.variables.create
+            @mutable tagmanager.accounts.containers.variables.update @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+        value:
+          description: >-
+            A parameter's value (may contain variable references such as
+            "{{myVariable}}") as appropriate to the specified type. @mutable
+            tagmanager.accounts.containers.variables.create @mutable
+            tagmanager.accounts.containers.variables.update @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          type: string
+        map:
+          description: >-
+            This map parameter's parameters (must have keys; keys must be
+            unique). @mutable tagmanager.accounts.containers.variables.create
+            @mutable tagmanager.accounts.containers.variables.update @mutable
+            tagmanager.accounts.containers.triggers.create @mutable
+            tagmanager.accounts.containers.triggers.update @mutable
+            tagmanager.accounts.containers.tags.create @mutable
+            tagmanager.accounts.containers.tags.update
+          items:
+            $ref: '#/components/schemas/Parameter'
+          type: array
+    ListVariablesResponse:
+      description: List Variables Response.
+      properties:
+        variables:
+          type: array
+          description: All GTM Variables of a GTM Container.
+          items:
+            $ref: '#/components/schemas/Variable'
+      type: object
+      id: ListVariablesResponse
+    Rule:
+      type: object
+      id: Rule
+      description: Represents a Google Tag Manager Rule.
+      properties:
+        containerId:
+          description: GTM Container ID.
+          type: string
+        accountId:
+          description: GTM Account ID.
+          type: string
+        notes:
+          type: string
+          description: >-
+            User notes on how to apply this rule in the container. @mutable
+            tagmanager.accounts.containers.rules.create @mutable
+            tagmanager.accounts.containers.rules.update
+        name:
+          description: >-
+            Rule display name. @mutable
+            tagmanager.accounts.containers.rules.create @mutable
+            tagmanager.accounts.containers.rules.update
+          type: string
+        fingerprint:
+          description: >-
+            The fingerprint of the GTM Rule as computed at storage time. This
+            value is recomputed whenever the rule is modified.
+          type: string
+        condition:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
+          description: >-
+            The list of conditions that make up this rule (implicit AND between
+            them). @mutable tagmanager.accounts.containers.rules.create @mutable
+            tagmanager.accounts.containers.rules.update
+        ruleId:
+          description: The Rule ID uniquely identifies the GTM Rule.
+          type: string
+  parameters:
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/tagmanager.publish: Publish your Google Tag Manager container versions
+            https://www.googleapis.com/auth/tagmanager.edit.containers: >-
+              Manage your Google Tag Manager container and its subcomponents,
+              excluding versioning and publishing
+            https://www.googleapis.com/auth/tagmanager.manage.users: >-
+              Manage user permissions of your Google Tag Manager account and
+              container
+            https://www.googleapis.com/auth/tagmanager.manage.accounts: View and manage your Google Tag Manager accounts
+            https://www.googleapis.com/auth/tagmanager.readonly: View your Google Tag Manager container and its subcomponents
+            https://www.googleapis.com/auth/tagmanager.delete.containers: Delete your Google Tag Manager containers
+            https://www.googleapis.com/auth/tagmanager.edit.containerversions: Manage your Google Tag Manager container versions
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /tagmanager/v1/accounts/{accountId}/permissions:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/alt'
+    post:
+      description: Creates a user's Account & Container Permissions.
+      operationId: tagmanager.accounts.permissions.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccess'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: permissions
+      x-stackQL-verb: insert
+    get:
+      description: >-
+        List all users that have access to the account along with Account and
+        Container Permissions granted to each of them.
+      operationId: tagmanager.accounts.permissions.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAccountUsersResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: permissions
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/permissions/{permissionId}:
+    parameters: *ref_1
+    get:
+      description: Gets a user's Account & Container Permissions.
+      operationId: tagmanager.accounts.permissions.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: permissions
+      x-stackQL-verb: select
+    put:
+      description: Updates a user's Account & Container Permissions.
+      operationId: tagmanager.accounts.permissions.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccess'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: permissions
+      x-stackQL-verb: exec
+    delete:
+      description: >-
+        Removes a user from the account, revoking access to it and all of its
+        containers.
+      operationId: tagmanager.accounts.permissions.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.users
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: permissions
+      x-stackQL-verb: delete
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/move_folders/{folderId}:
+    parameters: *ref_1
+    put:
+      description: Moves entities to a GTM Folder.
+      operationId: tagmanager.accounts.containers.move_folders.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Folder'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: folderId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: variableId
+          schema:
+            type: string
+        - in: query
+          name: triggerId
+          schema:
+            type: string
+        - in: query
+          name: tagId
+          schema:
+            type: string
+      x-stackQL-resource: move_folders
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a GTM Trigger.
+      operationId: tagmanager.accounts.containers.triggers.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: triggerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: triggers
+      x-stackQL-verb: delete
+    get:
+      description: Gets a GTM Trigger.
+      operationId: tagmanager.accounts.containers.triggers.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trigger'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: triggerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: triggers
+      x-stackQL-verb: select
+    put:
+      description: Updates a GTM Trigger.
+      operationId: tagmanager.accounts.containers.triggers.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trigger'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trigger'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: triggerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: triggers
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/triggers:
+    parameters: *ref_1
+    get:
+      description: Lists all GTM Triggers of a Container.
+      operationId: tagmanager.accounts.containers.triggers.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTriggersResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: triggers
+      x-stackQL-verb: select
+    post:
+      description: Creates a GTM Trigger.
+      operationId: tagmanager.accounts.containers.triggers.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trigger'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trigger'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: triggers
+      x-stackQL-verb: insert
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a Container Version.
+      operationId: tagmanager.accounts.containers.versions.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: delete
+    put:
+      description: Updates a Container Version.
+      operationId: tagmanager.accounts.containers.versions.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerVersion'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerVersion'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: exec
+    get:
+      description: Gets a Container Version.
+      operationId: tagmanager.accounts.containers.versions.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerVersion'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/undelete:
+    parameters: *ref_1
+    post:
+      description: Undeletes a Container Version.
+      operationId: tagmanager.accounts.containers.versions.undelete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerVersion'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/versions:
+    parameters: *ref_1
+    get:
+      description: Lists all Container Versions of a GTM Container.
+      operationId: tagmanager.accounts.containers.versions.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContainerVersionsResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: headers
+          schema:
+            type: boolean
+        - in: query
+          name: includeDeleted
+          schema:
+            type: boolean
+      x-stackQL-resource: versions
+      x-stackQL-verb: select
+    post:
+      description: Creates a Container Version.
+      operationId: tagmanager.accounts.containers.versions.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContainerVersionRequestVersionOptions'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containerversions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateContainerVersionResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: insert
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/publish:
+    parameters: *ref_1
+    post:
+      description: Publishes a Container Version.
+      operationId: tagmanager.accounts.containers.versions.publish
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.publish
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.publish
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishContainerVersionResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/restore:
+    parameters: *ref_1
+    post:
+      description: >-
+        Restores a Container Version. This will overwrite the container's
+        current configuration (including its variables, triggers and tags). The
+        operation will not have any effect on the version that is being served
+        (i.e. the published version).
+      operationId: tagmanager.accounts.containers.versions.restore
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerVersion'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerVersionId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: versions
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/reauthorize_environments/{environmentId}:
+    parameters: *ref_1
+    put:
+      description: Re-generates the authorization code for a GTM Environment.
+      operationId: tagmanager.accounts.containers.reauthorize_environments.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Environment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.publish
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.publish
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: reauthorize_environments
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/variables/{variableId}:
+    parameters: *ref_1
+    get:
+      description: Gets a GTM Variable.
+      operationId: tagmanager.accounts.containers.variables.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: variableId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: variables
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a GTM Variable.
+      operationId: tagmanager.accounts.containers.variables.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: variableId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: variables
+      x-stackQL-verb: delete
+    put:
+      description: Updates a GTM Variable.
+      operationId: tagmanager.accounts.containers.variables.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: variableId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: variables
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/variables:
+    parameters: *ref_1
+    post:
+      description: Creates a GTM Variable.
+      operationId: tagmanager.accounts.containers.variables.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: variables
+      x-stackQL-verb: insert
+    get:
+      description: Lists all GTM Variables of a Container.
+      operationId: tagmanager.accounts.containers.variables.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVariablesResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: variables
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/tags/{tagId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a GTM Tag.
+      operationId: tagmanager.accounts.containers.tags.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: tagId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: tags
+      x-stackQL-verb: delete
+    put:
+      description: Updates a GTM Tag.
+      operationId: tagmanager.accounts.containers.tags.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: tagId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: tags
+      x-stackQL-verb: exec
+    get:
+      description: Gets a GTM Tag.
+      operationId: tagmanager.accounts.containers.tags.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: tagId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: tags
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/tags:
+    parameters: *ref_1
+    get:
+      description: Lists all GTM Tags of a Container.
+      operationId: tagmanager.accounts.containers.tags.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTagsResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: tags
+      x-stackQL-verb: select
+    post:
+      description: Creates a GTM Tag.
+      operationId: tagmanager.accounts.containers.tags.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: tags
+      x-stackQL-verb: insert
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/environments:
+    parameters: *ref_1
+    post:
+      description: Creates a GTM Environment.
+      operationId: tagmanager.accounts.containers.environments.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Environment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: environments
+      x-stackQL-verb: insert
+    get:
+      description: Lists all GTM Environments of a GTM Container.
+      operationId: tagmanager.accounts.containers.environments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvironmentsResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: environments
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/environments/{environmentId}:
+    parameters: *ref_1
+    get:
+      description: Gets a GTM Environment.
+      operationId: tagmanager.accounts.containers.environments.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: environments
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a GTM Environment.
+      operationId: tagmanager.accounts.containers.environments.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: environments
+      x-stackQL-verb: delete
+    put:
+      description: Updates a GTM Environment.
+      operationId: tagmanager.accounts.containers.environments.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Environment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: environments
+      x-stackQL-verb: exec
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/folders/{folderId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a GTM Folder.
+      operationId: tagmanager.accounts.containers.folders.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: folderId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: folders
+      x-stackQL-verb: delete
+    put:
+      description: Updates a GTM Folder.
+      operationId: tagmanager.accounts.containers.folders.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Folder'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: folderId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: folders
+      x-stackQL-verb: exec
+    get:
+      description: Gets a GTM Folder.
+      operationId: tagmanager.accounts.containers.folders.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: folderId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: folders
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/folders:
+    parameters: *ref_1
+    post:
+      description: Creates a GTM Folder.
+      operationId: tagmanager.accounts.containers.folders.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Folder'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: folders
+      x-stackQL-verb: insert
+    get:
+      description: Lists all GTM Folders of a Container.
+      operationId: tagmanager.accounts.containers.folders.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFoldersResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: folders
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}/folders/{folderId}/entities:
+    parameters: *ref_1
+    get:
+      description: List all entities in a GTM Folder.
+      operationId: tagmanager.accounts.containers.folders.entities.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderEntities'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: folderId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: entities
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers/{containerId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a Container.
+      operationId: tagmanager.accounts.containers.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.delete.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.delete.containers
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: containers
+      x-stackQL-verb: delete
+    put:
+      description: Updates a Container.
+      operationId: tagmanager.accounts.containers.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Container'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: containers
+      x-stackQL-verb: exec
+    get:
+      description: Gets a Container.
+      operationId: tagmanager.accounts.containers.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: containerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: containers
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts/{accountId}/containers:
+    parameters: *ref_1
+    get:
+      description: Lists all Containers that belongs to a GTM Account.
+      operationId: tagmanager.accounts.containers.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContainersResponse'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: containers
+      x-stackQL-verb: select
+    post:
+      description: Creates a Container.
+      operationId: tagmanager.accounts.containers.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Container'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: containers
+      x-stackQL-verb: insert
+  /tagmanager/v1/accounts/{accountId}:
+    parameters: *ref_1
+    put:
+      description: Updates a GTM Account.
+      operationId: tagmanager.accounts.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fingerprint
+          schema:
+            type: string
+      x-stackQL-resource: accounts
+      x-stackQL-verb: exec
+    get:
+      description: Gets a GTM Account.
+      operationId: tagmanager.accounts.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: accounts
+      x-stackQL-verb: select
+  /tagmanager/v1/accounts:
+    parameters: *ref_1
+    get:
+      description: Lists all GTM Accounts that a user has access to.
+      operationId: tagmanager.accounts.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.edit.containers
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.manage.accounts
+        - Oauth2:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/tagmanager.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAccountsResponse'
+      parameters: []
+      x-stackQL-resource: accounts
+      x-stackQL-verb: select

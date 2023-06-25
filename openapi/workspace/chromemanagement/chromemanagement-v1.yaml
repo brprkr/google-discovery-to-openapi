@@ -1,0 +1,3209 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Chrome Management API
+  description: >-
+    The Chrome Management API is a suite of services that allows Chrome
+    administrators to view, manage and gain insights on their Chrome OS and
+    Chrome Browser devices.
+  version: v1
+  x-discovery-doc-revision: '20230622'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: http://developers.google.com/chrome/management/
+servers:
+  - url: https://chromemanagement.googleapis.com
+components:
+  schemas:
+    GoogleChromeManagementV1HeartbeatStatusReport:
+      id: GoogleChromeManagementV1HeartbeatStatusReport
+      description: >-
+        Heartbeat status report of a device. * Available for Kiosks * This field
+        provides online/offline/unknown status of a device and will only be
+        included if the status has changed (e.g. Online -> Offline) * Data for
+        this field is controlled via policy:
+        [HeartbeatEnabled](https://chromeenterprise.google/policies/#HeartbeatEnabled)
+        [More
+        Info](https://support.google.com/chrome/a/answer/6179663#:~:text=On%20the%20Chrome,device%20status%20alerts)
+        * Heartbeat Frequency: 2 mins * Note: If a device goes offline, it can
+        take up to 12 minutes for the online status of the device to be updated
+        * Cache: If the device is offline, the collected data is stored locally,
+        and will be reported when the device is next online: N/A * Reported for
+        affiliated users only: N/A * Granular permission needed:
+        TELEMETRY_API_DEVICE_ACTIVITY_REPORT
+      properties:
+        state:
+          description: State the device changed to
+          enum:
+            - STATE_UNSPECIFIED
+            - UNKNOWN
+            - ONLINE
+            - OFFLINE
+          enumDescriptions:
+            - State not specified
+            - Device is not eligible for heartbeat monitoring
+            - Device is online
+            - Device is offline
+          type: string
+        reportTime:
+          type: string
+          description: Timestamp of when status changed was detected
+          format: google-datetime
+      type: object
+    GoogleChromeManagementV1ChromeAppPermission:
+      properties:
+        type:
+          description: Output only. The type of the permission.
+          type: string
+          readOnly: true
+        accessUserData:
+          readOnly: true
+          description: >-
+            Output only. If available, whether this permissions grants the
+            app/extension access to user data.
+          type: boolean
+        documentationUri:
+          description: >-
+            Output only. If available, a URI to a page that has documentation
+            for the current permission.
+          readOnly: true
+          type: string
+      type: object
+      id: GoogleChromeManagementV1ChromeAppPermission
+      description: Permission requested by a Chrome app or extension.
+    GoogleChromeManagementV1DisplayInfo:
+      type: object
+      id: GoogleChromeManagementV1DisplayInfo
+      description: Information for a display.
+      properties:
+        isInternal:
+          type: boolean
+          readOnly: true
+          description: Output only. Indicates if display is internal or not.
+        deviceId:
+          readOnly: true
+          description: Output only. Represents the graphics card device id.
+          format: int64
+          type: string
+        refreshRate:
+          type: integer
+          readOnly: true
+          format: int32
+          description: Output only. Refresh rate in Hz.
+        resolutionWidth:
+          format: int32
+          description: Output only. Resolution width in pixels.
+          type: integer
+          readOnly: true
+        resolutionHeight:
+          format: int32
+          readOnly: true
+          type: integer
+          description: Output only. Resolution height in pixels.
+        displayName:
+          readOnly: true
+          type: string
+          description: Output only. Display device name.
+    GoogleChromeManagementV1TelemetryUser:
+      description: >-
+        Telemetry data collected from a managed user. * Granular permission
+        needed: TELEMETRY_API_USER
+      type: object
+      id: GoogleChromeManagementV1TelemetryUser
+      properties:
+        userId:
+          type: string
+          description: Directory ID of the user.
+        userDevice:
+          description: Telemetry data collected from a managed user and device.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryUserDevice'
+          type: array
+        orgUnitId:
+          type: string
+          description: Organization unit of the user.
+        userEmail:
+          description: Email address of the user.
+          type: string
+        customer:
+          description: G Suite Customer whose enterprise enrolled the device.
+          type: string
+        name:
+          type: string
+          description: Resource name of the user.
+    GoogleChromeManagementV1NetworkStatusReport:
+      id: GoogleChromeManagementV1NetworkStatusReport
+      description: >-
+        State of visible/configured networks. * This field is telemetry
+        information and this will change over time as the device is utilized. *
+        Data for this field is controlled via policy:
+        [ReportNetworkStatus](https://chromeenterprise.google/policies/#ReportNetworkStatus)
+        * Data Collection Frequency: 60 minutes * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: Yes * Reported for affiliated users only: Yes
+        * Granular permission needed: TELEMETRY_API_NETWORK_REPORT
+      type: object
+      properties:
+        transmissionPowerDbm:
+          readOnly: true
+          format: int32
+          type: integer
+          description: Output only. Transmission power measured in decibels.
+        connectionState:
+          enumDescriptions:
+            - Network connection state unspecified.
+            - The network is connected and internet connectivity is available.
+            - >-
+              The network is connected and not in a detected portal state, but
+              internet connectivity may not be available.
+            - >-
+              The network is connected but a portal state was detected. Internet
+              connectivity may be limited.
+            - The network is in the process of connecting.
+            - The network is not connected.
+          type: string
+          readOnly: true
+          description: Output only. Current connection state of the network.
+          enum:
+            - NETWORK_CONNECTION_STATE_UNSPECIFIED
+            - ONLINE
+            - CONNECTED
+            - PORTAL
+            - CONNECTING
+            - NOT_CONNECTED
+        wifiLinkQuality:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. Wifi link quality. Value ranges from [0, 70]. 0
+            indicates no signal and 70 indicates a strong signal.
+          format: int64
+        signalStrengthDbm:
+          description: >-
+            Output only. Signal strength for wireless networks measured in
+            decibels.
+          readOnly: true
+          type: integer
+          format: int32
+        reportTime:
+          description: Output only. Time at which the network state was reported.
+          type: string
+          readOnly: true
+          format: google-datetime
+        transmissionBitRateMbps:
+          description: Output only. Transmission bit rate measured in Megabits per second.
+          readOnly: true
+          type: string
+          format: int64
+        receivingBitRateMbps:
+          description: Output only. Receiving bit rate measured in Megabits per second.
+          readOnly: true
+          format: int64
+          type: string
+        guid:
+          type: string
+          description: Output only. Network connection guid.
+          readOnly: true
+        lanIpAddress:
+          readOnly: true
+          description: Output only. LAN IP address.
+          type: string
+        wifiPowerManagementEnabled:
+          readOnly: true
+          description: Output only. Wifi power management enabled
+          type: boolean
+        sampleFrequency:
+          readOnly: true
+          description: Output only. Frequency the report is sampled.
+          format: google-duration
+          type: string
+        gatewayIpAddress:
+          type: string
+          readOnly: true
+          description: Output only. Gateway IP address.
+        encryptionOn:
+          description: Output only. Whether the wifi encryption key is turned off.
+          readOnly: true
+          type: boolean
+        connectionType:
+          description: Output only. Network connection type.
+          enum:
+            - NETWORK_TYPE_UNSPECIFIED
+            - CELLULAR
+            - ETHERNET
+            - TETHER
+            - VPN
+            - WIFI
+          enumDescriptions:
+            - Network connection type unspecified
+            - Cellular network connection.
+            - Ethernet network connection.
+            - Tether network connection.
+            - VPN network connection.
+            - Wifi network connection.
+          readOnly: true
+          type: string
+    GoogleChromeManagementV1DeviceAueCountReport:
+      description: >-
+        Report for CountChromeDevicesPerAueDateResponse, contains the count of
+        devices of a specific model and auto update expiration range.
+      type: object
+      id: GoogleChromeManagementV1DeviceAueCountReport
+      properties:
+        aueYear:
+          description: >-
+            Int value of year corresponding to the Auto Update Expiration date
+            in UTC time zone. If the device is already expired, this field is
+            empty.
+          format: int64
+          type: string
+        model:
+          type: string
+          description: Public model name of the devices.
+        count:
+          type: string
+          format: int64
+          description: Count of devices of this model.
+        expired:
+          type: boolean
+          description: Boolean value for whether or not the device has already expired.
+        aueMonth:
+          enum:
+            - MONTH_UNSPECIFIED
+            - JANUARY
+            - FEBRUARY
+            - MARCH
+            - APRIL
+            - MAY
+            - JUNE
+            - JULY
+            - AUGUST
+            - SEPTEMBER
+            - OCTOBER
+            - NOVEMBER
+            - DECEMBER
+          type: string
+          enumDescriptions:
+            - The unspecified month.
+            - The month of January.
+            - The month of February.
+            - The month of March.
+            - The month of April.
+            - The month of May.
+            - The month of June.
+            - The month of July.
+            - The month of August.
+            - The month of September.
+            - The month of October.
+            - The month of November.
+            - The month of December.
+          description: >-
+            Enum value of month corresponding to the auto update expiration date
+            in UTC time zone. If the device is already expired, this field is
+            empty.
+    GoogleChromeManagementV1ListTelemetryEventsResponse:
+      description: Response message for listing telemetry events for a customer.
+      properties:
+        telemetryEvents:
+          description: Telemetry events returned in the response.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryEvent'
+          type: array
+        nextPageToken:
+          description: Token to specify next page in the list.
+          type: string
+      type: object
+      id: GoogleChromeManagementV1ListTelemetryEventsResponse
+    GoogleChromeManagementV1ListTelemetryUsersResponse:
+      description: Response message for listing telemetry users for a customer.
+      id: GoogleChromeManagementV1ListTelemetryUsersResponse
+      type: object
+      properties:
+        nextPageToken:
+          description: Token to specify next page in the list.
+          type: string
+        telemetryUsers:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryUser'
+          description: Telemetry users returned in the response.
+          type: array
+    GoogleChromeManagementV1CountInstalledAppsResponse:
+      properties:
+        installedApps:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1InstalledApp'
+          type: array
+          description: List of installed apps matching request.
+        totalSize:
+          type: integer
+          description: Total number of installed apps matching request.
+          format: int32
+        nextPageToken:
+          type: string
+          description: Token to specify the next page of the request.
+      id: GoogleChromeManagementV1CountInstalledAppsResponse
+      description: Response containing details of queried installed apps.
+      type: object
+    GoogleChromeManagementV1TelemetryDevice:
+      id: GoogleChromeManagementV1TelemetryDevice
+      description: >-
+        Telemetry data collected from a managed device. * Granular permission
+        needed: TELEMETRY_API_DEVICE
+      type: object
+      properties:
+        cpuInfo:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1CpuInfo'
+          description: Output only. Information regarding CPU specs for the device.
+          type: array
+          readOnly: true
+        peripheralsReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1PeripheralsReport'
+          description: >-
+            Output only. Peripherals reports collected periodically sorted in a
+            decreasing order of report_time.
+          readOnly: true
+        networkInfo:
+          readOnly: true
+          $ref: '#/components/schemas/GoogleChromeManagementV1NetworkInfo'
+          description: Output only. Network devices information.
+        serialNumber:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. Device serial number. This value is the same as the
+            Admin Console's Serial Number in the ChromeOS Devices tab.
+        heartbeatStatusReport:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1HeartbeatStatusReport'
+          type: array
+          description: >-
+            Output only. Heartbeat status report containing timestamps
+            periodically sorted in decreasing order of report_time
+          readOnly: true
+        cpuStatusReport:
+          readOnly: true
+          type: array
+          description: >-
+            Output only. CPU status reports collected periodically sorted in a
+            decreasing order of report_time.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1CpuStatusReport'
+        deviceId:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The unique Directory API ID of the device. This value
+            is the same as the Admin Console's Directory API ID in the ChromeOS
+            Devices tab
+        batteryInfo:
+          readOnly: true
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1BatteryInfo'
+          description: Output only. Information on battery specs for the device.
+        kioskAppStatusReport:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1KioskAppStatusReport'
+          readOnly: true
+          description: Output only. Kiosk app status report for the kiosk device
+          type: array
+        storageInfo:
+          description: Output only. Information of storage specs for the device.
+          readOnly: true
+          $ref: '#/components/schemas/GoogleChromeManagementV1StorageInfo'
+        customer:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. Google Workspace Customer whose enterprise enrolled the
+            device.
+        graphicsInfo:
+          $ref: '#/components/schemas/GoogleChromeManagementV1GraphicsInfo'
+          description: >-
+            Output only. Contains information regarding Graphic peripherals for
+            the device.
+          readOnly: true
+        orgUnitId:
+          description: Output only. Organization unit ID of the device.
+          type: string
+          readOnly: true
+        osUpdateStatus:
+          readOnly: true
+          description: >-
+            Output only. Contains relevant information regarding ChromeOS update
+            status.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1OsUpdateStatus'
+          type: array
+        audioStatusReport:
+          type: array
+          description: >-
+            Output only. Audio reports collected periodically sorted in a
+            decreasing order of report_time.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1AudioStatusReport'
+        graphicsStatusReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1GraphicsStatusReport'
+          readOnly: true
+          description: Output only. Graphics reports collected periodically.
+        batteryStatusReport:
+          readOnly: true
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1BatteryStatusReport'
+          description: Output only. Battery reports collected periodically.
+        memoryStatusReport:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1MemoryStatusReport'
+          type: array
+          description: >-
+            Output only. Memory status reports collected periodically sorted
+            decreasing by report_time.
+          readOnly: true
+        bootPerformanceReport:
+          type: array
+          readOnly: true
+          description: Output only. Boot performance reports of the device.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1BootPerformanceReport'
+        networkStatusReport:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1NetworkStatusReport'
+          description: Output only. Network specs collected periodically.
+          type: array
+          readOnly: true
+        networkDiagnosticsReport:
+          description: Output only. Network diagnostics collected periodically.
+          readOnly: true
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/GoogleChromeManagementV1NetworkDiagnosticsReport
+        thunderboltInfo:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1ThunderboltInfo'
+          description: Output only. Information on Thunderbolt bus.
+        memoryInfo:
+          $ref: '#/components/schemas/GoogleChromeManagementV1MemoryInfo'
+          description: Output only. Information regarding memory specs for the device.
+          readOnly: true
+        name:
+          readOnly: true
+          description: Output only. Resource name of the device.
+          type: string
+        storageStatusReport:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1StorageStatusReport'
+          description: Output only. Storage reports collected periodically.
+    GoogleChromeManagementV1TelemetryHttpsLatencyChangeEvent:
+      description: >-
+        Https latency routine is run periodically and
+        `TelemetryHttpsLatencyChangeEvent` is triggered if a latency problem was
+        detected or if the device has recovered from a latency problem. *
+        Granular permission needed: TELEMETRY_API_NETWORK_REPORT
+      properties:
+        httpsLatencyState:
+          enum:
+            - HTTPS_LATENCY_STATE_UNSPECIFIED
+            - RECOVERY
+            - PROBLEM
+          description: Current HTTPS latency state.
+          enumDescriptions:
+            - HTTPS latency state is unspecified.
+            - HTTPS latency recovered from a problem.
+            - HTTPS latency problem.
+          type: string
+        httpsLatencyRoutineData:
+          $ref: '#/components/schemas/GoogleChromeManagementV1HttpsLatencyRoutineData'
+          description: HTTPS latency routine data that triggered the event.
+      type: object
+      id: GoogleChromeManagementV1TelemetryHttpsLatencyChangeEvent
+    GoogleChromeManagementV1TouchScreenDevice:
+      type: object
+      id: GoogleChromeManagementV1TouchScreenDevice
+      properties:
+        stylusCapable:
+          type: boolean
+          description: Output only. Touch screen device is stylus capable or not.
+          readOnly: true
+        touchPointCount:
+          description: Output only. Number of touch points supported on the device.
+          format: int32
+          type: integer
+          readOnly: true
+        displayName:
+          description: Output only. Touch screen device display name.
+          type: string
+          readOnly: true
+      description: Information of an internal touch screen device.
+    GoogleChromeManagementV1HttpsLatencyRoutineData:
+      type: object
+      description: >-
+        Data that describes the result of the HTTPS latency diagnostics routine,
+        with the HTTPS requests issued to Google websites.
+      properties:
+        problem:
+          readOnly: true
+          description: Output only. HTTPS latency routine problem if a problem occurred.
+          type: string
+          enumDescriptions:
+            - HTTPS latency problem not specified.
+            - One or more DNS resolutions resulted in a failure.
+            - One or more HTTPS requests resulted in a failure.
+            - >-
+              Average HTTPS request latency time between 500ms and 1000ms is
+              high.
+            - >-
+              Average HTTPS request latency time greater than 1000ms is very
+              high.
+          enum:
+            - HTTPS_LATENCY_PROBLEM_UNSPECIFIED
+            - FAILED_DNS_RESOLUTIONS
+            - FAILED_HTTPS_REQUESTS
+            - HIGH_LATENCY
+            - VERY_HIGH_LATENCY
+        latency:
+          description: >-
+            Output only. HTTPS latency if routine succeeded or failed because of
+            HIGH_LATENCY or VERY_HIGH_LATENCY.
+          format: google-duration
+          readOnly: true
+          type: string
+      id: GoogleChromeManagementV1HttpsLatencyRoutineData
+    GoogleChromeManagementV1AppDetails:
+      description: Resource representing app details.
+      id: GoogleChromeManagementV1AppDetails
+      type: object
+      properties:
+        firstPublishTime:
+          readOnly: true
+          type: string
+          description: Output only. First published time.
+          format: google-datetime
+        revisionId:
+          description: >-
+            Output only. App version. A new revision is committed whenever a new
+            version of the app is published.
+          readOnly: true
+          type: string
+        latestPublishTime:
+          type: string
+          description: Output only. Latest published time.
+          format: google-datetime
+          readOnly: true
+        displayName:
+          readOnly: true
+          description: Output only. App's display name.
+          type: string
+        privacyPolicyUri:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The URI pointing to the privacy policy of the app, if
+            it was provided by the developer. Version-specific field that will
+            only be set when the requested app version is found.
+        name:
+          type: string
+          description: >-
+            Output only. Format:
+            name=customers/{customer_id}/apps/{chrome|android|web}/{app_id}@{version}
+          readOnly: true
+        isPaidApp:
+          readOnly: true
+          type: boolean
+          description: >-
+            Output only. Indicates if the app has to be paid for OR has paid
+            content.
+        iconUri:
+          readOnly: true
+          description: >-
+            Output only. A link to an image that can be used as an icon for the
+            product.
+          type: string
+        description:
+          type: string
+          readOnly: true
+          description: Output only. App's description.
+        type:
+          enum:
+            - APP_ITEM_TYPE_UNSPECIFIED
+            - CHROME
+            - ANDROID
+            - WEB
+          enumDescriptions:
+            - App type unspecified.
+            - Chrome app.
+            - ARC++ app.
+            - Web app.
+          readOnly: true
+          type: string
+          description: Output only. App type.
+        homepageUri:
+          description: Output only. Home page or Website uri.
+          type: string
+          readOnly: true
+        androidAppInfo:
+          $ref: '#/components/schemas/GoogleChromeManagementV1AndroidAppInfo'
+          readOnly: true
+          description: Output only. Android app information.
+        reviewRating:
+          format: float
+          description: >-
+            Output only. The rating of the app (on 5 stars). Chrome Web Store
+            review information will always be for the latest version of an app.
+          readOnly: true
+          type: number
+        appId:
+          readOnly: true
+          description: >-
+            Output only. Unique store identifier for the item. Examples:
+            "gmbmikajjgmnabiglmofipeabaddhgne" for the Save to Google Drive
+            Chrome extension, "com.google.android.apps.docs" for the Google
+            Drive Android app.
+          type: string
+        chromeAppInfo:
+          description: Output only. Chrome Web Store app information.
+          readOnly: true
+          $ref: '#/components/schemas/GoogleChromeManagementV1ChromeAppInfo'
+        serviceError:
+          description: >-
+            Output only. Information about a partial service error if
+            applicable.
+          $ref: '#/components/schemas/GoogleRpcStatus'
+          readOnly: true
+        publisher:
+          type: string
+          readOnly: true
+          description: Output only. The publisher of the item.
+        reviewNumber:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. Number of reviews received. Chrome Web Store review
+            information will always be for the latest version of an app.
+          format: int64
+        detailUri:
+          type: string
+          readOnly: true
+          description: Output only. The uri for the detail page of the item.
+    GoogleChromeManagementV1ChromeAppInfo:
+      id: GoogleChromeManagementV1ChromeAppInfo
+      description: Chrome Web Store app information.
+      type: object
+      properties:
+        kioskEnabled:
+          description: >-
+            Output only. Whether this app is enabled for Kiosk mode on ChromeOS
+            devices
+          readOnly: true
+          type: boolean
+        isCwsHosted:
+          readOnly: true
+          description: >-
+            Output only. Whether the app or extension is in a published state in
+            the Chrome Web Store.
+          type: boolean
+        isTheme:
+          readOnly: true
+          type: boolean
+          description: Output only. Whether the app or extension is a theme.
+        supportEnabled:
+          description: >-
+            Output only. The app developer has enabled support for their app.
+            Version-specific field that will only be set when the requested app
+            version is found.
+          type: boolean
+          readOnly: true
+        googleOwned:
+          readOnly: true
+          type: boolean
+          description: >-
+            Output only. Whether the app or extension is built and maintained by
+            Google. Version-specific field that will only be set when the
+            requested app version is found.
+        minUserCount:
+          readOnly: true
+          description: Output only. The minimum number of users using this app.
+          type: integer
+          format: int32
+        isExtensionPolicySupported:
+          description: Output only. Whether an app supports policy for extensions.
+          type: boolean
+          readOnly: true
+        siteAccess:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1ChromeAppSiteAccess'
+          description: >-
+            Output only. Every permission giving access to domains or broad host
+            patterns. ( e.g. www.google.com). This includes the matches from
+            content scripts as well as hosts in the permissions node of the
+            manifest. Version-specific field that will only be set when the
+            requested app version is found.
+          type: array
+          readOnly: true
+        isKioskOnly:
+          description: >-
+            Output only. Whether the app is only for Kiosk mode on ChromeOS
+            devices
+          readOnly: true
+          type: boolean
+        type:
+          enum:
+            - ITEM_TYPE_UNSPECIFIED
+            - EXTENSION
+            - OTHERS
+          enumDescriptions:
+            - Unspecified ItemType.
+            - Chrome Extensions.
+            - Any other type than extension.
+          type: string
+          description: Output only. Types of an item in the Chrome Web Store
+          readOnly: true
+        permissions:
+          description: >-
+            Output only. Every custom permission requested by the app.
+            Version-specific field that will only be set when the requested app
+            version is found.
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1ChromeAppPermission'
+    GoogleChromeManagementV1BatteryInfo:
+      properties:
+        serialNumber:
+          readOnly: true
+          type: string
+          description: Output only. Battery serial number.
+        designCapacity:
+          type: string
+          format: int64
+          description: Output only. Design capacity (mAmpere-hours).
+          readOnly: true
+        manufacturer:
+          type: string
+          description: Output only. Battery manufacturer.
+          readOnly: true
+        designMinVoltage:
+          type: integer
+          readOnly: true
+          description: Output only. Designed minimum output voltage (mV)
+          format: int32
+        manufactureDate:
+          $ref: '#/components/schemas/GoogleTypeDate'
+          readOnly: true
+          description: Output only. The date the battery was manufactured.
+        technology:
+          readOnly: true
+          type: string
+          description: 'Output only. Technology of the battery. Example: Li-ion'
+      id: GoogleChromeManagementV1BatteryInfo
+      description: >-
+        Information about the battery. * This field provides device information,
+        which is static and will not change over time. * Data for this field is
+        controlled via policy:
+        [ReportDevicePowerStatus](https://chromeenterprise.google/policies/#ReportDevicePowerStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_BATTERY_INFO
+      type: object
+    GoogleChromeManagementV1InstalledApp:
+      type: object
+      id: GoogleChromeManagementV1InstalledApp
+      description: Describes an installed app.
+      properties:
+        disabled:
+          readOnly: true
+          type: boolean
+          description: Output only. Whether the app is disabled.
+        appSource:
+          enum:
+            - APP_SOURCE_UNSPECIFIED
+            - CHROME_WEBSTORE
+            - PLAY_STORE
+          description: Output only. Source of the installed app.
+          readOnly: true
+          type: string
+          enumDescriptions:
+            - Application source not specified.
+            - Generally for extensions and Chrome apps.
+            - Play Store app.
+        appInstallType:
+          enumDescriptions:
+            - Application install type not specified.
+            - Multiple app install types.
+            - Normal app install type.
+            - Administrator app install type.
+            - Development app install type.
+            - Sideloaded app install type.
+            - Other app install type.
+          description: Output only. How the app was installed.
+          type: string
+          readOnly: true
+          enum:
+            - APP_INSTALL_TYPE_UNSPECIFIED
+            - MULTIPLE
+            - NORMAL
+            - ADMIN
+            - DEVELOPMENT
+            - SIDELOAD
+            - OTHER
+        permissions:
+          type: array
+          readOnly: true
+          items:
+            type: string
+          description: Output only. Permissions of the installed app.
+        appType:
+          description: Output only. Type of the app.
+          enumDescriptions:
+            - App type not specified.
+            - Chrome extension.
+            - Chrome app.
+            - Chrome theme.
+            - Chrome hosted app.
+            - ARC++ app.
+          readOnly: true
+          type: string
+          enum:
+            - APP_TYPE_UNSPECIFIED
+            - EXTENSION
+            - APP
+            - THEME
+            - HOSTED_APP
+            - ANDROID_APP
+        browserDeviceCount:
+          type: string
+          readOnly: true
+          description: Output only. Count of browser devices with this app installed.
+          format: int64
+        homepageUri:
+          description: Output only. Homepage uri of the installed app.
+          readOnly: true
+          type: string
+        appId:
+          description: >-
+            Output only. Unique identifier of the app. For Chrome apps and
+            extensions, the 32-character id (e.g.
+            ehoadneljpdggcbbknedodolkkjodefl). For Android apps, the package
+            name (e.g. com.evernote).
+          type: string
+          readOnly: true
+        description:
+          description: Output only. Description of the installed app.
+          type: string
+          readOnly: true
+        osUserCount:
+          readOnly: true
+          format: int64
+          description: Output only. Count of ChromeOS users with this app installed.
+          type: string
+        displayName:
+          readOnly: true
+          type: string
+          description: Output only. Name of the installed app.
+    GoogleChromeManagementV1AndroidAppPermission:
+      properties:
+        type:
+          type: string
+          readOnly: true
+          description: Output only. The type of the permission.
+      description: Permission requested by an Android app.
+      type: object
+      id: GoogleChromeManagementV1AndroidAppPermission
+    GoogleChromeManagementV1NetworkDevice:
+      properties:
+        iccid:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. The integrated circuit card ID associated with the
+            device's sim card.
+        meid:
+          description: >-
+            Output only. MEID (if applicable) of the corresponding network
+            device.
+          readOnly: true
+          type: string
+        macAddress:
+          readOnly: true
+          description: >-
+            Output only. MAC address (if applicable) of the corresponding
+            network device.
+          type: string
+        imei:
+          description: >-
+            Output only. IMEI (if applicable) of the corresponding network
+            device.
+          type: string
+          readOnly: true
+        type:
+          enumDescriptions:
+            - Network device type not specified.
+            - Cellular device.
+            - Ethernet device.
+            - Wifi device.
+          enum:
+            - NETWORK_DEVICE_TYPE_UNSPECIFIED
+            - CELLULAR_DEVICE
+            - ETHERNET_DEVICE
+            - WIFI_DEVICE
+          type: string
+          readOnly: true
+          description: Output only. Network device type.
+        mdn:
+          readOnly: true
+          description: >-
+            Output only. The mobile directory number associated with the
+            device's sim card.
+          type: string
+      description: >-
+        Details about the network device. * This field provides device
+        information, which is static and will not change over time. * Data for
+        this field is controlled via policy:
+        [ReportNetworkDeviceConfiguration](https://chromeenterprise.google/policies/#ReportNetworkDeviceConfiguration)
+        * Data Collection Frequency: At device startup * Default Data Reporting
+        Frequency: At device startup - Policy Controlled: Yes * Cache: If the
+        device is offline, the collected data is stored locally, and will be
+        reported when the device is next online: Yes * Reported for affiliated
+        users only: N/A
+      id: GoogleChromeManagementV1NetworkDevice
+      type: object
+    GoogleChromeManagementV1DisplayDevice:
+      id: GoogleChromeManagementV1DisplayDevice
+      description: Information of a display device.
+      properties:
+        displayWidthMm:
+          description: Output only. Display width in millimeters.
+          format: int32
+          readOnly: true
+          type: integer
+        displayHeightMm:
+          type: integer
+          format: int32
+          description: Output only. Display height in millimeters.
+          readOnly: true
+        manufacturerId:
+          type: string
+          readOnly: true
+          description: Output only. Three letter manufacturer ID.
+        modelId:
+          type: integer
+          description: Output only. Manufacturer product code.
+          readOnly: true
+          format: int32
+        displayName:
+          readOnly: true
+          description: Output only. Display device name.
+          type: string
+        internal:
+          readOnly: true
+          description: Output only. Is display internal or not.
+          type: boolean
+        manufactureYear:
+          format: int32
+          type: integer
+          description: Output only. Year of manufacture.
+          readOnly: true
+      type: object
+    GoogleChromeManagementV1MemoryStatusReport:
+      id: GoogleChromeManagementV1MemoryStatusReport
+      properties:
+        pageFaults:
+          format: int32
+          description: Output only. Number of page faults during this collection
+          readOnly: true
+          type: integer
+        sampleFrequency:
+          readOnly: true
+          format: google-duration
+          type: string
+          description: Output only. Frequency the report is sampled.
+        reportTime:
+          readOnly: true
+          type: string
+          format: google-datetime
+          description: >-
+            Output only. The timestamp in milliseconds representing time at
+            which this report was sampled.
+        systemRamFreeBytes:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. Amount of free RAM in bytes (unreliable due to Garbage
+            Collection).
+          format: int64
+      description: >-
+        Contains samples of memory status reports. * This field is telemetry
+        information and this will change over time as the device is utilized. *
+        Data for this field is controlled via policy:
+        [ReportDeviceMemoryInfo](https://chromeenterprise.google/policies/#ReportDeviceMemoryInfo)
+        * Data Collection Frequency: Only at upload, SystemRamFreeByes is
+        collected every 10 minutes * Default Data Reporting Frequency: Every 3
+        hours - Policy Controlled: Yes * Cache: If the device is offline, the
+        collected data is stored locally, and will be reported when the device
+        is next online: No * Reported for affiliated users only: N/A * Granular
+        permission needed: TELEMETRY_API_MEMORY_REPORT
+      type: object
+    GoogleChromeManagementV1TouchScreenInfo:
+      description: Information on the device touch screen.
+      type: object
+      id: GoogleChromeManagementV1TouchScreenInfo
+      properties:
+        touchpadLibrary:
+          description: Output only. Touchpad library name used by the input stack.
+          readOnly: true
+          type: string
+        devices:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1TouchScreenDevice'
+          readOnly: true
+          type: array
+          description: Output only. List of the internal touch screen devices.
+    GoogleChromeManagementV1TotalMemoryEncryptionInfo:
+      type: object
+      id: GoogleChromeManagementV1TotalMemoryEncryptionInfo
+      description: >-
+        Memory encryption information of a device. * This field provides device
+        information, which is static and will not change over time. * Data for
+        this field is controlled via policy:
+        [ReportDeviceMemoryInfo](https://chromeenterprise.google/policies/#ReportDeviceMemoryInfo)
+        * Data Collection Frequency: At device startup * Default Data Reporting
+        Frequency: At device startup - Policy Controlled: Yes * Cache: If the
+        device is offline, the collected data is stored locally, and will be
+        reported when the device is next online: Yes * Reported for affiliated
+        users only: N/A
+      properties:
+        encryptionState:
+          description: The state of memory encryption on the device.
+          enumDescriptions:
+            - Memory encryption state is not set.
+            - The memory encryption state is unknown.
+            - Memory encrpytion on the device is disabled.
+            - Memory encryption on the device uses total memory encryption.
+            - >-
+              Memory encryption on the device uses multi-key total memory
+              encryption.
+          type: string
+          enum:
+            - MEMORY_ENCRYPTION_STATE_UNSPECIFIED
+            - MEMORY_ENCRYPTION_STATE_UNKNOWN
+            - MEMORY_ENCRYPTION_STATE_DISABLED
+            - MEMORY_ENCRYPTION_STATE_TME
+            - MEMORY_ENCRYPTION_STATE_MKTME
+        encryptionAlgorithm:
+          description: Memory encryption algorithm.
+          enumDescriptions:
+            - Memory encryption algorithm is not set.
+            - The memory encryption algorithm being used is unknown.
+            - >-
+              The memory encryption algorithm is using the AES_XTS encryption
+              algorithm with a 128 bit block cypher.
+            - >-
+              The memory encryption algorithm is using the AES_XTS encryption
+              algorithm with a 256 bit block cypher.
+          type: string
+          enum:
+            - MEMORY_ENCRYPTION_ALGORITHM_UNSPECIFIED
+            - MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN
+            - MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_128
+            - MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_256
+        maxKeys:
+          format: int64
+          description: The maximum number of keys that can be used for encryption.
+          type: string
+        keyLength:
+          type: string
+          description: The length of the encryption keys.
+          format: int64
+    GoogleChromeManagementV1CpuTemperatureInfo:
+      type: object
+      properties:
+        temperatureCelsius:
+          format: int32
+          description: Output only. CPU temperature in Celsius.
+          type: integer
+          readOnly: true
+        label:
+          readOnly: true
+          type: string
+          description: 'Output only. CPU label. Example: Core 0'
+      description: >-
+        CPU temperature of a device. Sampled per CPU core in Celsius. * This
+        field is telemetry information and this will change over time as the
+        device is utilized. * Data for this field is controlled via policy:
+        [ReportDeviceCpuInfo](https://chromeenterprise.google/policies/#ReportDeviceCpuInfo)
+        * Data Collection Frequency: Every 10 minutes * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+      id: GoogleChromeManagementV1CpuTemperatureInfo
+    GoogleChromeManagementV1ChromeAppRequest:
+      properties:
+        latestRequestTime:
+          description: >-
+            Output only. The timestamp of the most recently made request for
+            this app.
+          format: google-datetime
+          type: string
+          readOnly: true
+        detailUri:
+          description: Output only. The uri for the detail page of the item.
+          type: string
+          readOnly: true
+        iconUri:
+          readOnly: true
+          description: >-
+            Output only. A link to an image that can be used as an icon for the
+            product.
+          type: string
+        appId:
+          description: >-
+            Output only. Unique store identifier for the app. Example:
+            "gmbmikajjgmnabiglmofipeabaddhgne" for the Save to Google Drive
+            Chrome extension.
+          type: string
+          readOnly: true
+        requestCount:
+          type: string
+          readOnly: true
+          format: int64
+          description: Output only. Total count of requests for this app.
+        displayName:
+          description: Output only. App's display name.
+          readOnly: true
+          type: string
+        appDetails:
+          description: >-
+            Output only. Format:
+            app_details=customers/{customer_id}/apps/chrome/{app_id}
+          type: string
+          readOnly: true
+      description: Details of an app installation request.
+      type: object
+      id: GoogleChromeManagementV1ChromeAppRequest
+    GoogleChromeManagementV1TelemetryUserInfo:
+      properties:
+        orgUnitId:
+          readOnly: true
+          type: string
+          description: Output only. Organization unit ID of the user.
+        email:
+          readOnly: true
+          type: string
+          description: Output only. User's email.
+      id: GoogleChromeManagementV1TelemetryUserInfo
+      description: >-
+        Information about a user associated with telemetry data. * Granular
+        permission needed: TELEMETRY_API_USER
+      type: object
+    GoogleChromeManagementV1GraphicsInfo:
+      type: object
+      properties:
+        displayDevices:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1DisplayDevice'
+          readOnly: true
+          description: Output only. Information about the display(s) of the device.
+        eprivacySupported:
+          readOnly: true
+          type: boolean
+          description: Output only. Is ePrivacy screen supported or not.
+        touchScreenInfo:
+          readOnly: true
+          description: >-
+            Output only. Information about the internal touch screen(s) of the
+            device.
+          $ref: '#/components/schemas/GoogleChromeManagementV1TouchScreenInfo'
+        adapterInfo:
+          readOnly: true
+          $ref: '#/components/schemas/GoogleChromeManagementV1GraphicsAdapterInfo'
+          description: Output only. Information about the graphics adapter (GPU).
+      id: GoogleChromeManagementV1GraphicsInfo
+      description: >-
+        Information of the graphics subsystem. * This field provides device
+        information, which is static and will not change over time. * Data for
+        this field is controlled via policy:
+        [ReportDeviceGraphicsStatus](https://chromeenterprise.google/policies/#ReportDeviceGraphicsStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_GRAPHICS_INFO
+    GoogleChromeManagementV1CpuStatusReport:
+      id: GoogleChromeManagementV1CpuStatusReport
+      properties:
+        cpuTemperatureInfo:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1CpuTemperatureInfo'
+          description: Output only. CPU temperature sample info per CPU core in Celsius
+          readOnly: true
+          type: array
+        sampleFrequency:
+          format: google-duration
+          readOnly: true
+          description: Output only. Frequency the report is sampled.
+          type: string
+        cpuUtilizationPct:
+          readOnly: true
+          description: Output only. Sample of CPU utilization (0-100 percent).
+          type: integer
+          format: int32
+        reportTime:
+          format: google-datetime
+          description: >-
+            Output only. The timestamp in milliseconds representing time at
+            which this report was sampled.
+          type: string
+          readOnly: true
+      type: object
+      description: >-
+        Provides information about the status of the CPU. * This field is
+        telemetry information and this will change over time as the device is
+        utilized. * Data for this field is controlled via policy:
+        [ReportDeviceCpuInfo](https://chromeenterprise.google/policies/#ReportDeviceCpuInfo)
+        * Data Collection Frequency: Every 10 minutes * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_CPU_REPORT
+    GoogleChromeManagementV1BatteryStatusReport:
+      id: GoogleChromeManagementV1BatteryStatusReport
+      properties:
+        fullChargeCapacity:
+          readOnly: true
+          type: string
+          description: Output only. Full charge capacity (mAmpere-hours).
+          format: int64
+        serialNumber:
+          type: string
+          description: Output only. Battery serial number.
+          readOnly: true
+        cycleCount:
+          type: integer
+          readOnly: true
+          description: Output only. Cycle count.
+          format: int32
+        sample:
+          readOnly: true
+          type: array
+          description: >-
+            Output only. Sampling data for the battery sorted in a decreasing
+            order of report_time.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1BatterySampleReport'
+        reportTime:
+          type: string
+          readOnly: true
+          format: google-datetime
+          description: Output only. Timestamp of when the sample was collected on device
+        batteryHealth:
+          description: Output only. Battery health.
+          type: string
+          readOnly: true
+          enumDescriptions:
+            - Health unknown.
+            - Battery is healthy.
+            - Battery is moderately unhealthy and should be replaced soon.
+            - Battery is unhealthy and should be replaced.
+          enum:
+            - BATTERY_HEALTH_UNSPECIFIED
+            - BATTERY_HEALTH_NORMAL
+            - BATTERY_REPLACE_SOON
+            - BATTERY_REPLACE_NOW
+      description: >-
+        Status data for battery. * This field is telemetry information and this
+        will change over time as the device is utilized. * Data for this field
+        is controlled via policy:
+        [ReportDevicePowerStatus](https://chromeenterprise.google/policies/#ReportDevicePowerStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_BATTERY_REPORT
+      type: object
+    GoogleChromeManagementV1TelemetryDeviceInfo:
+      properties:
+        deviceId:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. The unique Directory API ID of the device. This value
+            is the same as the Admin Console's Directory API ID in the ChromeOS
+            Devices tab.
+        orgUnitId:
+          type: string
+          description: Output only. Organization unit ID of the device.
+          readOnly: true
+      description: >-
+        Information about a device associated with telemetry data. * Granular
+        Permission needed: TELEMETRY_API_DEVICE
+      type: object
+      id: GoogleChromeManagementV1TelemetryDeviceInfo
+    GoogleChromeManagementV1Device:
+      type: object
+      id: GoogleChromeManagementV1Device
+      properties:
+        deviceId:
+          readOnly: true
+          description: >-
+            Output only. The ID of the device that reported this Chrome browser
+            information.
+          type: string
+        machine:
+          readOnly: true
+          description: Output only. The name of the machine within its local network.
+          type: string
+      description: Describes a device reporting Chrome browser information.
+    GoogleChromeManagementV1GraphicsStatusReport:
+      properties:
+        displays:
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1DisplayInfo'
+          type: array
+          description: Output only. Information about the displays for the device.
+        reportTime:
+          readOnly: true
+          type: string
+          format: google-datetime
+          description: Output only. Time at which the graphics data was reported.
+      type: object
+      id: GoogleChromeManagementV1GraphicsStatusReport
+      description: >-
+        Information of the graphics subsystem. * This field is telemetry
+        information and this will change over time as the device is utilized. *
+        Data for this field is controlled via policy:
+        [ReportDeviceGraphicsInfo](https://chromeenterprise.google/policies/#ReportDeviceGraphicsInfo)
+        * Data Collection Frequency: 3 hours. * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_GRAPHICS_REPORT
+    GoogleChromeManagementV1CountChromeVersionsResponse:
+      properties:
+        totalSize:
+          type: integer
+          format: int32
+          description: Total number browser versions matching request.
+        browserVersions:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1BrowserVersion'
+          description: List of all browser versions and their install counts.
+          type: array
+        nextPageToken:
+          type: string
+          description: Token to specify the next page of the request.
+      type: object
+      description: Response containing requested browser versions details and counts.
+      id: GoogleChromeManagementV1CountChromeVersionsResponse
+    GoogleChromeManagementV1ChromeAppSiteAccess:
+      description: Represent one host permission.
+      type: object
+      id: GoogleChromeManagementV1ChromeAppSiteAccess
+      properties:
+        hostMatch:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. This can contain very specific hosts, or patterns like
+            "*.com" for instance.
+    GoogleRpcStatus:
+      id: GoogleRpcStatus
+      type: object
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      properties:
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: any
+              description: Properties of the object. Contains field @type with type URL.
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+        code:
+          format: int32
+          type: integer
+          description: The status code, which should be an enum value of google.rpc.Code.
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+    GoogleChromeManagementV1FindInstalledAppDevicesResponse:
+      description: Response containing a list of devices with queried app installed.
+      properties:
+        nextPageToken:
+          description: Token to specify the next page of the request.
+          type: string
+        totalSize:
+          format: int32
+          type: integer
+          description: Total number of devices matching request.
+        devices:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1Device'
+          description: >-
+            A list of devices which have the app installed. Sorted in ascending
+            alphabetical order on the Device.machine field.
+          type: array
+      type: object
+      id: GoogleChromeManagementV1FindInstalledAppDevicesResponse
+    GoogleChromeManagementV1DiskInfo:
+      properties:
+        sizeBytes:
+          type: string
+          description: Output only. Disk size.
+          readOnly: true
+          format: int64
+        model:
+          description: Output only. Disk model.
+          type: string
+          readOnly: true
+        writeTimeThisSession:
+          type: string
+          format: google-duration
+          readOnly: true
+          description: Output only. Time spent writing to disk since last boot.
+        readTimeThisSession:
+          format: google-duration
+          description: Output only. Time spent reading from disk since last boot.
+          readOnly: true
+          type: string
+        type:
+          type: string
+          readOnly: true
+          description: 'Output only. Disk type: eMMC / NVMe / ATA / SCSI.'
+        bytesWrittenThisSession:
+          format: int64
+          description: Output only. Number of bytes written since last boot.
+          readOnly: true
+          type: string
+        volumeIds:
+          readOnly: true
+          description: Output only. Disk volumes.
+          type: array
+          items:
+            type: string
+        ioTimeThisSession:
+          type: string
+          format: google-duration
+          readOnly: true
+          description: >-
+            Output only. Counts the time the disk and queue were busy, so unlike
+            the fields above, parallel requests are not counted multiple times.
+        manufacturer:
+          description: Output only. Disk manufacturer.
+          readOnly: true
+          type: string
+        discardTimeThisSession:
+          type: string
+          description: >-
+            Output only. Time spent discarding since last boot. Discarding is
+            writing to clear blocks which are no longer in use. Supported on
+            kernels 4.18+.
+          format: google-duration
+          readOnly: true
+        bytesReadThisSession:
+          readOnly: true
+          description: Output only. Number of bytes read since last boot.
+          format: int64
+          type: string
+        serialNumber:
+          type: string
+          description: Output only. Disk serial number.
+          readOnly: true
+        health:
+          readOnly: true
+          type: string
+          description: Output only. Disk health.
+      type: object
+      description: Status of the single storage device.
+      id: GoogleChromeManagementV1DiskInfo
+    GoogleChromeManagementV1StorageInfo:
+      properties:
+        volume:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1StorageInfoDiskVolume'
+          description: Information for disk volumes
+          type: array
+        totalDiskBytes:
+          type: string
+          description: The total space for user data storage in the device in bytes.
+          format: int64
+        availableDiskBytes:
+          type: string
+          format: int64
+          description: The available space for user data storage in the device in bytes.
+      id: GoogleChromeManagementV1StorageInfo
+      description: >-
+        Status data for storage. * This field is telemetry information and this
+        will change over time as the device is utilized. * Data for this field
+        is controlled via policy:
+        [ReportDeviceStorageStatus](https://chromeenterprise.google/policies/#ReportDeviceStorageStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_STORAGE_INFO
+      type: object
+    GoogleTypeDate:
+      properties:
+        year:
+          type: integer
+          description: >-
+            Year of the date. Must be from 1 to 9999, or 0 to specify a date
+            without a year.
+          format: int32
+        month:
+          format: int32
+          type: integer
+          description: >-
+            Month of a year. Must be from 1 to 12, or 0 to specify a year
+            without a month and day.
+        day:
+          type: integer
+          format: int32
+          description: >-
+            Day of a month. Must be from 1 to 31 and valid for the year and
+            month, or 0 to specify a year by itself or a year and month where
+            the day isn't significant.
+      description: >-
+        Represents a whole or partial calendar date, such as a birthday. The
+        time of day and time zone are either specified elsewhere or are
+        insignificant. The date is relative to the Gregorian Calendar. This can
+        represent one of the following: * A full date, with non-zero year,
+        month, and day values. * A month and day, with a zero year (for example,
+        an anniversary). * A year on its own, with a zero month and a zero day.
+        * A year and month, with a zero day (for example, a credit card
+        expiration date). Related types: * google.type.TimeOfDay *
+        google.type.DateTime * google.protobuf.Timestamp
+      id: GoogleTypeDate
+      type: object
+    GoogleChromeManagementV1UsbPeripheralReport:
+      properties:
+        vid:
+          description: Output only. Vendor ID
+          readOnly: true
+          type: integer
+          format: int32
+        vendor:
+          description: Output only. Vendor name
+          readOnly: true
+          type: string
+        name:
+          readOnly: true
+          type: string
+          description: Output only. Device name, model name, or product name
+        categories:
+          type: array
+          description: >-
+            Output only. Categories the device belongs to
+            https://www.usb.org/defined-class-codes
+          items:
+            type: string
+          readOnly: true
+        classId:
+          readOnly: true
+          description: Output only. Class ID https://www.usb.org/defined-class-codes
+          format: int32
+          type: integer
+        firmwareVersion:
+          readOnly: true
+          description: Output only. Firmware version
+          type: string
+        subclassId:
+          description: Output only. Subclass ID https://www.usb.org/defined-class-codes
+          readOnly: true
+          type: integer
+          format: int32
+        pid:
+          type: integer
+          description: Output only. Product ID
+          readOnly: true
+          format: int32
+      type: object
+      description: USB connected peripheral report.
+      id: GoogleChromeManagementV1UsbPeripheralReport
+    GoogleChromeManagementV1TelemetryUsbPeripheralsEvent:
+      properties:
+        usbPeripheralReport:
+          type: array
+          description: List of usb devices that were either added or removed.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1UsbPeripheralReport'
+      description: >-
+        `TelemetryUsbPeripheralsEvent` is triggered USB devices are either added
+        or removed. * Granular permission needed:
+        TELEMETRY_API_PERIPHERALS_REPORT
+      id: GoogleChromeManagementV1TelemetryUsbPeripheralsEvent
+      type: object
+    GoogleChromeManagementV1AudioStatusReport:
+      type: object
+      description: >-
+        Status data for storage. * This field is telemetry information and this
+        will change over time as the device is utilized. * Data for this field
+        is controlled via policy:
+        [ReportDeviceAudioStatus](https://chromeenterprise.google/policies/#ReportDeviceAudioStatus)
+        * Data Collection Frequency: 10 minutes * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_AUDIO_REPORT
+      properties:
+        inputDevice:
+          type: string
+          description: Output only. Active input device's name.
+          readOnly: true
+        outputDevice:
+          description: Output only. Active output device's name.
+          readOnly: true
+          type: string
+        inputGain:
+          readOnly: true
+          type: integer
+          format: int32
+          description: Output only. Active input device's gain in [0, 100].
+        outputMute:
+          type: boolean
+          readOnly: true
+          description: Output only. Is active output device mute or not.
+        outputVolume:
+          readOnly: true
+          format: int32
+          type: integer
+          description: Output only. Active output device's volume in [0, 100].
+        reportTime:
+          type: string
+          description: Output only. Timestamp of when the sample was collected on device.
+          format: google-datetime
+          readOnly: true
+        inputMute:
+          readOnly: true
+          description: Output only. Is active input device mute or not.
+          type: boolean
+      id: GoogleChromeManagementV1AudioStatusReport
+    GoogleChromeManagementV1CpuInfo:
+      id: GoogleChromeManagementV1CpuInfo
+      properties:
+        maxClockSpeed:
+          description: Output only. The max CPU clock speed in kHz.
+          readOnly: true
+          format: int32
+          type: integer
+        model:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The CPU model name. Example: Intel(R) Core(TM) i5-8250U
+            CPU @ 1.60GHz
+        keylockerSupported:
+          description: Output only. Whether keylocker is supported.
+          type: boolean
+          readOnly: true
+        architecture:
+          description: >-
+            Output only. Architecture type for the CPU. * This field provides
+            device information, which is static and will not change over time. *
+            Data for this field is controlled via policy:
+            [ReportDeviceCpuInfo](https://chromeenterprise.google/policies/#ReportDeviceCpuInfo)
+            * Data Collection Frequency: Only at Upload * Default Data Reporting
+            Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device
+            is offline, the collected data is stored locally, and will be
+            reported when the device is next online: No * Reported for
+            affiliated users only: N/A
+          enum:
+            - ARCHITECTURE_UNSPECIFIED
+            - X64
+          enumDescriptions:
+            - Architecture unknown.
+            - x64 architecture
+          readOnly: true
+          type: string
+        keylockerConfigured:
+          readOnly: true
+          type: boolean
+          description: >-
+            Output only. Whether keylocker is configured.`TRUE` = Enabled;
+            `FALSE` = disabled. Only reported if keylockerSupported = `TRUE`.
+      description: >-
+        CPU specifications for the device * This field provides device
+        information, which is static and will not change over time. * Data for
+        this field is controlled via policy:
+        [ReportDeviceCpuInfo](https://chromeenterprise.google/policies/#ReportDeviceCpuInfo)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_CPU_INFO
+      type: object
+    GoogleChromeManagementV1BatterySampleReport:
+      type: object
+      description: >-
+        Sampling data for battery. * This field is telemetry information and
+        this will change over time as the device is utilized. * Data for this
+        field is controlled via policy:
+        [ReportDevicePowerStatus](https://chromeenterprise.google/policies/#ReportDevicePowerStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+      properties:
+        voltage:
+          description: Output only. Battery voltage (millivolt).
+          readOnly: true
+          type: string
+          format: int64
+        current:
+          format: int64
+          type: string
+          readOnly: true
+          description: Output only. Battery current (mA).
+        dischargeRate:
+          format: int32
+          description: >-
+            Output only. The battery discharge rate measured in mW. Positive if
+            the battery is being discharged, negative if it's being charged.
+          type: integer
+          readOnly: true
+        temperature:
+          description: Output only. Temperature in Celsius degrees.
+          type: integer
+          readOnly: true
+          format: int32
+        remainingCapacity:
+          format: int64
+          readOnly: true
+          description: Output only. Battery remaining capacity (mAmpere-hours).
+          type: string
+        chargeRate:
+          type: integer
+          format: int32
+          description: Output only. Battery charge percentage.
+          readOnly: true
+        status:
+          type: string
+          description: 'Output only. Battery status read from sysfs. Example: Discharging'
+          readOnly: true
+        reportTime:
+          readOnly: true
+          description: Output only. Timestamp of when the sample was collected on device
+          format: google-datetime
+          type: string
+      id: GoogleChromeManagementV1BatterySampleReport
+    GoogleChromeManagementV1OsUpdateStatus:
+      id: GoogleChromeManagementV1OsUpdateStatus
+      type: object
+      description: >-
+        Contains information regarding the current OS update status. * This
+        field is telemetry information and this will change over time as the
+        device is utilized. * Data for this field is controlled via policy:
+        [ReportDeviceOsUpdateStatus](https://chromeenterprise.google/policies/#ReportDeviceOsUpdateStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_OS_REPORT
+      properties:
+        lastRebootTime:
+          description: Output only. Timestamp of the last reboot.
+          format: google-datetime
+          readOnly: true
+          type: string
+        newPlatformVersion:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. New platform version of the os image being downloaded
+            and applied. It is only set when update status is
+            OS_IMAGE_DOWNLOAD_IN_PROGRESS or OS_UPDATE_NEED_REBOOT. Note this
+            could be a dummy "0.0.0.0" for OS_UPDATE_NEED_REBOOT status for some
+            edge cases, e.g. update engine is restarted without a reboot.
+        lastUpdateCheckTime:
+          type: string
+          description: Output only. Timestamp of the last update check.
+          format: google-datetime
+          readOnly: true
+        lastUpdateTime:
+          description: Output only. Timestamp of the last successful update.
+          type: string
+          format: google-datetime
+          readOnly: true
+        newRequestedPlatformVersion:
+          type: string
+          description: >-
+            Output only. New requested platform version from the pending updated
+            kiosk app.
+          readOnly: true
+        updateState:
+          enum:
+            - UPDATE_STATE_UNSPECIFIED
+            - OS_IMAGE_DOWNLOAD_NOT_STARTED
+            - OS_IMAGE_DOWNLOAD_IN_PROGRESS
+            - OS_UPDATE_NEED_REBOOT
+          description: Output only. Current state of the os update.
+          type: string
+          readOnly: true
+          enumDescriptions:
+            - State unspecified.
+            - OS has not started downloading.
+            - OS has started download on device.
+            - Device needs reboot to finish upload.
+    GoogleChromeManagementV1StorageStatusReport:
+      id: GoogleChromeManagementV1StorageStatusReport
+      description: >-
+        Status data for storage. * This field is telemetry information and this
+        will change over time as the device is utilized. * Data for this field
+        is controlled via policy:
+        [ReportDeviceStorageStatus](https://chromeenterprise.google/policies/#ReportDeviceStorageStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_STORAGE_REPORT
+      type: object
+      properties:
+        disk:
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1DiskInfo'
+          type: array
+          description: Output only. Reports on disk.
+        reportTime:
+          description: Output only. Timestamp of when the sample was collected on device
+          format: google-datetime
+          readOnly: true
+          type: string
+    GoogleChromeManagementV1MemoryInfo:
+      properties:
+        availableRamBytes:
+          description: Output only. Amount of available RAM in bytes.
+          format: int64
+          readOnly: true
+          type: string
+        totalRamBytes:
+          readOnly: true
+          type: string
+          format: int64
+          description: Output only. Total RAM in bytes.
+        totalMemoryEncryption:
+          readOnly: true
+          $ref: >-
+            #/components/schemas/GoogleChromeManagementV1TotalMemoryEncryptionInfo
+          description: Output only. Total memory encryption info for the device.
+      type: object
+      id: GoogleChromeManagementV1MemoryInfo
+      description: >-
+        Memory information of a device. * This field has both telemetry and
+        device information: - `totalRamBytes` - Device information -
+        `availableRamBytes` - Telemetry information - `totalMemoryEncryption` -
+        Device information * Data for this field is controlled via policy:
+        [ReportDeviceMemoryInfo](https://chromeenterprise.google/policies/#ReportDeviceMemoryInfo)
+        * Data Collection Frequency: - `totalRamBytes` - Only at upload -
+        `availableRamBytes` - Every 10 minutes - `totalMemoryEncryption` - at
+        device startup * Default Data Reporting Frequency: - `totalRamBytes` - 3
+        hours - `availableRamBytes` - 3 hours - `totalMemoryEncryption` - at
+        device startup - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: only for `totalMemoryEncryption` * Reported
+        for affiliated users only: N/A * Granular permission needed:
+        TELEMETRY_API_MEMORY_INFO
+    GoogleChromeManagementV1GraphicsAdapterInfo:
+      type: object
+      properties:
+        deviceId:
+          format: int64
+          description: Output only. Represents the graphics card device id.
+          type: string
+          readOnly: true
+        adapter:
+          readOnly: true
+          description: >-
+            Output only. Adapter name. Example: Mesa DRI Intel(R) UHD Graphics
+            620 (Kabylake GT2).
+          type: string
+        driverVersion:
+          readOnly: true
+          description: Output only. Version of the GPU driver.
+          type: string
+      description: Information of a graphics adapter (GPU).
+      id: GoogleChromeManagementV1GraphicsAdapterInfo
+    GoogleChromeManagementV1DeviceHardwareCountReport:
+      description: >-
+        Report for CountChromeDevicesPerHardwareSpecResponse, contains the count
+        of devices with a unique hardware specification.
+      id: GoogleChromeManagementV1DeviceHardwareCountReport
+      type: object
+      properties:
+        bucket:
+          description: Public name of the hardware specification.
+          type: string
+        count:
+          description: Count of devices with a unique hardware specification.
+          format: int64
+          type: string
+    GoogleChromeManagementV1CountChromeHardwareFleetDevicesResponse:
+      id: GoogleChromeManagementV1CountChromeHardwareFleetDevicesResponse
+      type: object
+      description: >-
+        Response containing a list of devices with a specific type of hardware
+        specification from the requested hardware type.
+      properties:
+        cpuReports:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/GoogleChromeManagementV1DeviceHardwareCountReport
+          description: >-
+            The DeviceHardwareCountReport for device cpu type (for example
+            Intel(R) Core(TM) i7-10610U CPU @ 1.80GHz).
+        modelReports:
+          description: >-
+            The DeviceHardwareCountReport for device model type (for example
+            Acer C7 Chromebook).
+          items:
+            $ref: >-
+              #/components/schemas/GoogleChromeManagementV1DeviceHardwareCountReport
+          type: array
+        memoryReports:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/GoogleChromeManagementV1DeviceHardwareCountReport
+          description: >-
+            The DeviceHardwareCountReport for device memory amount in gigabytes
+            (for example 16).
+        storageReports:
+          type: array
+          description: >-
+            The DeviceHardwareCountReport for device storage amount in gigabytes
+            (for example 128).
+          items:
+            $ref: >-
+              #/components/schemas/GoogleChromeManagementV1DeviceHardwareCountReport
+    GoogleChromeManagementV1NetworkInfo:
+      properties:
+        networkDevices:
+          readOnly: true
+          type: array
+          description: Output only. List of network devices.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1NetworkDevice'
+      id: GoogleChromeManagementV1NetworkInfo
+      description: >-
+        Network device information. * This field provides device information,
+        which is static and will not change over time. * Data for this field is
+        controlled via policy:
+        [ReportNetworkDeviceConfiguration](https://chromeenterprise.google/policies/#ReportNetworkDeviceConfiguration)
+        * Data Collection Frequency: At device startup * Default Data Reporting
+        Frequency: At device startup - Policy Controlled: Yes * Cache: If the
+        device is offline, the collected data is stored locally, and will be
+        reported when the device is next online: Yes * Reported for affiliated
+        users only: N/A * Granular permission needed: TELEMETRY_API_NETWORK_INFO
+      type: object
+    GoogleChromeManagementV1TelemetryUserDevice:
+      description: >-
+        Telemetry data collected for a managed user and device. * Granular
+        permission needed: TELEMETRY_API_DEVICE
+      properties:
+        audioStatusReport:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1AudioStatusReport'
+          readOnly: true
+          description: >-
+            Output only. Audio reports collected periodically sorted in a
+            decreasing order of report_time.
+          type: array
+        deviceId:
+          type: string
+          description: >-
+            The unique Directory API ID of the device. This value is the same as
+            the Admin Console's Directory API ID in the ChromeOS Devices tab.
+        peripheralsReport:
+          readOnly: true
+          description: >-
+            Output only. Peripherals reports collected periodically sorted in a
+            decreasing order of report_time.
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1PeripheralsReport'
+      type: object
+      id: GoogleChromeManagementV1TelemetryUserDevice
+    GoogleChromeManagementV1CountChromeAppRequestsResponse:
+      description: Response containing summary of requested app installations.
+      id: GoogleChromeManagementV1CountChromeAppRequestsResponse
+      properties:
+        requestedApps:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1ChromeAppRequest'
+          type: array
+          description: Count of requested apps matching request.
+        nextPageToken:
+          description: Token to specify the next page in the list.
+          type: string
+        totalSize:
+          format: int32
+          description: Total number of matching app requests.
+          type: integer
+      type: object
+    GoogleChromeManagementV1CountChromeBrowsersNeedingAttentionResponse:
+      properties:
+        pendingBrowserUpdateCount:
+          format: int64
+          type: string
+          description: Number of browsers that are pending an OS update
+        noRecentActivityCount:
+          type: string
+          description: Number of browsers that haven’t had any recent activity
+          format: int64
+        recentlyEnrolledCount:
+          description: Number of browsers that have been recently enrolled
+          type: string
+          format: int64
+      type: object
+      id: GoogleChromeManagementV1CountChromeBrowsersNeedingAttentionResponse
+      description: Response containing counts for browsers that need attention.
+    GoogleChromeManagementV1CountChromeDevicesThatNeedAttentionResponse:
+      id: GoogleChromeManagementV1CountChromeDevicesThatNeedAttentionResponse
+      type: object
+      properties:
+        osVersionNotCompliantCount:
+          type: string
+          description: Number of devices whose OS version is not compliant.
+          format: int64
+        pendingUpdate:
+          format: int64
+          description: Number of devices that are pending an OS update.
+          type: string
+        unsupportedPolicyCount:
+          format: int64
+          type: string
+          description: >-
+            Number of devices that are unable to apply a policy due to an OS
+            version mismatch.
+        noRecentPolicySyncCount:
+          format: int64
+          type: string
+          description: >-
+            Number of ChromeOS devices have not synced policies in the past 28
+            days.
+        noRecentUserActivityCount:
+          description: >-
+            Number of ChromeOS devices that have not seen any user activity in
+            the past 28 days.
+          format: int64
+          type: string
+      description: Response containing counts for devices that need attention.
+    GoogleChromeManagementV1StorageInfoDiskVolume:
+      id: GoogleChromeManagementV1StorageInfoDiskVolume
+      properties:
+        storageFreeBytes:
+          format: int64
+          type: string
+          description: Free storage space in bytes.
+        storageTotalBytes:
+          description: Total storage space in bytes.
+          format: int64
+          type: string
+        volumeId:
+          description: Disk volume id.
+          type: string
+      type: object
+      description: Information for disk volumes
+    GoogleChromeManagementV1NetworkDiagnosticsReport:
+      properties:
+        httpsLatencyData:
+          readOnly: true
+          description: Output only. HTTPS latency test data.
+          $ref: '#/components/schemas/GoogleChromeManagementV1HttpsLatencyRoutineData'
+        reportTime:
+          type: string
+          readOnly: true
+          description: Output only. Timestamp of when the diagnostics were collected.
+          format: google-datetime
+      type: object
+      description: >-
+        Network testing results to determine the health of the device's network
+        connection, for example whether the HTTPS latency is high or normal. *
+        Granular permission needed: TELEMETRY_API_NETWORK_REPORT
+      id: GoogleChromeManagementV1NetworkDiagnosticsReport
+    GoogleChromeManagementV1KioskAppStatusReport:
+      type: object
+      description: >-
+        Kiosk app status report of a device. * Available for Kiosks * This field
+        provides the app id and version number running on a kiosk device and the
+        timestamp of when the report was last updated * Data for this field is
+        controlled via policy:
+        [ReportDeviceSessionStatus](https://chromeenterprise.google/policies/#ReportDeviceSessionStatus)
+        * Data Collection Frequency: Only at Upload * Default Data Reporting
+        Frequency: 3 hours - Policy Controlled: Yes * Cache: If the device is
+        offline, the collected data is stored locally, and will be reported when
+        the device is next online: No * Reported for affiliated users only: N/A
+        * Granular permission needed: TELEMETRY_API_APPS_REPORT
+      id: GoogleChromeManagementV1KioskAppStatusReport
+      properties:
+        appVersion:
+          description: App version number of kiosk app for example "1.10.118"
+          type: string
+        reportTime:
+          type: string
+          format: google-datetime
+          description: Timestamp of when report was collected
+        appId:
+          description: App id of kiosk app for example "mdmkkicfmmkgmpkmkdikhlbggogpicma"
+          type: string
+    GoogleChromeManagementV1ThunderboltInfo:
+      id: GoogleChromeManagementV1ThunderboltInfo
+      description: >-
+        Thunderbolt bus info. * This field provides device information, which is
+        static and will not change over time. * Data for this field is
+        controlled via policy:
+        [ReportDeviceSecurityStatus](https://chromeenterprise.google/policies/#ReportDeviceSecurityStatus)
+        * Data Collection Frequency: At device startup * Default Data Reporting
+        Frequency: At device startup - Policy Controlled: No * Cache: If the
+        device is offline, the collected data is stored locally, and will be
+        reported when the device is next online: Yes * Reported for affiliated
+        users only: N/A * Granular permission needed:
+        TELEMETRY_API_BUS_DEVICE_INFO
+      properties:
+        securityLevel:
+          enum:
+            - THUNDERBOLT_SECURITY_LEVEL_UNSPECIFIED
+            - THUNDERBOLT_SECURITY_NONE_LEVEL
+            - THUNDERBOLT_SECURITY_USER_LEVEL
+            - THUNDERBOLT_SECURITY_SECURE_LEVEL
+            - THUNDERBOLT_SECURITY_DP_ONLY_LEVEL
+            - THUNDERBOLT_SECURITY_USB_ONLY_LEVEL
+            - THUNDERBOLT_SECURITY_NO_PCIE_LEVEL
+          type: string
+          description: Security level of the Thunderbolt bus.
+          enumDescriptions:
+            - Thunderbolt security level is not set.
+            - >-
+              All devices are automatically connected by the firmware. No user
+              approval is needed.
+            - User is asked whether the device is allowed to be connected.
+            - >-
+              User is asked whether the device is allowed to be connected. In
+              addition the device is sent a challenge that should match the
+              expected one based on a random key written to the key sysfs
+              attribute
+            - The firmware automatically creates tunnels for Thunderbolt.
+            - >-
+              The firmware automatically creates tunnels for the USB controller
+              and Display Port in a dock. All PCIe links downstream of the dock
+              are removed.
+            - PCIE tunneling is disabled.
+      type: object
+    GoogleChromeManagementV1CountChromeDevicesReachingAutoExpirationDateResponse:
+      id: >-
+        GoogleChromeManagementV1CountChromeDevicesReachingAutoExpirationDateResponse
+      description: >-
+        Response containing a list of devices expiring in each month of a
+        selected time frame. Counts are grouped by model and Auto Update
+        Expiration date.
+      properties:
+        deviceAueCountReports:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1DeviceAueCountReport'
+          type: array
+          description: >-
+            The list of reports sorted by auto update expiration date in
+            ascending order.
+      type: object
+    GoogleChromeManagementV1BrowserVersion:
+      description: Describes a browser version and its install count.
+      type: object
+      properties:
+        count:
+          readOnly: true
+          type: string
+          format: int64
+          description: Output only. Count grouped by device_system and major version
+        channel:
+          type: string
+          readOnly: true
+          description: Output only. The release channel of the installed browser.
+          enum:
+            - RELEASE_CHANNEL_UNSPECIFIED
+            - CANARY
+            - DEV
+            - BETA
+            - STABLE
+          enumDescriptions:
+            - No release channel specified.
+            - Canary release channel.
+            - Dev release channel.
+            - Beta release channel.
+            - Stable release channel.
+        system:
+          type: string
+          enumDescriptions:
+            - No operating system specified.
+            - Other operating system.
+            - Android operating system.
+            - Apple iOS operating system.
+            - ChromeOS operating system.
+            - Microsoft Windows operating system.
+            - Apple macOS operating system.
+            - Linux operating system.
+          description: Output only. The device operating system.
+          enum:
+            - DEVICE_SYSTEM_UNSPECIFIED
+            - SYSTEM_OTHER
+            - SYSTEM_ANDROID
+            - SYSTEM_IOS
+            - SYSTEM_CROS
+            - SYSTEM_WINDOWS
+            - SYSTEM_MAC
+            - SYSTEM_LINUX
+          readOnly: true
+        version:
+          description: Output only. The full version of the installed browser.
+          type: string
+          readOnly: true
+        deviceOsVersion:
+          description: Output only. Version of the system-specified operating system.
+          type: string
+          readOnly: true
+      id: GoogleChromeManagementV1BrowserVersion
+    GoogleChromeManagementV1ListTelemetryDevicesResponse:
+      properties:
+        devices:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryDevice'
+          type: array
+          description: Telemetry devices returned in the response.
+        nextPageToken:
+          description: Token to specify next page in the list.
+          type: string
+      type: object
+      id: GoogleChromeManagementV1ListTelemetryDevicesResponse
+    GoogleChromeManagementV1AndroidAppInfo:
+      type: object
+      id: GoogleChromeManagementV1AndroidAppInfo
+      description: Android app information.
+      properties:
+        permissions:
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1AndroidAppPermission'
+          readOnly: true
+          description: Output only. Permissions requested by an Android app.
+          type: array
+    GoogleChromeManagementV1BootPerformanceReport:
+      type: object
+      description: >-
+        Boot performance report of a device. * This field is telemetry
+        information and this will change over time as the device is utilized. *
+        Data for this field is controlled via policy:
+        [ReportDeviceBootMode](https://chromeenterprise.google/policies/#ReportDeviceBootMode)
+        * Data Collection Frequency: On every boot up event * Default Data
+        Reporting Frequency: 3 hours - Policy Controlled: Yes * Cache: If the
+        device is offline, the collected data is stored locally, and will be
+        reported when the device is next online: Yes * Reported for affiliated
+        users only: N/A * Granular permission needed: TELEMETRY_API_OS_REPORT
+      properties:
+        shutdownReason:
+          enum:
+            - SHUTDOWN_REASON_UNSPECIFIED
+            - USER_REQUEST
+            - SYSTEM_UPDATE
+            - LOW_BATTERY
+            - OTHER
+          enumDescriptions:
+            - Shutdown reason is not specified.
+            - User initiated.
+            - System update initiated.
+            - Shutdown due to low battery.
+            - Shutdown due to other reasons.
+          type: string
+          description: The shutdown reason.
+        shutdownTime:
+          description: The timestamp when shutdown.
+          type: string
+          format: google-datetime
+        shutdownDuration:
+          format: google-duration
+          description: Total time since shutdown start to power off.
+          type: string
+        bootUpDuration:
+          format: google-duration
+          description: Total time to boot up.
+          type: string
+        reportTime:
+          type: string
+          format: google-datetime
+          description: Timestamp when the report was collected.
+        bootUpTime:
+          description: The timestamp when power came on.
+          type: string
+          format: google-datetime
+      id: GoogleChromeManagementV1BootPerformanceReport
+    GoogleChromeManagementV1TelemetryAudioSevereUnderrunEvent:
+      type: object
+      properties: {}
+      id: GoogleChromeManagementV1TelemetryAudioSevereUnderrunEvent
+      description: >-
+        `TelemetryAudioSevereUnderrunEvent` is triggered when a audio devices
+        run out of buffer data for more than 5 seconds. * Granular permission
+        needed: TELEMETRY_API_AUDIO_REPORT
+    GoogleChromeManagementV1TelemetryEvent:
+      description: Telemetry data reported by a managed device.
+      id: GoogleChromeManagementV1TelemetryEvent
+      properties:
+        httpsLatencyChangeEvent:
+          readOnly: true
+          description: >-
+            Output only. Payload for HTTPS latency change event. Present only
+            when `event_type` is `NETWORK_HTTPS_LATENCY_CHANGE`.
+          $ref: >-
+            #/components/schemas/GoogleChromeManagementV1TelemetryHttpsLatencyChangeEvent
+        name:
+          type: string
+          description: Output only. Resource name of the event.
+          readOnly: true
+        audioSevereUnderrunEvent:
+          $ref: >-
+            #/components/schemas/GoogleChromeManagementV1TelemetryAudioSevereUnderrunEvent
+          readOnly: true
+          description: >-
+            Output only. Payload for audio severe underrun event. Present only
+            when the `event_type` field is `AUDIO_SEVERE_UNDERRUN`.
+        user:
+          readOnly: true
+          $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryUserInfo'
+          description: Output only. Information about the user associated with the event.
+        eventType:
+          enum:
+            - EVENT_TYPE_UNSPECIFIED
+            - AUDIO_SEVERE_UNDERRUN
+            - USB_ADDED
+            - USB_REMOVED
+            - NETWORK_HTTPS_LATENCY_CHANGE
+          enumDescriptions:
+            - Event type unknown.
+            - >-
+              Triggered when a audio devices run out of buffer data for more
+              than 5 seconds.
+            - Triggered when USB devices are added.
+            - Triggered when USB devices are removed.
+            - >-
+              Triggered when a new HTTPS latency problem was detected or the
+              device has recovered form an existing HTTPS latency problem.
+          description: The event type of the current event.
+          type: string
+        device:
+          $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryDeviceInfo'
+          description: Output only. Information about the device associated with the event.
+          readOnly: true
+        reportTime:
+          type: string
+          description: Timestamp that represents when the event was reported.
+          format: google-datetime
+        usbPeripheralsEvent:
+          readOnly: true
+          $ref: >-
+            #/components/schemas/GoogleChromeManagementV1TelemetryUsbPeripheralsEvent
+          description: >-
+            Output only. Payload for usb peripherals event. Present only when
+            the `event_type` field is either `USB_ADDED` or `USB_REMOVED`.
+      type: object
+    GoogleChromeManagementV1PeripheralsReport:
+      properties:
+        usbPeripheralReport:
+          description: Reports of all usb connected devices.
+          items:
+            $ref: '#/components/schemas/GoogleChromeManagementV1UsbPeripheralReport'
+          type: array
+        reportTime:
+          description: Output only. Timestamp of when the report was collected.
+          type: string
+          format: google-datetime
+          readOnly: true
+      id: GoogleChromeManagementV1PeripheralsReport
+      description: >-
+        Peripherals report. * Granular permission needed:
+        TELEMETRY_API_PERIPHERALS_REPORT
+      type: object
+  parameters:
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/chrome.management.telemetry.readonly: >-
+              See basic device and telemetry information collected from Chrome
+              OS devices or users managed within your organization
+            https://www.googleapis.com/auth/chrome.management.appdetails.readonly: >-
+              See detailed information about apps installed on Chrome browsers
+              and devices managed by your organization
+            https://www.googleapis.com/auth/chrome.management.reports.readonly: >-
+              See reports about devices and Chrome browsers managed within your
+              organization
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1/customers/{customersId}/apps/android/{androidId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/callback'
+    get:
+      description: Get a specific app for a customer by its resource name.
+      operationId: chromemanagement.customers.apps.android.get
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleChromeManagementV1AppDetails'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: androidId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: android
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/apps/chrome/{chromeId}:
+    parameters: *ref_1
+    get:
+      description: Get a specific app for a customer by its resource name.
+      operationId: chromemanagement.customers.apps.chrome.get
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleChromeManagementV1AppDetails'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: chromeId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: chrome
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/apps/web/{webId}:
+    parameters: *ref_1
+    get:
+      description: Get a specific app for a customer by its resource name.
+      operationId: chromemanagement.customers.apps.web.get
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleChromeManagementV1AppDetails'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: webId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: web
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/apps:countChromeAppRequests:
+    parameters: *ref_1
+    get:
+      description: Generate summary of app installation requests.
+      operationId: chromemanagement.customers.apps.countChromeAppRequests
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.appdetails.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeAppRequestsResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: apps
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countChromeBrowsersNeedingAttention:
+    parameters: *ref_1
+    get:
+      description: >-
+        Count of Chrome Browsers that have been recently enrolled, have new
+        policy to be synced, or have no recent activity.
+      operationId: chromemanagement.customers.reports.countChromeBrowsersNeedingAttention
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeBrowsersNeedingAttentionResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countChromeHardwareFleetDevices:
+    parameters: *ref_1
+    get:
+      description: >-
+        Counts of devices with a specific hardware specification from the
+        requested hardware type (for example model name, processor type).
+        Further information can be found here
+        https://support.google.com/chrome/a/answer/10564947
+      operationId: chromemanagement.customers.reports.countChromeHardwareFleetDevices
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeHardwareFleetDevicesResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countChromeDevicesThatNeedAttention:
+    parameters: *ref_1
+    get:
+      description: >-
+        Counts of ChromeOS devices that have not synced policies or have lacked
+        user activity in the past 28 days, are out of date, or are not
+        complaint. Further information can be found here
+        https://support.google.com/chrome/a/answer/10564947
+      operationId: chromemanagement.customers.reports.countChromeDevicesThatNeedAttention
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeDevicesThatNeedAttentionResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countInstalledApps:
+    parameters: *ref_1
+    get:
+      description: Generate report of app installations.
+      operationId: chromemanagement.customers.reports.countInstalledApps
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountInstalledAppsResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:findInstalledAppDevices:
+    parameters: *ref_1
+    get:
+      description: >-
+        Generate report of managed Chrome browser devices that have a specified
+        app installed.
+      operationId: chromemanagement.customers.reports.findInstalledAppDevices
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1FindInstalledAppDevicesResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: appType
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: appId
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countChromeDevicesReachingAutoExpirationDate:
+    parameters: *ref_1
+    get:
+      description: >-
+        Generate report of the number of devices expiring in each month of the
+        selected time frame. Devices are grouped by auto update expiration date
+        and model. Further information can be found
+        [here](https://support.google.com/chrome/a/answer/10564947).
+      operationId: >-
+        chromemanagement.customers.reports.countChromeDevicesReachingAutoExpirationDate
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeDevicesReachingAutoExpirationDateResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: minAueDate
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+        - in: query
+          name: maxAueDate
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/reports:countChromeVersions:
+    parameters: *ref_1
+    get:
+      description: Generate report of installed Chrome versions.
+      operationId: chromemanagement.customers.reports.countChromeVersions
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/chrome.management.reports.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1CountChromeVersionsResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: orgUnitId
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /v1/customers/{customersId}/telemetry/users/{usersId}:
+    parameters: *ref_1
+    get:
+      description: Get telemetry user.
+      operationId: chromemanagement.customers.telemetry.users.get
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryUser'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: usersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+      x-stackQL-resource: users
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/telemetry/users:
+    parameters: *ref_1
+    get:
+      description: List all telemetry users.
+      operationId: chromemanagement.customers.telemetry.users.list
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1ListTelemetryUsersResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: users
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/telemetry/events:
+    parameters: *ref_1
+    get:
+      description: List telemetry events.
+      operationId: chromemanagement.customers.telemetry.events.list
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1ListTelemetryEventsResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: events
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/telemetry/devices/{devicesId}:
+    parameters: *ref_1
+    get:
+      description: Get telemetry device.
+      operationId: chromemanagement.customers.telemetry.devices.get
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleChromeManagementV1TelemetryDevice'
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: devicesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: readMask
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select
+  /v1/customers/{customersId}/telemetry/devices:
+    parameters: *ref_1
+    get:
+      description: List all telemetry devices.
+      operationId: chromemanagement.customers.telemetry.devices.list
+      security:
+        - Oauth2:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+          Oauth2c:
+            - >-
+              https://www.googleapis.com/auth/chrome.management.telemetry.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleChromeManagementV1ListTelemetryDevicesResponse
+      parameters:
+        - in: path
+          name: customersId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: readMask
+          schema:
+            type: string
+      x-stackQL-resource: devices
+      x-stackQL-verb: select

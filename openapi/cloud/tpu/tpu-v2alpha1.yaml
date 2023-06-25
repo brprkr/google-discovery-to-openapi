@@ -1,0 +1,2062 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Cloud TPU API
+  description: TPU API provides customers with access to Google TPU technology.
+  version: v2alpha1
+  x-discovery-doc-revision: '20230601'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/tpu/
+servers:
+  - url: https://tpu.googleapis.com
+components:
+  schemas:
+    SuspendingData:
+      description: Further data for the suspending state.
+      type: object
+      id: SuspendingData
+      properties: {}
+    ListRuntimeVersionsResponse:
+      id: ListRuntimeVersionsResponse
+      description: Response for ListRuntimeVersions.
+      properties:
+        nextPageToken:
+          description: The next page token or empty if none.
+          type: string
+        runtimeVersions:
+          items:
+            $ref: '#/components/schemas/RuntimeVersion'
+          type: array
+          description: The listed nodes.
+        unreachable:
+          type: array
+          items:
+            type: string
+          description: Locations that could not be reached.
+      type: object
+    GetGuestAttributesRequest:
+      type: object
+      properties:
+        queryPath:
+          type: string
+          description: The guest attributes path to be queried.
+        workerIds:
+          items:
+            type: string
+          type: array
+          description: >-
+            The 0-based worker ID. If it is empty, all workers' GuestAttributes
+            will be returned.
+      id: GetGuestAttributesRequest
+      description: Request for GetGuestAttributes.
+    Status:
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      type: object
+      properties:
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+        details:
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          type: array
+          items:
+            additionalProperties:
+              description: Properties of the object. Contains field @type with type URL.
+              type: any
+            type: object
+        code:
+          description: The status code, which should be an enum value of google.rpc.Code.
+          type: integer
+          format: int32
+      id: Status
+    Interval:
+      description: >-
+        Represents a time interval, encoded as a Timestamp start (inclusive) and
+        a Timestamp end (exclusive). The start must be less than or equal to the
+        end. When the start equals the end, the interval is empty (matches no
+        time). When both start and end are unspecified, the interval matches any
+        time.
+      type: object
+      id: Interval
+      properties:
+        startTime:
+          type: string
+          format: google-datetime
+          description: >-
+            Optional. Inclusive start of the interval. If specified, a Timestamp
+            matching this interval will have to be the same or after the start.
+        endTime:
+          description: >-
+            Optional. Exclusive end of the interval. If specified, a Timestamp
+            matching this interval will have to be before the end.
+          format: google-datetime
+          type: string
+    Operation:
+      id: Operation
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+      type: object
+      properties:
+        error:
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+          $ref: '#/components/schemas/Status'
+        name:
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+          type: string
+        metadata:
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+          type: object
+        response:
+          type: object
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+        done:
+          type: boolean
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+    ListQueuedResourcesResponse:
+      properties:
+        queuedResources:
+          description: The listed queued resources.
+          items:
+            $ref: '#/components/schemas/QueuedResource'
+          type: array
+        unreachable:
+          type: array
+          description: Locations that could not be reached.
+          items:
+            type: string
+        nextPageToken:
+          type: string
+          description: The next page token or empty if none.
+      description: Response for ListQueuedResources.
+      id: ListQueuedResourcesResponse
+      type: object
+    NodeSpec:
+      type: object
+      properties:
+        nodeId:
+          description: >-
+            The unqualified resource name. Should follow the
+            `^[A-Za-z0-9_.~+%-]+$` regex format. This is only specified when
+            requesting a single node. In case of multi-node requests,
+            multi_node_params must be populated instead. It's an error to
+            specify both node_id and multi_node_params.
+          type: string
+        node:
+          $ref: '#/components/schemas/Node'
+          description: Required. The node.
+        parent:
+          type: string
+          description: Required. The parent resource name.
+      description: >-
+        Details of the TPU node(s) being requested. Users can request either a
+        single node or multiple nodes. NodeSpec provides the specification for
+        node(s) to be created.
+      id: NodeSpec
+    Node:
+      description: A TPU instance.
+      type: object
+      id: Node
+      properties:
+        metadata:
+          description: >-
+            Custom metadata to apply to the TPU Node. Can set startup-script and
+            shutdown-script
+          additionalProperties:
+            type: string
+          type: object
+        createTime:
+          readOnly: true
+          type: string
+          format: google-datetime
+          description: Output only. The time when the node was created.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Resource labels to represent user-provided metadata.
+        apiVersion:
+          enumDescriptions:
+            - API version is unknown.
+            - TPU API V1Alpha1 version.
+            - TPU API V1 version.
+            - TPU API V2Alpha1 version.
+          description: Output only. The API version that created this Node.
+          enum:
+            - API_VERSION_UNSPECIFIED
+            - V1_ALPHA1
+            - V1
+            - V2_ALPHA1
+          readOnly: true
+          type: string
+        description:
+          description: The user-supplied description of the TPU. Maximum of 512 characters.
+          type: string
+        cidrBlock:
+          type: string
+          description: >-
+            The CIDR block that the TPU node will use when selecting an IP
+            address. This CIDR block must be a /29 block; the Compute Engine
+            networks API forbids a smaller block, and using a larger block would
+            be wasteful (a node can only consume one IP address). Errors will
+            occur if the CIDR block has already been used for a currently
+            existing TPU node, the CIDR block conflicts with any subnetworks in
+            the user's provided network, or the provided network is peered with
+            another network that is using that CIDR block.
+        acceleratorConfig:
+          description: The AccleratorConfig for the TPU Node.
+          $ref: '#/components/schemas/AcceleratorConfig'
+        dataDisks:
+          items:
+            $ref: '#/components/schemas/AttachedDisk'
+          type: array
+          description: The additional data disks for the Node.
+        runtimeVersion:
+          type: string
+          description: Required. The runtime version running in the Node.
+        healthDescription:
+          description: >-
+            Output only. If this field is populated, it contains a description
+            of why the TPU Node is unhealthy.
+          type: string
+          readOnly: true
+        id:
+          format: int64
+          description: Output only. The unique identifier for the TPU Node.
+          readOnly: true
+          type: string
+        symptoms:
+          description: Output only. The Symptoms that have occurred to the TPU Node.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Symptom'
+          type: array
+        acceleratorType:
+          description: The type of hardware accelerators associated with this node.
+          type: string
+        networkEndpoints:
+          items:
+            $ref: '#/components/schemas/NetworkEndpoint'
+          description: >-
+            Output only. The network endpoints where TPU workers can be accessed
+            and sent work. It is recommended that runtime clients of the node
+            reach out to the 0th entry in this map first.
+          readOnly: true
+          type: array
+        schedulingConfig:
+          $ref: '#/components/schemas/SchedulingConfig'
+          description: The scheduling options for this node.
+        name:
+          description: Output only. Immutable. The name of the TPU.
+          type: string
+          readOnly: true
+        networkConfig:
+          $ref: '#/components/schemas/NetworkConfig'
+          description: Network configurations for the TPU node.
+        queuedResource:
+          description: >-
+            Output only. The qualified name of the QueuedResource that requested
+            this Node.
+          type: string
+          readOnly: true
+        state:
+          enum:
+            - STATE_UNSPECIFIED
+            - CREATING
+            - READY
+            - RESTARTING
+            - REIMAGING
+            - DELETING
+            - REPAIRING
+            - STOPPED
+            - STOPPING
+            - STARTING
+            - PREEMPTED
+            - TERMINATED
+            - HIDING
+            - HIDDEN
+            - UNHIDING
+          readOnly: true
+          description: Output only. The current state for the TPU Node.
+          enumDescriptions:
+            - TPU node state is not known/set.
+            - TPU node is being created.
+            - TPU node has been created.
+            - TPU node is restarting.
+            - TPU node is undergoing reimaging.
+            - TPU node is being deleted.
+            - >-
+              TPU node is being repaired and may be unusable. Details can be
+              found in the 'help_description' field.
+            - TPU node is stopped.
+            - TPU node is currently stopping.
+            - TPU node is currently starting.
+            - >-
+              TPU node has been preempted. Only applies to Preemptible TPU
+              Nodes.
+            - >-
+              TPU node has been terminated due to maintenance or has reached the
+              end of its life cycle (for preemptible nodes).
+            - TPU node is currently hiding.
+            - TPU node has been hidden.
+            - TPU node is currently unhiding.
+          type: string
+        multisliceNode:
+          type: boolean
+          readOnly: true
+          description: Output only. Whether the Node belongs to a Multislice group.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags to apply to the TPU Node. Tags are used to identify valid
+            sources or targets for network firewalls.
+        serviceAccount:
+          $ref: '#/components/schemas/ServiceAccount'
+          description: >-
+            The Google Cloud Platform Service Account to be used by the TPU node
+            VMs. If None is specified, the default compute service account will
+            be used.
+        health:
+          enum:
+            - HEALTH_UNSPECIFIED
+            - HEALTHY
+            - TIMEOUT
+            - UNHEALTHY_TENSORFLOW
+            - UNHEALTHY_MAINTENANCE
+          type: string
+          description: The health status of the TPU node.
+          enumDescriptions:
+            - 'Health status is unknown: not initialized or failed to retrieve.'
+            - The resource is healthy.
+            - The resource is unresponsive.
+            - The in-guest ML stack is unhealthy.
+            - >-
+              The node is under maintenance/priority boost caused rescheduling
+              and will resume running once rescheduled.
+        shieldedInstanceConfig:
+          $ref: '#/components/schemas/ShieldedInstanceConfig'
+          description: Shielded Instance options.
+    Location:
+      id: Location
+      description: A resource that represents a Google Cloud location.
+      type: object
+      properties:
+        displayName:
+          description: >-
+            The friendly name for this location, typically a nearby city name.
+            For example, "Tokyo".
+          type: string
+        locationId:
+          description: 'The canonical id for this location. For example: `"us-east1"`.'
+          type: string
+        name:
+          description: >-
+            Resource name for the location, which may vary between
+            implementations. For example:
+            `"projects/example-project/locations/us-east1"`
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            Service-specific metadata. For example the available capacity at the
+            given location.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Cross-service attributes for the location. For example
+            {"cloud.googleapis.com/region": "us-east1"}
+    ActiveData:
+      description: Further data for the active state.
+      type: object
+      id: ActiveData
+      properties: {}
+    SchedulingConfig:
+      type: object
+      properties:
+        reserved:
+          type: boolean
+          description: Whether the node is created under a reservation.
+        preemptible:
+          type: boolean
+          description: Defines whether the node is preemptible.
+      description: Sets the scheduling options for this node.
+      id: SchedulingConfig
+    BestEffort:
+      description: BestEffort tier definition.
+      properties: {}
+      type: object
+      id: BestEffort
+    AcceleratorConfig:
+      properties:
+        topology:
+          type: string
+          description: Required. Topology of TPU in chips.
+        type:
+          type: string
+          enumDescriptions:
+            - Unspecified version.
+            - TPU v2.
+            - TPU v3.
+            - TPU v4.
+          description: Required. Type of TPU.
+          enum:
+            - TYPE_UNSPECIFIED
+            - V2
+            - V3
+            - V4
+      type: object
+      description: A TPU accelerator configuration.
+      id: AcceleratorConfig
+    ServiceIdentity:
+      id: ServiceIdentity
+      properties:
+        email:
+          description: The email address of the service identity.
+          type: string
+      type: object
+      description: The per-product per-project service identity for Cloud TPU service.
+    QueueingPolicy:
+      id: QueueingPolicy
+      properties:
+        validUntilTime:
+          format: google-datetime
+          type: string
+          description: >-
+            An absolute time after which resources should not be created. If the
+            request cannot be fulfilled by this time the request will be failed.
+        validInterval:
+          $ref: '#/components/schemas/Interval'
+          description: An absolute time interval within which resources may be created.
+        validAfterDuration:
+          type: string
+          description: A relative time after which resources may be created.
+          format: google-duration
+        validAfterTime:
+          format: google-datetime
+          type: string
+          description: An absolute time at which resources may be created.
+        validUntilDuration:
+          type: string
+          description: >-
+            A relative time after which resources should not be created. If the
+            request cannot be fulfilled by this time the request will be failed.
+          format: google-duration
+      type: object
+      description: Defines the policy of the QueuedRequest.
+    Symptom:
+      properties:
+        symptomType:
+          type: string
+          enum:
+            - SYMPTOM_TYPE_UNSPECIFIED
+            - LOW_MEMORY
+            - OUT_OF_MEMORY
+            - EXECUTE_TIMED_OUT
+            - MESH_BUILD_FAIL
+            - HBM_OUT_OF_MEMORY
+            - PROJECT_ABUSE
+          enumDescriptions:
+            - Unspecified symptom.
+            - TPU VM memory is low.
+            - TPU runtime is out of memory.
+            - TPU runtime execution has timed out.
+            - >-
+              TPU runtime fails to construct a mesh that recognizes each TPU
+              device's neighbors.
+            - TPU HBM is out of memory.
+            - Abusive behaviors have been identified on the current project.
+          description: Type of the Symptom.
+        createTime:
+          type: string
+          format: google-datetime
+          description: Timestamp when the Symptom is created.
+        details:
+          description: Detailed information of the current Symptom.
+          type: string
+        workerId:
+          type: string
+          description: A string used to uniquely distinguish a worker within a TPU node.
+      id: Symptom
+      type: object
+      description: A Symptom instance.
+    StopNodeRequest:
+      id: StopNodeRequest
+      description: Request for StopNode.
+      type: object
+      properties: {}
+    Guaranteed:
+      id: Guaranteed
+      properties:
+        minDuration:
+          type: string
+          format: google-duration
+          description: >-
+            Optional. Defines the minimum duration of the guarantee. If
+            specified, the requested resources will only be provisioned if they
+            can be allocated for at least the given duration.
+        reserved:
+          type: boolean
+          description: >-
+            Optional. Specifies the request should be scheduled on reserved
+            capacity.
+      description: Guaranteed tier definition.
+      type: object
+    ListNodesResponse:
+      properties:
+        nodes:
+          description: The listed nodes.
+          items:
+            $ref: '#/components/schemas/Node'
+          type: array
+        nextPageToken:
+          type: string
+          description: The next page token or empty if none.
+        unreachable:
+          type: array
+          items:
+            type: string
+          description: Locations that could not be reached.
+      id: ListNodesResponse
+      description: Response for ListNodes.
+      type: object
+    NetworkConfig:
+      type: object
+      id: NetworkConfig
+      description: Network related configurations.
+      properties:
+        enableExternalIps:
+          description: >-
+            Indicates that external IP addresses would be associated with the
+            TPU workers. If set to false, the specified subnetwork or network
+            should have Private Google Access enabled.
+          type: boolean
+        canIpForward:
+          description: >-
+            Allows the TPU node to send and receive packets with non-matching
+            destination or source IPs. This is required if you plan to use the
+            TPU workers to forward routes.
+          type: boolean
+        subnetwork:
+          description: >-
+            The name of the subnetwork for the TPU node. It must be a
+            preexisting Google Compute Engine subnetwork. If none is provided,
+            "default" will be used.
+          type: string
+        network:
+          type: string
+          description: >-
+            The name of the network for the TPU node. It must be a preexisting
+            Google Compute Engine network. If none is provided, "default" will
+            be used.
+    ShieldedInstanceConfig:
+      id: ShieldedInstanceConfig
+      type: object
+      properties:
+        enableSecureBoot:
+          description: Defines whether the instance has Secure Boot enabled.
+          type: boolean
+      description: A set of Shielded Instance options.
+    CreatingData:
+      description: Further data for the creating state.
+      id: CreatingData
+      properties: {}
+      type: object
+    QueuedResource:
+      description: >-
+        A QueuedResource represents a request for resources that will be placed
+        in a queue and fulfilled when the necessary resources are available.
+      id: QueuedResource
+      properties:
+        guaranteed:
+          $ref: '#/components/schemas/Guaranteed'
+          description: The Guaranteed tier
+        name:
+          description: Output only. Immutable. The name of the QueuedResource.
+          type: string
+          readOnly: true
+        bestEffort:
+          description: The BestEffort tier.
+          $ref: '#/components/schemas/BestEffort'
+        state:
+          $ref: '#/components/schemas/QueuedResourceState'
+          readOnly: true
+          description: Output only. State of the QueuedResource request.
+        queueingPolicy:
+          $ref: '#/components/schemas/QueueingPolicy'
+          description: The queueing policy of the QueuedRequest.
+        tpu:
+          description: Defines a TPU resource.
+          $ref: '#/components/schemas/Tpu'
+        reservationName:
+          description: >-
+            Name of the reservation in which the resource should be provisioned.
+            Format:
+            projects/{project}/locations/{zone}/reservations/{reservation}
+          type: string
+      type: object
+    GuestAttributes:
+      description: A guest attributes.
+      id: GuestAttributes
+      properties:
+        queryValue:
+          $ref: '#/components/schemas/GuestAttributesValue'
+          description: The value of the requested queried path.
+        queryPath:
+          description: >-
+            The path to be queried. This can be the default namespace ('/') or a
+            nested namespace ('/\/') or a specified key ('/\/\')
+          type: string
+      type: object
+    SuspendedData:
+      id: SuspendedData
+      description: Further data for the suspended state.
+      type: object
+      properties: {}
+    RuntimeVersion:
+      properties:
+        name:
+          type: string
+          description: The resource name.
+        version:
+          type: string
+          description: The runtime version.
+      description: A runtime version that a Node can be configured with.
+      id: RuntimeVersion
+      type: object
+    GenerateServiceIdentityResponse:
+      description: Response for GenerateServiceIdentity.
+      type: object
+      properties:
+        identity:
+          description: ServiceIdentity that was created or retrieved.
+          $ref: '#/components/schemas/ServiceIdentity'
+      id: GenerateServiceIdentityResponse
+    ListAcceleratorTypesResponse:
+      type: object
+      id: ListAcceleratorTypesResponse
+      properties:
+        nextPageToken:
+          type: string
+          description: The next page token or empty if none.
+        unreachable:
+          description: Locations that could not be reached.
+          type: array
+          items:
+            type: string
+        acceleratorTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcceleratorType'
+          description: The listed nodes.
+      description: Response for ListAcceleratorTypes.
+    AttachedDisk:
+      properties:
+        sourceDisk:
+          description: >-
+            Specifies the full path to an existing disk. For example:
+            "projects/my-project/zones/us-central1-c/disks/my-disk".
+          type: string
+        mode:
+          enum:
+            - DISK_MODE_UNSPECIFIED
+            - READ_WRITE
+            - READ_ONLY
+          description: >-
+            The mode in which to attach this disk. If not specified, the default
+            is READ_WRITE mode. Only applicable to data_disks.
+          type: string
+          enumDescriptions:
+            - The disk mode is not known/set.
+            - >-
+              Attaches the disk in read-write mode. Only one TPU node can attach
+              a disk in read-write mode at a time.
+            - >-
+              Attaches the disk in read-only mode. Multiple TPU nodes can attach
+              a disk in read-only mode at a time.
+      id: AttachedDisk
+      type: object
+      description: 'A node-attached disk resource. Next ID: 8;'
+    SimulateMaintenanceEventRequest:
+      id: SimulateMaintenanceEventRequest
+      properties:
+        workerIds:
+          items:
+            type: string
+          description: >-
+            The 0-based worker ID. If it is empty, worker ID 0 will be selected
+            for maintenance event simulation. A maintenance event will only be
+            fired on the first specified worker ID. Future implementations may
+            support firing on multiple workers.
+          type: array
+      description: Request for SimulateMaintenanceEvent.
+      type: object
+    ListOperationsResponse:
+      type: object
+      properties:
+        operations:
+          description: >-
+            A list of operations that matches the specified filter in the
+            request.
+          items:
+            $ref: '#/components/schemas/Operation'
+          type: array
+        nextPageToken:
+          type: string
+          description: The standard List next-page token.
+      description: The response message for Operations.ListOperations.
+      id: ListOperationsResponse
+    ListLocationsResponse:
+      type: object
+      id: ListLocationsResponse
+      properties:
+        nextPageToken:
+          type: string
+          description: The standard List next-page token.
+        locations:
+          description: >-
+            A list of locations that matches the specified filter in the
+            request.
+          items:
+            $ref: '#/components/schemas/Location'
+          type: array
+      description: The response message for Locations.ListLocations.
+    GenerateServiceIdentityRequest:
+      description: Request for GenerateServiceIdentity.
+      properties: {}
+      id: GenerateServiceIdentityRequest
+      type: object
+    GuestAttributesValue:
+      properties:
+        items:
+          type: array
+          description: The list of guest attributes entries.
+          items:
+            $ref: '#/components/schemas/GuestAttributesEntry'
+      id: GuestAttributesValue
+      type: object
+      description: Array of guest attribute namespace/key/value tuples.
+    QueuedResourceState:
+      properties:
+        creatingData:
+          description: Further data for the creating state.
+          $ref: '#/components/schemas/CreatingData'
+        failedData:
+          description: Further data for the failed state.
+          $ref: '#/components/schemas/FailedData'
+        acceptedData:
+          description: Further data for the accepted state.
+          $ref: '#/components/schemas/AcceptedData'
+        state:
+          type: string
+          enumDescriptions:
+            - State of the QueuedResource request is not known/set.
+            - >-
+              The QueuedResource request has been received. We're still working
+              on determining if we will be able to honor this request.
+            - >-
+              The QueuedResource request has passed initial validation/admission
+              control and has been persisted in the queue.
+            - >-
+              The QueuedResource request has been selected. The associated
+              resources are currently being provisioned (or very soon will begin
+              provisioning).
+            - >-
+              The request could not be completed. This may be due to some
+              late-discovered problem with the request itself, or due to
+              unavailability of resources within the constraints of the request
+              (e.g., the 'valid until' start timing constraint expired).
+            - The QueuedResource is being deleted.
+            - >-
+              The resources specified in the QueuedResource request have been
+              provisioned and are ready for use by the end-user/consumer.
+            - >-
+              The resources specified in the QueuedResource request are being
+              deleted. This may have been initiated by the user, or the Cloud
+              TPU service. Inspect the state data for more details.
+            - >-
+              The resources specified in the QueuedResource request have been
+              deleted.
+          enum:
+            - STATE_UNSPECIFIED
+            - CREATING
+            - ACCEPTED
+            - PROVISIONING
+            - FAILED
+            - DELETING
+            - ACTIVE
+            - SUSPENDING
+            - SUSPENDED
+          description: State of the QueuedResource request.
+        provisioningData:
+          $ref: '#/components/schemas/ProvisioningData'
+          description: Further data for the provisioning state.
+        suspendedData:
+          $ref: '#/components/schemas/SuspendedData'
+          description: Further data for the suspended state.
+        deletingData:
+          $ref: '#/components/schemas/DeletingData'
+          description: Further data for the deleting state.
+        activeData:
+          $ref: '#/components/schemas/ActiveData'
+          description: Further data for the active state.
+        suspendingData:
+          description: Further data for the suspending state.
+          $ref: '#/components/schemas/SuspendingData'
+      description: QueuedResourceState defines the details of the QueuedResource request.
+      type: object
+      id: QueuedResourceState
+    AcceptedData:
+      id: AcceptedData
+      description: Further data for the accepted state.
+      properties: {}
+      type: object
+    AccessConfig:
+      id: AccessConfig
+      description: An access config attached to the TPU worker.
+      properties:
+        externalIp:
+          type: string
+          readOnly: true
+          description: Output only. An external IP address associated with the TPU worker.
+      type: object
+    DeletingData:
+      type: object
+      properties: {}
+      description: Further data for the deleting state.
+      id: DeletingData
+    AcceleratorType:
+      id: AcceleratorType
+      description: A accelerator type that a Node can be configured with.
+      type: object
+      properties:
+        name:
+          type: string
+          description: The resource name.
+        acceleratorConfigs:
+          items:
+            $ref: '#/components/schemas/AcceleratorConfig'
+          description: The accelerator config.
+          type: array
+        type:
+          type: string
+          description: The accelerator type.
+    OperationMetadata:
+      properties:
+        statusDetail:
+          type: string
+          description: Human-readable status of the operation, if any.
+        target:
+          description: >-
+            Target of the operation - for example
+            projects/project-1/connectivityTests/test-1
+          type: string
+        apiVersion:
+          description: API version.
+          type: string
+        verb:
+          type: string
+          description: Name of the verb executed by the operation.
+        endTime:
+          format: google-datetime
+          description: The time the operation finished running.
+          type: string
+        createTime:
+          format: google-datetime
+          description: The time the operation was created.
+          type: string
+        cancelRequested:
+          type: boolean
+          description: Specifies if cancellation was requested for the operation.
+      description: Metadata describing an Operation
+      id: OperationMetadata
+      type: object
+    FailedData:
+      properties:
+        error:
+          description: The error that caused the queued resource to enter the FAILED state.
+          $ref: '#/components/schemas/Status'
+      description: Further data for the failed state.
+      id: FailedData
+      type: object
+    GetGuestAttributesResponse:
+      id: GetGuestAttributesResponse
+      type: object
+      properties:
+        guestAttributes:
+          description: The guest attributes for the TPU workers.
+          items:
+            $ref: '#/components/schemas/GuestAttributes'
+          type: array
+      description: Response for GetGuestAttributes.
+    ProvisioningData:
+      description: Further data for the provisioning state.
+      type: object
+      id: ProvisioningData
+      properties: {}
+    StartNodeRequest:
+      properties: {}
+      description: Request for StartNode.
+      id: StartNodeRequest
+      type: object
+    Tpu:
+      description: Details of the TPU resource(s) being requested.
+      properties:
+        nodeSpec:
+          description: The TPU node(s) being requested.
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeSpec'
+      type: object
+      id: Tpu
+    Empty:
+      type: object
+      properties: {}
+      id: Empty
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+    ServiceAccount:
+      id: ServiceAccount
+      type: object
+      description: A service account.
+      properties:
+        scope:
+          description: >-
+            The list of scopes to be made available for this service account. If
+            empty, access to all Cloud APIs will be allowed.
+          type: array
+          items:
+            type: string
+        email:
+          description: >-
+            Email address of the service account. If empty, default Compute
+            service account will be used.
+          type: string
+    GuestAttributesEntry:
+      description: A guest attributes namespace/key/value entry.
+      type: object
+      id: GuestAttributesEntry
+      properties:
+        value:
+          type: string
+          description: Value for the guest attribute entry.
+        key:
+          description: Key for the guest attribute entry.
+          type: string
+        namespace:
+          type: string
+          description: Namespace for the guest attribute entry.
+    NetworkEndpoint:
+      type: object
+      id: NetworkEndpoint
+      description: A network endpoint over which a TPU worker can be reached.
+      properties:
+        accessConfig:
+          description: The access config for the TPU worker.
+          $ref: '#/components/schemas/AccessConfig'
+        port:
+          description: The port of this network endpoint.
+          format: int32
+          type: integer
+        ipAddress:
+          type: string
+          description: The internal IP address of this network endpoint.
+  parameters:
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/runtimeVersions/{runtimeVersionsId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/quotaUser'
+    get:
+      description: Gets a runtime version.
+      operationId: tpu.projects.locations.runtimeVersions.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeVersion'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: runtimeVersionsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: runtime_versions
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/runtimeVersions:
+    parameters: *ref_1
+    get:
+      description: Lists runtime versions supported by this API.
+      operationId: tpu.projects.locations.runtimeVersions.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRuntimeVersionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: runtime_versions
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/operations:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists operations that match the specified filter in the request. If the
+        server doesn't support this method, it returns `UNIMPLEMENTED`.
+      operationId: tpu.projects.locations.operations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOperationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel:
+    parameters: *ref_1
+    post:
+      description: >-
+        Starts asynchronous cancellation on a long-running operation. The server
+        makes a best effort to cancel the operation, but success is not
+        guaranteed. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation
+        or other methods to check whether the cancellation succeeded or whether
+        the operation completed despite cancellation. On successful
+        cancellation, the operation is not deleted; instead, it becomes an
+        operation with an Operation.error value with a google.rpc.Status.code of
+        1, corresponding to `Code.CANCELLED`.
+      operationId: tpu.projects.locations.operations.cancel
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: exec
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:
+    parameters: *ref_1
+    delete:
+      description: >-
+        Deletes a long-running operation. This method indicates that the client
+        is no longer interested in the operation result. It does not cancel the
+        operation. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`.
+      operationId: tpu.projects.locations.operations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: delete
+    get:
+      description: >-
+        Gets the latest state of a long-running operation. Clients can use this
+        method to poll the operation result at intervals as recommended by the
+        API service.
+      operationId: tpu.projects.locations.operations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes:
+    parameters: *ref_1
+    get:
+      description: Lists nodes.
+      operationId: tpu.projects.locations.nodes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNodesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    post:
+      description: Creates a node.
+      operationId: tpu.projects.locations.nodes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: nodeId
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: insert
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a node.
+      operationId: tpu.projects.locations.nodes.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: delete
+    get:
+      description: Gets the details of a node.
+      operationId: tpu.projects.locations.nodes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: select
+    patch:
+      description: Updates the configurations of a node.
+      operationId: tpu.projects.locations.nodes.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:simulateMaintenanceEvent:
+    parameters: *ref_1
+    post:
+      description: Simulates a maintenance event.
+      operationId: tpu.projects.locations.nodes.simulateMaintenanceEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulateMaintenanceEventRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop:
+    parameters: *ref_1
+    post:
+      description: Stops a node. This operation is only available with single TPU nodes.
+      operationId: tpu.projects.locations.nodes.stop
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopNodeRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start:
+    parameters: *ref_1
+    post:
+      description: Starts a node.
+      operationId: tpu.projects.locations.nodes.start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartNodeRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes
+      x-stackQL-verb: exec
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:getGuestAttributes:
+    parameters: *ref_1
+    post:
+      description: Retrieves the guest attributes for the node.
+      operationId: tpu.projects.locations.nodes.getGuestAttributes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetGuestAttributesRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetGuestAttributesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nodesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: nodes__guest_attributes
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes:
+    parameters: *ref_1
+    get:
+      description: Lists accelerator types supported by this API.
+      operationId: tpu.projects.locations.acceleratorTypes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAcceleratorTypesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: accelerator_types
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes/{acceleratorTypesId}:
+    parameters: *ref_1
+    get:
+      description: Gets AcceleratorType.
+      operationId: tpu.projects.locations.acceleratorTypes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceleratorType'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: acceleratorTypesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: accelerator_types
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}:
+    parameters: *ref_1
+    get:
+      description: Gets details of a queued resource.
+      operationId: tpu.projects.locations.queuedResources.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueuedResource'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: queuedResourcesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: queued_resources
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a QueuedResource TPU instance.
+      operationId: tpu.projects.locations.queuedResources.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: queuedResourcesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: force
+          schema:
+            type: boolean
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: queued_resources
+      x-stackQL-verb: delete
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources:
+    parameters: *ref_1
+    post:
+      description: Creates a QueuedResource TPU instance.
+      operationId: tpu.projects.locations.queuedResources.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueuedResource'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: queuedResourceId
+          schema:
+            type: string
+      x-stackQL-resource: queued_resources
+      x-stackQL-verb: insert
+    get:
+      description: Lists queued resources.
+      operationId: tpu.projects.locations.queuedResources.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListQueuedResourcesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: queued_resources
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}:
+    parameters: *ref_1
+    get:
+      description: Gets information about a location.
+      operationId: tpu.projects.locations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations:
+    parameters: *ref_1
+    get:
+      description: Lists information about the supported locations for this service.
+      operationId: tpu.projects.locations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLocationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v2alpha1/projects/{projectsId}/locations/{locationsId}:generateServiceIdentity:
+    parameters: *ref_1
+    post:
+      description: Generates the Cloud TPU service identity for the project.
+      operationId: tpu.projects.locations.generateServiceIdentity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateServiceIdentityRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateServiceIdentityResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: exec

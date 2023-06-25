@@ -1,0 +1,596 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Gmail Postmaster Tools API
+  description: >-
+    The Postmaster Tools API is a RESTful API that provides programmatic access
+    to email traffic metrics (like spam reports, delivery errors etc) otherwise
+    available through the Gmail Postmaster Tools UI currently.
+  version: v1beta1
+  x-discovery-doc-revision: '20230622'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/gmail/postmaster
+servers:
+  - url: https://gmailpostmastertools.googleapis.com
+components:
+  schemas:
+    ListDomainsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            Token to retrieve the next page of results, or empty if there are no
+            more results in the list.
+        domains:
+          type: array
+          description: The list of domains.
+          items:
+            $ref: '#/components/schemas/Domain'
+      id: ListDomainsResponse
+      description: Response message for ListDomains.
+    DeliveryError:
+      description: Metric on a particular delivery error type.
+      properties:
+        errorRatio:
+          description: >-
+            The ratio of messages where the error occurred vs all authenticated
+            traffic.
+          format: double
+          type: number
+        errorType:
+          description: The type of delivery error.
+          enumDescriptions:
+            - The default value which should never be used explicitly.
+            - >-
+              The Domain or IP is sending traffic at a suspiciously high rate,
+              due to which temporary rate limits have been imposed. The limit
+              will be lifted when Gmail is confident enough of the nature of the
+              traffic.
+            - >-
+              The traffic is suspected to be spam, by Gmail, for various
+              reasons.
+            - The traffic is suspected to be spammy, specific to the content.
+            - Traffic contains attachments not supported by Gmail.
+            - The sender domain has set up a DMARC rejection policy.
+            - The IP reputation of the sending IP is very low.
+            - The Domain reputation of the sending domain is very low.
+            - >-
+              The IP is listed in one or more public [Real-time Blackhole
+              Lists](http://en.wikipedia.org/wiki/DNSBL). Work with the RBL to
+              get your IP delisted.
+            - >-
+              The Domain is listed in one or more public [Real-time Blackhole
+              Lists](http://en.wikipedia.org/wiki/DNSBL). Work with the RBL to
+              get your domain delisted.
+            - >-
+              The sending IP is missing a [PTR
+              record](https://support.google.com/domains/answer/3251147#ptr).
+          enum:
+            - DELIVERY_ERROR_TYPE_UNSPECIFIED
+            - RATE_LIMIT_EXCEEDED
+            - SUSPECTED_SPAM
+            - CONTENT_SPAMMY
+            - BAD_ATTACHMENT
+            - BAD_DMARC_POLICY
+            - LOW_IP_REPUTATION
+            - LOW_DOMAIN_REPUTATION
+            - IP_IN_RBL
+            - DOMAIN_IN_RBL
+            - BAD_PTR_RECORD
+          type: string
+        errorClass:
+          description: The class of delivery error.
+          type: string
+          enumDescriptions:
+            - The default value which should never be used explicitly.
+            - Delivery of message has been rejected.
+            - Temporary failure of message delivery to the recipient.
+          enum:
+            - DELIVERY_ERROR_CLASS_UNSPECIFIED
+            - PERMANENT_ERROR
+            - TEMPORARY_ERROR
+      id: DeliveryError
+      type: object
+    ListTrafficStatsResponse:
+      properties:
+        trafficStats:
+          items:
+            $ref: '#/components/schemas/TrafficStats'
+          description: The list of TrafficStats.
+          type: array
+        nextPageToken:
+          description: >-
+            Token to retrieve the next page of results, or empty if there are no
+            more results in the list.
+          type: string
+      type: object
+      description: Response message for ListTrafficStats.
+      id: ListTrafficStatsResponse
+    Domain:
+      id: Domain
+      description: A registered domain resource in the Postmaster API.
+      properties:
+        name:
+          description: >-
+            The resource name of the Domain. Domain names have the form
+            `domains/{domain_name}`, where domain_name is the fully qualified
+            domain name (i.e., mymail.mydomain.com).
+          type: string
+        permission:
+          enum:
+            - PERMISSION_UNSPECIFIED
+            - OWNER
+            - READER
+            - NONE
+          description: User’s permission for this domain. Assigned by the server.
+          enumDescriptions:
+            - The default value and should never be used explicitly.
+            - >-
+              User has read access to the domain and can share access with
+              others.
+            - User has read access to the domain.
+            - >-
+              User doesn't have permission to access information about the
+              domain. User did not verify ownership of domain nor was access
+              granted by other domain owners.
+          type: string
+        createTime:
+          description: >-
+            Timestamp when the user registered this domain. Assigned by the
+            server.
+          type: string
+          format: google-datetime
+      type: object
+    IpReputation:
+      id: IpReputation
+      properties:
+        numIps:
+          description: >-
+            Total number of unique IPs in this reputation category. This metric
+            only pertains to traffic that passed [SPF](http://www.openspf.org/)
+            or [DKIM](http://www.dkim.org/). Deprecated to be complied with
+            ApiLinter for Quantities. Use ip_count instead.
+          format: int64
+          type: string
+        sampleIps:
+          items:
+            type: string
+          description: A sample of IPs in this reputation category.
+          type: array
+        ipCount:
+          description: >-
+            Total number of unique IPs in this reputation category. This metric
+            only pertains to traffic that passed [SPF](http://www.openspf.org/)
+            or [DKIM](http://www.dkim.org/).
+          format: int64
+          type: string
+        reputation:
+          type: string
+          enum:
+            - REPUTATION_CATEGORY_UNSPECIFIED
+            - HIGH
+            - MEDIUM
+            - LOW
+            - BAD
+          description: The reputation category this IP reputation represents.
+          enumDescriptions:
+            - >-
+              The default value which should never be used explicitly. This
+              represents the state where no reputation information is available.
+            - >-
+              Has a good track record of a very low spam rate, and complies with
+              Gmail's sender guidelines. Mail will rarely be marked by the spam
+              filter.
+            - >-
+              Known to send good mail, but is prone to sending a low volume of
+              spam intermittently. Most of the email from this entity will have
+              a fair deliverability rate, except when there is a notable
+              increase in spam levels.
+            - >-
+              Known to send a considerable volume of spam regularly, and mail
+              from this sender will likely be marked as spam.
+            - >-
+              History of sending an enormously high volume of spam. Mail coming
+              from this entity will almost always be rejected at SMTP level or
+              marked as spam.
+      description: >-
+        IP Reputation information for a set of IPs in a specific reputation
+        category.
+      type: object
+    TrafficStats:
+      type: object
+      id: TrafficStats
+      properties:
+        inboundEncryptionRatio:
+          format: double
+          type: number
+          description: >-
+            The ratio of incoming mail (to Gmail), that passed secure transport
+            (TLS) vs all mail received from that domain. This metric only
+            pertains to traffic that passed [SPF](http://www.openspf.org/) or
+            [DKIM](http://www.dkim.org/).
+        spfSuccessRatio:
+          description: >-
+            The ratio of mail that successfully authenticated with SPF vs. all
+            mail that attempted to authenticate with
+            [SPF](http://www.openspf.org/). Spoofed mail is excluded.
+          type: number
+          format: double
+        dmarcSuccessRatio:
+          type: number
+          description: >-
+            The ratio of mail that passed [DMARC](https://dmarc.org/) alignment
+            checks vs all mail received from the domain that successfully
+            authenticated with either of [SPF](http://www.openspf.org/) or
+            [DKIM](http://www.dkim.org/).
+          format: double
+        dkimSuccessRatio:
+          description: >-
+            The ratio of mail that successfully authenticated with DKIM vs. all
+            mail that attempted to authenticate with
+            [DKIM](http://www.dkim.org/). Spoofed mail is excluded.
+          format: double
+          type: number
+        deliveryErrors:
+          description: >-
+            Delivery errors for the domain. This metric only pertains to traffic
+            that passed [SPF](http://www.openspf.org/) or
+            [DKIM](http://www.dkim.org/).
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryError'
+        userReportedSpamRatio:
+          description: >-
+            The ratio of user-report spam vs. email that was sent to the inbox.
+            This metric only pertains to emails authenticated by
+            [DKIM](http://www.dkim.org/).
+          format: double
+          type: number
+        outboundEncryptionRatio:
+          description: >-
+            The ratio of outgoing mail (from Gmail) that was accepted over
+            secure transport (TLS).
+          format: double
+          type: number
+        domainReputation:
+          enum:
+            - REPUTATION_CATEGORY_UNSPECIFIED
+            - HIGH
+            - MEDIUM
+            - LOW
+            - BAD
+          enumDescriptions:
+            - >-
+              The default value which should never be used explicitly. This
+              represents the state where no reputation information is available.
+            - >-
+              Has a good track record of a very low spam rate, and complies with
+              Gmail's sender guidelines. Mail will rarely be marked by the spam
+              filter.
+            - >-
+              Known to send good mail, but is prone to sending a low volume of
+              spam intermittently. Most of the email from this entity will have
+              a fair deliverability rate, except when there is a notable
+              increase in spam levels.
+            - >-
+              Known to send a considerable volume of spam regularly, and mail
+              from this sender will likely be marked as spam.
+            - >-
+              History of sending an enormously high volume of spam. Mail coming
+              from this entity will almost always be rejected at SMTP level or
+              marked as spam.
+          description: Reputation of the domain.
+          type: string
+        name:
+          description: >-
+            The resource name of the traffic statistics. Traffic statistic names
+            have the form `domains/{domain}/trafficStats/{date}`, where
+            domain_name is the fully qualified domain name (i.e.,
+            mymail.mydomain.com) of the domain this traffic statistics pertains
+            to and date is the date in yyyymmdd format that these statistics
+            corresponds to. For example:
+            domains/mymail.mydomain.com/trafficStats/20160807
+          type: string
+        spammyFeedbackLoops:
+          items:
+            $ref: '#/components/schemas/FeedbackLoop'
+          description: >-
+            Spammy [Feedback loop identifiers]
+            (https://support.google.com/mail/answer/6254652) with their
+            individual spam rates. This metric only pertains to traffic that is
+            authenticated by [DKIM](http://www.dkim.org/).
+          type: array
+        ipReputations:
+          description: >-
+            Reputation information pertaining to the IP addresses of the email
+            servers for the domain. There is exactly one entry for each
+            reputation category except REPUTATION_CATEGORY_UNSPECIFIED.
+          items:
+            $ref: '#/components/schemas/IpReputation'
+          type: array
+      description: Email traffic statistics pertaining to a specific date.
+    FeedbackLoop:
+      id: FeedbackLoop
+      description: >-
+        [Feedback loop](https://support.google.com/mail/answer/6254652)
+        identifier information.
+      type: object
+      properties:
+        spamRatio:
+          description: >-
+            The ratio of user marked spam messages with the identifier vs the
+            total number of inboxed messages with that identifier.
+          format: double
+          type: number
+        id:
+          description: >-
+            Feedback loop identifier that uniquely identifies individual
+            campaigns.
+          type: string
+  parameters:
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/postmaster.readonly: >-
+              See email traffic metrics for the domains you have registered in
+              Gmail Postmaster Tools
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1beta1/domains:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/quotaUser'
+    get:
+      description: >-
+        Lists the domains that have been registered by the client. The order of
+        domains in the response is unspecified and non-deterministic. Newly
+        created domains will not necessarily be added to the end of this list.
+      operationId: gmailpostmastertools.domains.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/postmaster.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/postmaster.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDomainsResponse'
+      parameters:
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: domains
+      x-stackQL-verb: select
+  /v1beta1/domains/{domainsId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets a specific domain registered by the client. Returns NOT_FOUND if
+        the domain does not exist.
+      operationId: gmailpostmastertools.domains.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/postmaster.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/postmaster.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+      parameters:
+        - in: path
+          name: domainsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: domains
+      x-stackQL-verb: select
+  /v1beta1/domains/{domainsId}/trafficStats:
+    parameters: *ref_1
+    get:
+      description: >-
+        List traffic statistics for all available days. Returns
+        PERMISSION_DENIED if user does not have permission to access
+        TrafficStats for the domain.
+      operationId: gmailpostmastertools.domains.trafficStats.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/postmaster.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/postmaster.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTrafficStatsResponse'
+      parameters:
+        - in: path
+          name: domainsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: endDate.year
+          schema:
+            type: integer
+        - in: query
+          name: startDate.month
+          schema:
+            type: integer
+        - in: query
+          name: startDate.day
+          schema:
+            type: integer
+        - in: query
+          name: endDate.day
+          schema:
+            type: integer
+        - in: query
+          name: endDate.month
+          schema:
+            type: integer
+        - in: query
+          name: startDate.year
+          schema:
+            type: integer
+      x-stackQL-resource: traffic_stats
+      x-stackQL-verb: select
+  /v1beta1/domains/{domainsId}/trafficStats/{trafficStatsId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get traffic statistics for a domain on a specific date. Returns
+        PERMISSION_DENIED if user does not have permission to access
+        TrafficStats for the domain.
+      operationId: gmailpostmastertools.domains.trafficStats.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/postmaster.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/postmaster.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficStats'
+      parameters:
+        - in: path
+          name: domainsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: trafficStatsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: traffic_stats
+      x-stackQL-verb: select

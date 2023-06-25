@@ -1,0 +1,1450 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: AdSense Host API
+  description: >-
+    Generates performance reports, generates ad codes, and provides publisher
+    management capabilities for AdSense Hosts.
+  version: v4.1
+  x-discovery-doc-revision: '20200930'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/adsense/host/
+servers:
+  - url: https://www.googleapis.com/adsensehost/v4.1
+components:
+  schemas:
+    CustomChannels:
+      type: object
+      id: CustomChannels
+      properties:
+        etag:
+          description: ETag of this response for caching purposes.
+          type: string
+        nextPageToken:
+          type: string
+          description: >-
+            Continuation token used to page through custom channels. To retrieve
+            the next page of results, set the next request's "pageToken" value
+            to this.
+        items:
+          description: The custom channels returned in this list response.
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomChannel'
+        kind:
+          description: Kind of list this is, in this case adsensehost#customChannels.
+          default: adsensehost#customChannels
+          type: string
+    AdUnit:
+      properties:
+        contentAdsSettings:
+          properties:
+            type:
+              description: >-
+                Type of this ad unit. Possible values are TEXT, TEXT_IMAGE,
+                IMAGE and LINK.
+              type: string
+            backupOption:
+              type: object
+              description: >-
+                The backup option to be used in instances where no ad is
+                available.
+              properties:
+                url:
+                  description: URL to use when type is set to URL.
+                  type: string
+                type:
+                  description: >-
+                    Type of the backup option. Possible values are BLANK, COLOR
+                    and URL.
+                  type: string
+                color:
+                  type: string
+                  description: >-
+                    Color to use when type is set to COLOR. These are
+                    represented as six hexadecimal characters, similar to HTML
+                    color codes, but without the leading hash.
+            size:
+              description: >-
+                Size of this ad unit. Size values are in the form
+                SIZE_{width}_{height}.
+              type: string
+          type: object
+          description: >-
+            Settings specific to content ads (AFC) and highend mobile content
+            ads (AFMC - deprecated).
+        id:
+          description: >-
+            Unique identifier of this ad unit. This should be considered an
+            opaque identifier; it is not safe to rely on it being in any
+            particular format.
+          type: string
+        code:
+          description: >-
+            Identity code of this ad unit, not necessarily unique across ad
+            clients.
+          type: string
+        customStyle:
+          $ref: '#/components/schemas/AdStyle'
+          description: Custom style information specific to this ad unit.
+        mobileContentAdsSettings:
+          properties:
+            type:
+              type: string
+              description: Type of this ad unit.
+            markupLanguage:
+              description: The markup language to use for this ad unit.
+              type: string
+            scriptingLanguage:
+              type: string
+              description: The scripting language to use for this ad unit.
+            size:
+              type: string
+              description: Size of this ad unit.
+          type: object
+          description: Settings specific to WAP mobile content ads (AFMC - deprecated).
+        kind:
+          description: Kind of resource this is, in this case adsensehost#adUnit.
+          default: adsensehost#adUnit
+          type: string
+        status:
+          type: string
+          description: >-
+            Status of this ad unit. Possible values are:
+
+            NEW: Indicates that the ad unit was created within the last seven
+            days and does not yet have any activity associated with it.
+
+
+            ACTIVE: Indicates that there has been activity on this ad unit in
+            the last seven days.
+
+
+            INACTIVE: Indicates that there has been no activity on this ad unit
+            in the last seven days.
+        name:
+          type: string
+          description: Name of this ad unit.
+      type: object
+      id: AdUnit
+    AdCode:
+      id: AdCode
+      type: object
+      properties:
+        adCode:
+          description: The ad code snippet.
+          type: string
+        kind:
+          type: string
+          default: adsensehost#adCode
+          description: Kind this is, in this case adsensehost#adCode.
+    UrlChannel:
+      type: object
+      id: UrlChannel
+      properties:
+        urlPattern:
+          type: string
+          description: >-
+            URL Pattern of this URL channel. Does not include "http://" or
+            "https://". Example: www.example.com/home
+        id:
+          description: >-
+            Unique identifier of this URL channel. This should be considered an
+            opaque identifier; it is not safe to rely on it being in any
+            particular format.
+          type: string
+        kind:
+          description: Kind of resource this is, in this case adsensehost#urlChannel.
+          default: adsensehost#urlChannel
+          type: string
+    AssociationSession:
+      id: AssociationSession
+      properties:
+        redirectUrl:
+          description: >-
+            Redirect URL of this association session. Used to redirect users
+            into the AdSense association flow.
+          type: string
+        productCodes:
+          type: array
+          items:
+            type: string
+          description: >-
+            The products to associate with the user. Options: AFC, AFG, AFV, AFS
+            (deprecated), AFMC (deprecated)
+        userLocale:
+          description: >-
+            The preferred locale of the user themselves when going through the
+            AdSense association flow.
+          type: string
+        websiteLocale:
+          description: The locale of the user's hosted website.
+          type: string
+        kind:
+          default: adsensehost#associationSession
+          type: string
+          description: >-
+            Kind of resource this is, in this case
+            adsensehost#associationSession.
+        websiteUrl:
+          description: The URL of the user's hosted website.
+          type: string
+        status:
+          description: >-
+            Status of the completed association, available once the association
+            callback token has been verified. One of ACCEPTED, REJECTED, or
+            ERROR.
+          type: string
+        id:
+          description: Unique identifier of this association session.
+          type: string
+        accountId:
+          description: >-
+            Hosted account id of the associated publisher after association.
+            Present if status is ACCEPTED.
+          type: string
+      type: object
+    Accounts:
+      id: Accounts
+      type: object
+      properties:
+        items:
+          description: The accounts returned in this list response.
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+        kind:
+          description: Kind of list this is, in this case adsensehost#accounts.
+          default: adsensehost#accounts
+          type: string
+        etag:
+          type: string
+          description: ETag of this response for caching purposes.
+    UrlChannels:
+      type: object
+      id: UrlChannels
+      properties:
+        etag:
+          description: ETag of this response for caching purposes.
+          type: string
+        kind:
+          type: string
+          description: Kind of list this is, in this case adsensehost#urlChannels.
+          default: adsensehost#urlChannels
+        nextPageToken:
+          description: >-
+            Continuation token used to page through URL channels. To retrieve
+            the next page of results, set the next request's "pageToken" value
+            to this.
+          type: string
+        items:
+          description: The URL channels returned in this list response.
+          type: array
+          items:
+            $ref: '#/components/schemas/UrlChannel'
+    AdClient:
+      properties:
+        productCode:
+          description: >-
+            This ad client's product code, which corresponds to the PRODUCT_CODE
+            report dimension.
+          type: string
+        id:
+          description: Unique identifier of this ad client.
+          type: string
+        arcOptIn:
+          type: boolean
+          description: Whether this ad client is opted in to ARC.
+        supportsReporting:
+          type: boolean
+          description: Whether this ad client supports being reported on.
+        kind:
+          description: Kind of resource this is, in this case adsensehost#adClient.
+          default: adsensehost#adClient
+          type: string
+      type: object
+      id: AdClient
+    CustomChannel:
+      properties:
+        id:
+          description: >-
+            Unique identifier of this custom channel. This should be considered
+            an opaque identifier; it is not safe to rely on it being in any
+            particular format.
+          type: string
+        code:
+          type: string
+          description: >-
+            Code of this custom channel, not necessarily unique across ad
+            clients.
+        name:
+          type: string
+          description: Name of this custom channel.
+        kind:
+          default: adsensehost#customChannel
+          type: string
+          description: Kind of resource this is, in this case adsensehost#customChannel.
+      type: object
+      id: CustomChannel
+    Report:
+      id: Report
+      type: object
+      properties:
+        rows:
+          description: >-
+            The output rows of the report. Each row is a list of cells; one for
+            each dimension in the request, followed by one for each metric in
+            the request. The dimension cells contain strings, and the metric
+            cells contain numbers.
+          items:
+            type: array
+            items:
+              type: string
+          type: array
+        averages:
+          items:
+            type: string
+          description: >-
+            The averages of the report. This is the same length as any other row
+            in the report; cells corresponding to dimension columns are empty.
+          type: array
+        totals:
+          items:
+            type: string
+          description: >-
+            The totals of the report. This is the same length as any other row
+            in the report; cells corresponding to dimension columns are empty.
+          type: array
+        headers:
+          type: array
+          items:
+            properties:
+              currency:
+                description: >-
+                  The currency of this column. Only present if the header type
+                  is METRIC_CURRENCY.
+                type: string
+              name:
+                type: string
+                description: The name of the header.
+              type:
+                description: >-
+                  The type of the header; one of DIMENSION, METRIC_TALLY,
+                  METRIC_RATIO, or METRIC_CURRENCY.
+                type: string
+            type: object
+          description: >-
+            The header information of the columns requested in the report. This
+            is a list of headers; one for each dimension in the request,
+            followed by one for each metric in the request.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Any warnings associated with generation of the report.
+        totalMatchedRows:
+          type: string
+          description: >-
+            The total number of rows matched by the report request. Fewer rows
+            may be returned in the response due to being limited by the row
+            count requested or the report row limit.
+          format: int64
+        kind:
+          default: adsensehost#report
+          description: Kind this is, in this case adsensehost#report.
+          type: string
+    AdStyle:
+      type: object
+      properties:
+        colors:
+          properties:
+            url:
+              description: The color of the ad url.
+              type: string
+            title:
+              type: string
+              description: The color of the ad title.
+            background:
+              description: The color of the ad background.
+              type: string
+            text:
+              type: string
+              description: The color of the ad text.
+            border:
+              type: string
+              description: The color of the ad border.
+          description: >-
+            The colors included in the style. These are represented as six
+            hexadecimal characters, similar to HTML color codes, but without the
+            leading hash.
+          type: object
+        kind:
+          type: string
+          description: Kind this is, in this case adsensehost#adStyle.
+          default: adsensehost#adStyle
+        font:
+          description: The font which is included in the style.
+          type: object
+          properties:
+            size:
+              type: string
+              description: >-
+                The size of the font. Possible values are: ACCOUNT_DEFAULT_SIZE,
+                ADSENSE_DEFAULT_SIZE, SMALL, MEDIUM and LARGE.
+            family:
+              type: string
+              description: >-
+                The family of the font. Possible values are:
+                ACCOUNT_DEFAULT_FAMILY, ADSENSE_DEFAULT_FAMILY, ARIAL, TIMES and
+                VERDANA.
+        corners:
+          type: string
+          description: >-
+            The style of the corners in the ad (deprecated: never populated,
+            ignored).
+      id: AdStyle
+    AdClients:
+      id: AdClients
+      type: object
+      properties:
+        etag:
+          description: ETag of this response for caching purposes.
+          type: string
+        nextPageToken:
+          description: >-
+            Continuation token used to page through ad clients. To retrieve the
+            next page of results, set the next request's "pageToken" value to
+            this.
+          type: string
+        kind:
+          description: Kind of list this is, in this case adsensehost#adClients.
+          type: string
+          default: adsensehost#adClients
+        items:
+          description: The ad clients returned in this list response.
+          type: array
+          items:
+            $ref: '#/components/schemas/AdClient'
+    AdUnits:
+      type: object
+      id: AdUnits
+      properties:
+        etag:
+          description: ETag of this response for caching purposes.
+          type: string
+        kind:
+          description: Kind of list this is, in this case adsensehost#adUnits.
+          type: string
+          default: adsensehost#adUnits
+        items:
+          type: array
+          description: The ad units returned in this list response.
+          items:
+            $ref: '#/components/schemas/AdUnit'
+        nextPageToken:
+          description: >-
+            Continuation token used to page through ad units. To retrieve the
+            next page of results, set the next request's "pageToken" value to
+            this.
+          type: string
+    Account:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of this account.
+        kind:
+          default: adsensehost#account
+          type: string
+          description: Kind of resource this is, in this case adsensehost#account.
+        id:
+          type: string
+          description: Unique identifier of this account.
+        status:
+          description: >-
+            Approval status of this account. One of: PENDING, APPROVED,
+            DISABLED.
+          type: string
+      id: Account
+  parameters:
+    quotaUser:
+      description: >-
+        An opaque string that represents a user for quota purposes. Must not
+        exceed 40 characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    userIp:
+      description: Deprecated. Please use quotaUser instead.
+      in: query
+      name: userIp
+      schema:
+        type: string
+    alt:
+      description: Data format for the response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - csv
+          - json
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/adsensehost: View and manage your AdSense host data and associated accounts
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /adclients:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/userIp'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/prettyPrint'
+    get:
+      description: List all host ad clients in this AdSense account.
+      operationId: adsensehost.adclients.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdClients'
+      parameters:
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: adclients
+      x-stackQL-verb: select
+  /adclients/{adClientId}:
+    parameters: *ref_1
+    get:
+      description: Get information about one of the ad clients in the Host AdSense account.
+      operationId: adsensehost.adclients.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdClient'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adclients
+      x-stackQL-verb: select
+  /adclients/{adClientId}/urlchannels:
+    parameters: *ref_1
+    get:
+      description: List all host URL channels in the host AdSense account.
+      operationId: adsensehost.urlchannels.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlChannels'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: urlchannels
+      x-stackQL-verb: select
+    post:
+      description: Add a new URL channel to the host AdSense account.
+      operationId: adsensehost.urlchannels.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UrlChannel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: urlchannels
+      x-stackQL-verb: insert
+  /adclients/{adClientId}/urlchannels/{urlChannelId}:
+    parameters: *ref_1
+    delete:
+      description: Delete a URL channel from the host AdSense account.
+      operationId: adsensehost.urlchannels.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: urlChannelId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: urlchannels
+      x-stackQL-verb: delete
+  /associationsessions/start:
+    parameters: *ref_1
+    get:
+      description: >-
+        Create an association session for initiating an association with an
+        AdSense user.
+      operationId: adsensehost.associationsessions.start
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociationSession'
+      parameters:
+        - in: query
+          name: productCode
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: websiteUrl
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userLocale
+          schema:
+            type: string
+        - in: query
+          name: callbackUrl
+          schema:
+            type: string
+        - in: query
+          name: websiteLocale
+          schema:
+            type: string
+      x-stackQL-resource: associationsessions
+      x-stackQL-verb: exec
+  /associationsessions/verify:
+    parameters: *ref_1
+    get:
+      description: >-
+        Verify an association session after the association callback returns
+        from AdSense signup.
+      operationId: adsensehost.associationsessions.verify
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociationSession'
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: associationsessions
+      x-stackQL-verb: exec
+  /reports:
+    parameters: *ref_1
+    get:
+      description: >-
+        Generate an AdSense report based on the report request sent in the query
+        parameters. Returns the result as JSON; to retrieve output in CSV format
+        specify "alt=csv" as a query parameter.
+      operationId: adsensehost.reports.generate
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: dimension
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+        - in: query
+          name: locale
+          schema:
+            type: string
+        - in: query
+          name: metric
+          schema:
+            type: string
+        - in: query
+          name: startIndex
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /accounts/{accountId}:
+    parameters: *ref_1
+    get:
+      description: Get information about the selected associated AdSense account.
+      operationId: adsensehost.accounts.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: accounts
+      x-stackQL-verb: select
+  /accounts:
+    parameters: *ref_1
+    get:
+      description: >-
+        List hosted accounts associated with this AdSense account by ad client
+        id.
+      operationId: adsensehost.accounts.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accounts'
+      parameters:
+        - in: query
+          name: filterAdClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: accounts
+      x-stackQL-verb: select
+  /accounts/{accountId}/adclients:
+    parameters: *ref_1
+    get:
+      description: List all hosted ad clients in the specified hosted account.
+      operationId: adsensehost.accounts.adclients.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdClients'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: adclients
+      x-stackQL-verb: select
+  /accounts/{accountId}/adclients/{adClientId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get information about one of the ad clients in the specified publisher's
+        AdSense account.
+      operationId: adsensehost.accounts.adclients.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdClient'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adclients
+      x-stackQL-verb: select
+  /accounts/{accountId}/adclients/{adClientId}/adunits:
+    parameters: *ref_1
+    put:
+      description: Update the supplied ad unit in the specified publisher AdSense account.
+      operationId: adsensehost.accounts.adunits.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdUnit'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnit'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adunits
+      x-stackQL-verb: exec
+    get:
+      description: List all ad units in the specified publisher's AdSense account.
+      operationId: adsensehost.accounts.adunits.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnits'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: includeInactive
+          schema:
+            type: boolean
+      x-stackQL-resource: adunits
+      x-stackQL-verb: select
+    patch:
+      description: >-
+        Update the supplied ad unit in the specified publisher AdSense account.
+        This method supports patch semantics.
+      operationId: adsensehost.accounts.adunits.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdUnit'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnit'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: adUnitId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adunits
+      x-stackQL-verb: exec
+    post:
+      description: >-
+        Insert the supplied ad unit into the specified publisher AdSense
+        account.
+      operationId: adsensehost.accounts.adunits.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdUnit'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnit'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adunits
+      x-stackQL-verb: insert
+  /accounts/{accountId}/adclients/{adClientId}/adunits/{adUnitId}:
+    parameters: *ref_1
+    delete:
+      description: >-
+        Delete the specified ad unit from the specified publisher AdSense
+        account.
+      operationId: adsensehost.accounts.adunits.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnit'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adUnitId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adunits
+      x-stackQL-verb: delete
+    get:
+      description: Get the specified host ad unit in this AdSense account.
+      operationId: adsensehost.accounts.adunits.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdUnit'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adUnitId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: adunits
+      x-stackQL-verb: select
+  /accounts/{accountId}/adclients/{adClientId}/adunits/{adUnitId}/adcode:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get ad code for the specified ad unit, attaching the specified host
+        custom channels.
+      operationId: adsensehost.accounts.adunits.getAdCode
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdCode'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: adUnitId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: hostCustomChannelId
+          schema:
+            type: string
+      x-stackQL-resource: adunits__ad_code
+      x-stackQL-verb: select
+  /accounts/{accountId}/reports:
+    parameters: *ref_1
+    get:
+      description: >-
+        Generate an AdSense report based on the report request sent in the query
+        parameters. Returns the result as JSON; to retrieve output in CSV format
+        specify "alt=csv" as a query parameter.
+      operationId: adsensehost.accounts.reports.generate
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: startIndex
+          schema:
+            type: integer
+        - in: query
+          name: sort
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: metric
+          schema:
+            type: string
+        - in: query
+          name: dimension
+          schema:
+            type: string
+        - in: query
+          name: locale
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: reports
+      x-stackQL-verb: exec
+  /adclients/{adClientId}/customchannels:
+    parameters: *ref_1
+    get:
+      description: List all host custom channels in this AdSense account.
+      operationId: adsensehost.customchannels.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannels'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: select
+    patch:
+      description: >-
+        Update a custom channel in the host AdSense account. This method
+        supports patch semantics.
+      operationId: adsensehost.customchannels.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomChannel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: customChannelId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: exec
+    put:
+      description: Update a custom channel in the host AdSense account.
+      operationId: adsensehost.customchannels.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomChannel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: exec
+    post:
+      description: Add a new custom channel to the host AdSense account.
+      operationId: adsensehost.customchannels.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomChannel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: insert
+  /adclients/{adClientId}/customchannels/{customChannelId}:
+    parameters: *ref_1
+    get:
+      description: Get a specific custom channel from the host AdSense account.
+      operationId: adsensehost.customchannels.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: customChannelId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: select
+    delete:
+      description: Delete a specific custom channel from the host AdSense account.
+      operationId: adsensehost.customchannels.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/adsensehost
+          Oauth2c:
+            - https://www.googleapis.com/auth/adsensehost
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomChannel'
+      parameters:
+        - in: path
+          name: adClientId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: customChannelId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: customchannels
+      x-stackQL-verb: delete

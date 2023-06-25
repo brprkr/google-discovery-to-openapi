@@ -1,0 +1,2674 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: OS Config API
+  description: >-
+    OS management tools that can be used for patch management, patch compliance,
+    and configuration management on VM instances.
+  version: v1beta
+  x-discovery-doc-revision: '20230618'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/compute/docs/osconfig/rest
+servers:
+  - url: https://osconfig.googleapis.com
+components:
+  schemas:
+    ExecutePatchJobRequest:
+      id: ExecutePatchJobRequest
+      type: object
+      description: A request message to initiate patching across Compute Engine instances.
+      properties:
+        displayName:
+          description: Display name for this patch job. This does not have to be unique.
+          type: string
+        duration:
+          description: >-
+            Duration of the patch job. After the duration ends, the patch job
+            times out.
+          format: google-duration
+          type: string
+        dryRun:
+          description: >-
+            If this patch is a dry-run only, instances are contacted but will do
+            nothing.
+          type: boolean
+        description:
+          description: >-
+            Description of the patch job. Length of the description is limited
+            to 1024 characters.
+          type: string
+        instanceFilter:
+          $ref: '#/components/schemas/PatchInstanceFilter'
+          description: >-
+            Required. Instances to patch, either explicitly or filtered by some
+            criteria such as zone or labels.
+        patchConfig:
+          $ref: '#/components/schemas/PatchConfig'
+          description: >-
+            Patch configuration being applied. If omitted, instances are patched
+            using the default configurations.
+        rollout:
+          $ref: '#/components/schemas/PatchRollout'
+          description: Rollout strategy of the patch job.
+    SoftwareRecipeStepCopyFile:
+      type: object
+      id: SoftwareRecipeStepCopyFile
+      properties:
+        artifactId:
+          type: string
+          description: Required. The id of the relevant artifact in the recipe.
+        permissions:
+          description: >-
+            Consists of three octal digits which represent, in order, the
+            permissions of the owner, group, and other users for the file
+            (similarly to the numeric mode used in the linux chmod utility).
+            Each digit represents a three bit number with the 4 bit
+            corresponding to the read permissions, the 2 bit corresponds to the
+            write bit, and the one bit corresponds to the execute permission.
+            Default behavior is 755. Below are some examples of permissions and
+            their associated values: read, write, and execute: 7 read and
+            execute: 5 read and write: 6 read only: 4
+          type: string
+        overwrite:
+          description: >-
+            Whether to allow this step to overwrite existing files. If this is
+            false and the file already exists the file is not overwritten and
+            the step is considered a success. Defaults to false.
+          type: boolean
+        destination:
+          type: string
+          description: Required. The absolute path on the instance to put the file.
+      description: Copies the artifact to the specified path on the instance.
+    YumRepository:
+      id: YumRepository
+      properties:
+        baseUrl:
+          description: Required. The location of the repository directory.
+          type: string
+        id:
+          description: >-
+            Required. A one word, unique name for this repository. This is the
+            `repo id` in the Yum config file and also the `display_name` if
+            `display_name` is omitted. This id is also used as the unique
+            identifier when checking for guest policy conflicts.
+          type: string
+        displayName:
+          description: The display name of the repository.
+          type: string
+        gpgKeys:
+          description: URIs of GPG keys.
+          type: array
+          items:
+            type: string
+      description: >-
+        Represents a single Yum package repository. This repository is added to
+        a repo file that is stored at `/etc/yum.repos.d/google_osconfig.repo`.
+      type: object
+    SoftwareRecipe:
+      type: object
+      id: SoftwareRecipe
+      properties:
+        artifacts:
+          items:
+            $ref: '#/components/schemas/SoftwareRecipeArtifact'
+          type: array
+          description: Resources available to be used in the steps in the recipe.
+        installSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SoftwareRecipeStep'
+          description: >-
+            Actions to be taken for installing this recipe. On failure it stops
+            executing steps and does not attempt another installation. Any steps
+            taken (including partially completed steps) are not rolled back.
+        version:
+          type: string
+          description: >-
+            The version of this software recipe. Version can be up to 4 period
+            separated numbers (e.g. 12.34.56.78).
+        name:
+          type: string
+          description: >-
+            Required. Unique identifier for the recipe. Only one recipe with a
+            given name is installed on an instance. Names are also used to
+            identify resources which helps to determine whether guest policies
+            have conflicts. This means that requests to create multiple recipes
+            with the same name and version are rejected since they could
+            potentially have conflicting assignments.
+        desiredState:
+          type: string
+          enumDescriptions:
+            - The default is to ensure the package is installed.
+            - The agent ensures that the package is installed.
+            - >-
+              The agent ensures that the package is installed and periodically
+              checks for and install any updates.
+            - >-
+              The agent ensures that the package is not installed and uninstall
+              it if detected.
+          enum:
+            - DESIRED_STATE_UNSPECIFIED
+            - INSTALLED
+            - UPDATED
+            - REMOVED
+          description: >-
+            Default is INSTALLED. The desired state the agent should maintain
+            for this recipe. INSTALLED: The software recipe is installed on the
+            instance but won't be updated to new versions. UPDATED: The software
+            recipe is installed on the instance. The recipe is updated to a
+            higher version, if a higher version of the recipe is assigned to
+            this instance. REMOVE: Remove is unsupported for software recipes
+            and attempts to create or update a recipe to the REMOVE state is
+            rejected.
+        updateSteps:
+          description: >-
+            Actions to be taken for updating this recipe. On failure it stops
+            executing steps and does not attempt another update for this recipe.
+            Any steps taken (including partially completed steps) are not rolled
+            back.
+          items:
+            $ref: '#/components/schemas/SoftwareRecipeStep'
+          type: array
+      description: >-
+        A software recipe is a set of instructions for installing and
+        configuring a piece of software. It consists of a set of artifacts that
+        are downloaded, and a set of steps that install, configure, and/or
+        update the software. Recipes support installing and updating software
+        from artifacts in the following formats: Zip archive, Tar archive,
+        Windows MSI, Debian package, and RPM package. Additionally, recipes
+        support executing a script (either defined in a file or directly in this
+        api) in bash, sh, cmd, and powershell. Updating a software recipe If a
+        recipe is assigned to an instance and there is a recipe with the same
+        name but a lower version already installed and the assigned state of the
+        recipe is `UPDATED`, then the recipe is updated to the new version.
+        Script Working Directories Each script or execution step is run in its
+        own temporary directory which is deleted after completing the step.
+    Empty:
+      type: object
+      id: Empty
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      properties: {}
+    LookupEffectiveGuestPolicyRequest:
+      type: object
+      id: LookupEffectiveGuestPolicyRequest
+      properties:
+        osArchitecture:
+          type: string
+          description: >-
+            Architecture of OS running on the instance. The OS Config agent only
+            provides this field for targeting if OS Inventory is enabled for
+            that instance.
+        osShortName:
+          type: string
+          description: >-
+            Short name of the OS running on the instance. The OS Config agent
+            only provides this field for targeting if OS Inventory is enabled
+            for that instance.
+        osVersion:
+          description: >-
+            Version of the OS running on the instance. The OS Config agent only
+            provides this field for targeting if OS Inventory is enabled for
+            that VM instance.
+          type: string
+      description: >-
+        A request message for getting the effective guest policy assigned to the
+        instance.
+    WeeklySchedule:
+      type: object
+      id: WeeklySchedule
+      description: Represents a weekly schedule.
+      properties:
+        dayOfWeek:
+          type: string
+          enumDescriptions:
+            - The day of the week is unspecified.
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Friday
+            - Saturday
+            - Sunday
+          description: Required. Day of the week.
+          enum:
+            - DAY_OF_WEEK_UNSPECIFIED
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+    ExecStep:
+      description: A step that runs an executable for a PatchJob.
+      id: ExecStep
+      type: object
+      properties:
+        linuxExecStepConfig:
+          $ref: '#/components/schemas/ExecStepConfig'
+          description: The ExecStepConfig for all Linux VMs targeted by the PatchJob.
+        windowsExecStepConfig:
+          description: The ExecStepConfig for all Windows VMs targeted by the PatchJob.
+          $ref: '#/components/schemas/ExecStepConfig'
+    WindowsUpdateSettings:
+      description: Windows patching is performed using the Windows Update Agent.
+      id: WindowsUpdateSettings
+      type: object
+      properties:
+        exclusivePatches:
+          items:
+            type: string
+          description: >-
+            An exclusive list of kbs to be updated. These are the only patches
+            that will be updated. This field must not be used with other patch
+            configurations.
+          type: array
+        excludes:
+          items:
+            type: string
+          type: array
+          description: List of KBs to exclude from update.
+        classifications:
+          type: array
+          items:
+            type: string
+            enumDescriptions:
+              - >-
+                Invalid. If classifications are included, they must be
+                specified.
+              - >-
+                "A widely released fix for a specific problem that addresses a
+                critical, non-security-related bug." [1]
+              - >-
+                "A widely released fix for a product-specific, security-related
+                vulnerability. Security vulnerabilities are rated by their
+                severity. The severity rating is indicated in the Microsoft
+                security bulletin as critical, important, moderate, or low." [1]
+              - >-
+                "A widely released and frequent software update that contains
+                additions to a product's definition database. Definition
+                databases are often used to detect objects that have specific
+                attributes, such as malicious code, phishing websites, or junk
+                mail." [1]
+              - '"Software that controls the input and output of a device." [1]'
+              - >-
+                "New product functionality that is first distributed outside the
+                context of a product release and that is typically included in
+                the next full product release." [1]
+              - >-
+                "A tested, cumulative set of all hotfixes, security updates,
+                critical updates, and updates. Additionally, service packs may
+                contain additional fixes for problems that are found internally
+                since the release of the product. Service packs my also contain
+                a limited number of customer-requested design changes or
+                features." [1]
+              - >-
+                "A utility or feature that helps complete a task or set of
+                tasks." [1]
+              - >-
+                "A tested, cumulative set of hotfixes, security updates,
+                critical updates, and updates that are packaged together for
+                easy deployment. A rollup generally targets a specific area,
+                such as security, or a component of a product, such as Internet
+                Information Services (IIS)." [1]
+              - >-
+                "A widely released fix for a specific problem. An update
+                addresses a noncritical, non-security-related bug." [1]
+            enum:
+              - CLASSIFICATION_UNSPECIFIED
+              - CRITICAL
+              - SECURITY
+              - DEFINITION
+              - DRIVER
+              - FEATURE_PACK
+              - SERVICE_PACK
+              - TOOL
+              - UPDATE_ROLLUP
+              - UPDATE
+          description: >-
+            Only apply updates of these windows update classifications. If
+            empty, all updates are applied.
+    Assignment:
+      type: object
+      id: Assignment
+      description: >-
+        An assignment represents the group or groups of VM instances that the
+        policy applies to. If an assignment is empty, it applies to all VM
+        instances. Otherwise, the targeted VM instances must meet all the
+        criteria specified. So if both labels and zones are specified, the
+        policy applies to VM instances with those labels and in those zones.
+      properties:
+        instanceNamePrefixes:
+          type: array
+          description: >-
+            Targets VM instances whose name starts with one of these prefixes.
+            Like labels, this is another way to group VM instances when
+            targeting configs, for example prefix="prod-". Only supported for
+            project-level policies.
+          items:
+            type: string
+        osTypes:
+          description: >-
+            Targets VM instances matching at least one of the following OS
+            types. VM instances must match all supplied criteria for a given
+            OsType to be included.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssignmentOsType'
+        groupLabels:
+          type: array
+          description: >-
+            Targets instances matching at least one of these label sets. This
+            allows an assignment to target disparate groups, for example
+            "env=prod or env=staging".
+          items:
+            $ref: '#/components/schemas/AssignmentGroupLabel'
+        zones:
+          description: >-
+            Targets instances in any of these zones. Leave empty to target
+            instances in any zone. Zonal targeting is uncommon and is supported
+            to facilitate the management of changes by zone.
+          type: array
+          items:
+            type: string
+        instances:
+          type: array
+          description: >-
+            Targets any of the instances specified. Instances are specified by
+            their URI in the form `zones/[ZONE]/instances/[INSTANCE_NAME]`.
+            Instance targeting is uncommon and is supported to facilitate the
+            management of changes by the instance or to target specific VM
+            instances for development and testing. Only supported for
+            project-level policies and must reference instances within this
+            project.
+          items:
+            type: string
+    TimeOfDay:
+      type: object
+      id: TimeOfDay
+      description: >-
+        Represents a time of day. The date and time zone are either not
+        significant or are specified elsewhere. An API may choose to allow leap
+        seconds. Related types are google.type.Date and
+        `google.protobuf.Timestamp`.
+      properties:
+        nanos:
+          format: int32
+          type: integer
+          description: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+        hours:
+          type: integer
+          description: >-
+            Hours of day in 24 hour format. Should be from 0 to 23. An API may
+            choose to allow the value "24:00:00" for scenarios like business
+            closing time.
+          format: int32
+        minutes:
+          type: integer
+          format: int32
+          description: Minutes of hour of day. Must be from 0 to 59.
+        seconds:
+          type: integer
+          description: >-
+            Seconds of minutes of the time. Must normally be from 0 to 59. An
+            API may allow the value 60 if it allows leap-seconds.
+          format: int32
+    AssignmentOsType:
+      properties:
+        osArchitecture:
+          description: >-
+            Targets VM instances with OS Inventory enabled and having the
+            following OS architecture.
+          type: string
+        osVersion:
+          description: >-
+            Targets VM instances with OS Inventory enabled and having the
+            following following OS version.
+          type: string
+        osShortName:
+          description: >-
+            Targets VM instances with OS Inventory enabled and having the
+            following OS short name, for example "debian" or "windows".
+          type: string
+      id: AssignmentOsType
+      description: Defines the criteria for selecting VM Instances by OS type.
+      type: object
+    ListPatchDeploymentsResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A pagination token that can be used to get the next page of patch
+            deployments.
+        patchDeployments:
+          type: array
+          description: The list of patch deployments.
+          items:
+            $ref: '#/components/schemas/PatchDeployment'
+      type: object
+      id: ListPatchDeploymentsResponse
+      description: A response message for listing patch deployments.
+    PatchInstanceFilter:
+      description: >-
+        A filter to target VM instances for patching. The targeted VMs must meet
+        all criteria specified. So if both labels and zones are specified, the
+        patch job targets only VMs with those labels and in those zones.
+      type: object
+      id: PatchInstanceFilter
+      properties:
+        groupLabels:
+          items:
+            $ref: '#/components/schemas/PatchInstanceFilterGroupLabel'
+          description: >-
+            Targets VM instances matching at least one of these label sets. This
+            allows targeting of disparate groups, for example "env=prod or
+            env=staging".
+          type: array
+        instances:
+          description: >-
+            Targets any of the VM instances specified. Instances are specified
+            by their URI in the form `zones/[ZONE]/instances/[INSTANCE_NAME]`,
+            `projects/[PROJECT_ID]/zones/[ZONE]/instances/[INSTANCE_NAME]`, or
+            `https://www.googleapis.com/compute/v1/projects/[PROJECT_ID]/zones/[ZONE]/instances/[INSTANCE_NAME]`
+          items:
+            type: string
+          type: array
+        zones:
+          description: >-
+            Targets VM instances in ANY of these zones. Leave empty to target VM
+            instances in any zone.
+          type: array
+          items:
+            type: string
+        all:
+          type: boolean
+          description: >-
+            Target all VM instances in the project. If true, no other criteria
+            is permitted.
+        instanceNamePrefixes:
+          type: array
+          items:
+            type: string
+          description: >-
+            Targets VMs whose name starts with one of these prefixes. Similar to
+            labels, this is another way to group VMs when targeting configs, for
+            example prefix="prod-".
+    OneTimeSchedule:
+      id: OneTimeSchedule
+      description: >-
+        Sets the time for a one time patch deployment. Timestamp is in
+        [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+      type: object
+      properties:
+        executeTime:
+          type: string
+          description: Required. The desired patch job execution time.
+          format: google-datetime
+    SoftwareRecipeArtifact:
+      id: SoftwareRecipeArtifact
+      description: Specifies a resource to be used in the recipe.
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            Required. Id of the artifact, which the installation and update
+            steps of this recipe can reference. Artifacts in a recipe cannot
+            have the same id.
+        remote:
+          description: A generic remote artifact.
+          $ref: '#/components/schemas/SoftwareRecipeArtifactRemote'
+        allowInsecure:
+          description: >-
+            Defaults to false. When false, recipes are subject to validations
+            based on the artifact type: Remote: A checksum must be specified,
+            and only protocols with transport-layer security are permitted. GCS:
+            An object generation number must be specified.
+          type: boolean
+        gcs:
+          description: A Google Cloud Storage artifact.
+          $ref: '#/components/schemas/SoftwareRecipeArtifactGcs'
+    PatchDeployment:
+      type: object
+      id: PatchDeployment
+      properties:
+        duration:
+          format: google-duration
+          type: string
+          description: >-
+            Optional. Duration of the patch. After the duration ends, the patch
+            times out.
+        createTime:
+          format: google-datetime
+          readOnly: true
+          type: string
+          description: >-
+            Output only. Time the patch deployment was created. Timestamp is in
+            [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+        instanceFilter:
+          $ref: '#/components/schemas/PatchInstanceFilter'
+          description: Required. VM instances to patch.
+        updateTime:
+          readOnly: true
+          description: >-
+            Output only. Time the patch deployment was last updated. Timestamp
+            is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+          format: google-datetime
+          type: string
+        description:
+          description: >-
+            Optional. Description of the patch deployment. Length of the
+            description is limited to 1024 characters.
+          type: string
+        recurringSchedule:
+          description: Required. Schedule recurring executions.
+          $ref: '#/components/schemas/RecurringSchedule'
+        rollout:
+          $ref: '#/components/schemas/PatchRollout'
+          description: Optional. Rollout strategy of the patch job.
+        patchConfig:
+          description: Optional. Patch configuration that is applied.
+          $ref: '#/components/schemas/PatchConfig'
+        oneTimeSchedule:
+          description: Required. Schedule a one-time execution.
+          $ref: '#/components/schemas/OneTimeSchedule'
+        lastExecuteTime:
+          description: >-
+            Output only. The last time a patch job was started by this
+            deployment. Timestamp is in
+            [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+          readOnly: true
+          type: string
+          format: google-datetime
+        state:
+          readOnly: true
+          type: string
+          enumDescriptions:
+            - The default value. This value is used if the state is omitted.
+            - Active value means that patch deployment generates Patch Jobs.
+            - >-
+              Paused value means that patch deployment does not generate Patch
+              jobs. Requires user action to move in and out from this state.
+          enum:
+            - STATE_UNSPECIFIED
+            - ACTIVE
+            - PAUSED
+          description: Output only. Current state of the patch deployment.
+        name:
+          type: string
+          description: >-
+            Unique name for the patch deployment resource in a project. The
+            patch deployment name is in the form:
+            `projects/{project_id}/patchDeployments/{patch_deployment_id}`. This
+            field is ignored when you create a new patch deployment.
+      description: >-
+        Patch deployments are configurations that individual patch jobs use to
+        complete a patch. These configurations include instance filter, package
+        repository settings, and a schedule. For more information about creating
+        and managing patch deployments, see [Scheduling patch
+        jobs](https://cloud.google.com/compute/docs/os-patch-management/schedule-patch-jobs).
+    PackageRepository:
+      type: object
+      id: PackageRepository
+      description: A package repository.
+      properties:
+        apt:
+          $ref: '#/components/schemas/AptRepository'
+          description: An Apt Repository.
+        goo:
+          description: A Goo Repository.
+          $ref: '#/components/schemas/GooRepository'
+        yum:
+          description: A Yum Repository.
+          $ref: '#/components/schemas/YumRepository'
+        zypper:
+          description: A Zypper Repository.
+          $ref: '#/components/schemas/ZypperRepository'
+    CancelPatchJobRequest:
+      description: Message for canceling a patch job.
+      type: object
+      id: CancelPatchJobRequest
+      properties: {}
+    EffectiveGuestPolicy:
+      description: The effective guest policy that applies to a VM instance.
+      id: EffectiveGuestPolicy
+      properties:
+        softwareRecipes:
+          items:
+            $ref: '#/components/schemas/EffectiveGuestPolicySourcedSoftwareRecipe'
+          type: array
+          description: List of recipes assigned to the VM instance.
+        packages:
+          items:
+            $ref: '#/components/schemas/EffectiveGuestPolicySourcedPackage'
+          type: array
+          description: List of package configurations assigned to the VM instance.
+        packageRepositories:
+          description: >-
+            List of package repository configurations assigned to the VM
+            instance.
+          items:
+            $ref: '#/components/schemas/EffectiveGuestPolicySourcedPackageRepository'
+          type: array
+      type: object
+    ListPatchJobInstanceDetailsResponse:
+      id: ListPatchJobInstanceDetailsResponse
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A pagination token that can be used to get the next page of results.
+        patchJobInstanceDetails:
+          items:
+            $ref: '#/components/schemas/PatchJobInstanceDetails'
+          type: array
+          description: A list of instance status.
+      description: A response message for listing the instances details for a patch job.
+    ZypperSettings:
+      type: object
+      description: >-
+        Zypper patching is performed by running `zypper patch`. See also
+        https://en.opensuse.org/SDB:Zypper_manual.
+      properties:
+        severities:
+          type: array
+          description: >-
+            Install only patches with these severities. Common severities
+            include critical, important, moderate, and low.
+          items:
+            type: string
+        withOptional:
+          type: boolean
+          description: Adds the `--with-optional` flag to `zypper patch`.
+        exclusivePatches:
+          items:
+            type: string
+          type: array
+          description: >-
+            An exclusive list of patches to be updated. These are the only
+            patches that will be installed using 'zypper patch patch:' command.
+            This field must not be used with any other patch configuration
+            fields.
+        withUpdate:
+          type: boolean
+          description: Adds the `--with-update` flag, to `zypper patch`.
+        excludes:
+          type: array
+          description: List of patches to exclude from update.
+          items:
+            type: string
+        categories:
+          items:
+            type: string
+          type: array
+          description: >-
+            Install only patches with these categories. Common categories
+            include security, recommended, and feature.
+      id: ZypperSettings
+    Package:
+      description: >-
+        Package is a reference to the software package to be installed or
+        removed. The agent on the VM instance uses the system package manager to
+        apply the config. These are the commands that the agent uses to install
+        or remove packages. Apt install: `apt-get update && apt-get -y install
+        package1 package2 package3` remove: `apt-get -y remove package1 package2
+        package3` Yum install: `yum -y install package1 package2 package3`
+        remove: `yum -y remove package1 package2 package3` Zypper install:
+        `zypper install package1 package2 package3` remove: `zypper rm package1
+        package2` Googet install: `googet -noconfirm install package1 package2
+        package3` remove: `googet -noconfirm remove package1 package2 package3`
+      properties:
+        desiredState:
+          enumDescriptions:
+            - The default is to ensure the package is installed.
+            - The agent ensures that the package is installed.
+            - >-
+              The agent ensures that the package is installed and periodically
+              checks for and install any updates.
+            - >-
+              The agent ensures that the package is not installed and uninstall
+              it if detected.
+          type: string
+          enum:
+            - DESIRED_STATE_UNSPECIFIED
+            - INSTALLED
+            - UPDATED
+            - REMOVED
+          description: >-
+            The desired_state the agent should maintain for this package. The
+            default is to ensure the package is installed.
+        name:
+          type: string
+          description: >-
+            Required. The name of the package. A package is uniquely identified
+            for conflict validation by checking the package name and the
+            manager(s) that the package targets.
+        manager:
+          description: >-
+            Type of package manager that can be used to install this package. If
+            a system does not have the package manager, the package is not
+            installed or removed no error message is returned. By default, or if
+            you specify `ANY`, the agent attempts to install and remove this
+            package using the default package manager. This is useful when
+            creating a policy that applies to different types of systems. The
+            default behavior is ANY.
+          enum:
+            - MANAGER_UNSPECIFIED
+            - ANY
+            - APT
+            - YUM
+            - ZYPPER
+            - GOO
+          enumDescriptions:
+            - The default behavior is ANY.
+            - >-
+              Apply this package config using the default system package
+              manager.
+            - Apply this package config only if Apt is available on the system.
+            - Apply this package config only if Yum is available on the system.
+            - >-
+              Apply this package config only if Zypper is available on the
+              system.
+            - >-
+              Apply this package config only if GooGet is available on the
+              system.
+          type: string
+      type: object
+      id: Package
+    GooRepository:
+      type: object
+      id: GooRepository
+      properties:
+        url:
+          type: string
+          description: Required. The url of the repository.
+        name:
+          description: Required. The name of the repository.
+          type: string
+      description: >-
+        Represents a Goo package repository. These is added to a repo file that
+        is stored at C:/ProgramData/GooGet/repos/google_osconfig.repo.
+    YumSettings:
+      description: >-
+        Yum patching is performed by executing `yum update`. Additional options
+        can be set to control how this is executed. Note that not all settings
+        are supported on all platforms.
+      type: object
+      id: YumSettings
+      properties:
+        minimal:
+          type: boolean
+          description: Will cause patch to run `yum update-minimal` instead.
+        exclusivePackages:
+          items:
+            type: string
+          description: >-
+            An exclusive list of packages to be updated. These are the only
+            packages that will be updated. If these packages are not installed,
+            they will be ignored. This field must not be specified with any
+            other patch configuration fields.
+          type: array
+        security:
+          type: boolean
+          description: >-
+            Adds the `--security` flag to `yum update`. Not supported on all
+            platforms.
+        excludes:
+          type: array
+          items:
+            type: string
+          description: >-
+            List of packages to exclude from update. These packages are excluded
+            by using the yum `--exclude` flag.
+    MonthlySchedule:
+      properties:
+        weekDayOfMonth:
+          description: Required. Week day in a month.
+          $ref: '#/components/schemas/WeekDayOfMonth'
+        monthDay:
+          type: integer
+          format: int32
+          description: >-
+            Required. One day of the month. 1-31 indicates the 1st to the 31st
+            day. -1 indicates the last day of the month. Months without the
+            target day will be skipped. For example, a schedule to run "every
+            month on the 31st" will not run in February, April, June, etc.
+      id: MonthlySchedule
+      type: object
+      description: >-
+        Represents a monthly schedule. An example of a valid monthly schedule is
+        "on the third Tuesday of the month" or "on the 15th of the month".
+    AptSettings:
+      type: object
+      properties:
+        exclusivePackages:
+          description: >-
+            An exclusive list of packages to be updated. These are the only
+            packages that will be updated. If these packages are not installed,
+            they will be ignored. This field cannot be specified with any other
+            patch configuration fields.
+          items:
+            type: string
+          type: array
+        excludes:
+          description: >-
+            List of packages to exclude from update. These packages will be
+            excluded
+          items:
+            type: string
+          type: array
+        type:
+          description: >-
+            By changing the type to DIST, the patching is performed using
+            `apt-get dist-upgrade` instead.
+          enumDescriptions:
+            - By default, upgrade will be performed.
+            - Runs `apt-get dist-upgrade`.
+            - Runs `apt-get upgrade`.
+          type: string
+          enum:
+            - TYPE_UNSPECIFIED
+            - DIST
+            - UPGRADE
+      description: >-
+        Apt patching is completed by executing `apt-get update && apt-get
+        upgrade`. Additional options can be set to control how this is executed.
+      id: AptSettings
+    OSPolicyAssignmentOperationMetadata:
+      properties:
+        apiMethod:
+          enum:
+            - API_METHOD_UNSPECIFIED
+            - CREATE
+            - UPDATE
+            - DELETE
+          description: The OS policy assignment API method.
+          enumDescriptions:
+            - Invalid value
+            - Create OS policy assignment API method
+            - Update OS policy assignment API method
+            - Delete OS policy assignment API method
+          type: string
+        rolloutState:
+          enumDescriptions:
+            - Invalid value
+            - The rollout is in progress.
+            - The rollout is being cancelled.
+            - The rollout is cancelled.
+            - The rollout has completed successfully.
+          description: State of the rollout
+          enum:
+            - ROLLOUT_STATE_UNSPECIFIED
+            - IN_PROGRESS
+            - CANCELLING
+            - CANCELLED
+            - SUCCEEDED
+          type: string
+        osPolicyAssignment:
+          type: string
+          description: >-
+            Reference to the `OSPolicyAssignment` API resource. Format:
+            `projects/{project_number}/locations/{location}/osPolicyAssignments/{os_policy_assignment_id@revision_id}`
+        rolloutStartTime:
+          format: google-datetime
+          description: Rollout start time
+          type: string
+        rolloutUpdateTime:
+          description: Rollout update time
+          format: google-datetime
+          type: string
+      description: >-
+        OS policy assignment operation metadata provided by OS policy assignment
+        API methods that return long running operations.
+      id: OSPolicyAssignmentOperationMetadata
+      type: object
+    PatchRollout:
+      type: object
+      description: >-
+        Patch rollout configuration specifications. Contains details on the
+        concurrency control when applying patch(es) to all targeted VMs.
+      properties:
+        mode:
+          enum:
+            - MODE_UNSPECIFIED
+            - ZONE_BY_ZONE
+            - CONCURRENT_ZONES
+          enumDescriptions:
+            - Mode must be specified.
+            - >-
+              Patches are applied one zone at a time. The patch job begins in
+              the region with the lowest number of targeted VMs. Within the
+              region, patching begins in the zone with the lowest number of
+              targeted VMs. If multiple regions (or zones within a region) have
+              the same number of targeted VMs, a tie-breaker is achieved by
+              sorting the regions or zones in alphabetical order.
+            - Patches are applied to VMs in all zones at the same time.
+          type: string
+          description: Mode of the patch rollout.
+        disruptionBudget:
+          $ref: '#/components/schemas/FixedOrPercent'
+          description: >-
+            The maximum number (or percentage) of VMs per zone to disrupt at any
+            given moment. The number of VMs calculated from multiplying the
+            percentage by the total number of VMs in a zone is rounded up.
+            During patching, a VM is considered disrupted from the time the
+            agent is notified to begin until patching has completed. This
+            disruption time includes the time to complete reboot and any
+            post-patch steps. A VM contributes to the disruption budget if its
+            patching operation fails either when applying the patches, running
+            pre or post patch steps, or if it fails to respond with a success
+            notification before timing out. VMs that are not running or do not
+            have an active agent do not count toward this disruption budget. For
+            zone-by-zone rollouts, if the disruption budget in a zone is
+            exceeded, the patch job stops, because continuing to the next zone
+            requires completion of the patch process in the previous zone. For
+            example, if the disruption budget has a fixed value of `10`, and 8
+            VMs fail to patch in the current zone, the patch job continues to
+            patch 2 VMs at a time until the zone is completed. When that zone is
+            completed successfully, patching begins with 10 VMs at a time in the
+            next zone. If 10 VMs in the next zone fail to patch, the patch job
+            stops.
+      id: PatchRollout
+    RecurringSchedule:
+      id: RecurringSchedule
+      properties:
+        startTime:
+          format: google-datetime
+          type: string
+          description: >-
+            Optional. The time that the recurring schedule becomes effective.
+            Defaults to `create_time` of the patch deployment.
+        weekly:
+          $ref: '#/components/schemas/WeeklySchedule'
+          description: Required. Schedule with weekly executions.
+        lastExecuteTime:
+          format: google-datetime
+          type: string
+          readOnly: true
+          description: Output only. The time the last patch job ran successfully.
+        timeOfDay:
+          description: Required. Time of the day to run a recurring deployment.
+          $ref: '#/components/schemas/TimeOfDay'
+        endTime:
+          description: >-
+            Optional. The end time at which a recurring patch deployment
+            schedule is no longer active.
+          format: google-datetime
+          type: string
+        nextExecuteTime:
+          readOnly: true
+          description: Output only. The time the next patch job is scheduled to run.
+          type: string
+          format: google-datetime
+        timeZone:
+          description: >-
+            Required. Defines the time zone that `time_of_day` is relative to.
+            The rules for daylight saving time are determined by the chosen time
+            zone.
+          $ref: '#/components/schemas/TimeZone'
+        monthly:
+          description: Required. Schedule with monthly executions.
+          $ref: '#/components/schemas/MonthlySchedule'
+        frequency:
+          enum:
+            - FREQUENCY_UNSPECIFIED
+            - WEEKLY
+            - MONTHLY
+            - DAILY
+          enumDescriptions:
+            - Invalid. A frequency must be specified.
+            - >-
+              Indicates that the frequency of recurrence should be expressed in
+              terms of weeks.
+            - >-
+              Indicates that the frequency of recurrence should be expressed in
+              terms of months.
+            - >-
+              Indicates that the frequency of recurrence should be expressed in
+              terms of days.
+          type: string
+          description: Required. The frequency unit of this recurring schedule.
+      description: Sets the time for recurring patch deployments.
+      type: object
+    ExecStepConfig:
+      type: object
+      id: ExecStepConfig
+      properties:
+        gcsObject:
+          $ref: '#/components/schemas/GcsObject'
+          description: A Google Cloud Storage object containing the executable.
+        localPath:
+          type: string
+          description: An absolute path to the executable on the VM.
+        allowedSuccessCodes:
+          description: >-
+            Defaults to [0]. A list of possible return values that the execution
+            can return to indicate a success.
+          type: array
+          items:
+            format: int32
+            type: integer
+        interpreter:
+          description: >-
+            The script interpreter to use to run the script. If no interpreter
+            is specified the script will be executed directly, which will likely
+            only succeed for scripts with [shebang lines]
+            (https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
+          type: string
+          enumDescriptions:
+            - If the interpreter is not specified, the value defaults to `NONE`.
+            - >-
+              Indicates that the file is run as follows on each operating
+              system: + For Linux VMs, the file is ran as an executable and the
+              interpreter might be parsed from the [shebang
+              line](https://wikipedia.org/wiki/Shebang_(Unix)) of the file. +
+              For Windows VM, this value is not supported.
+            - >-
+              Indicates that the file is run with `/bin/sh` on Linux and `cmd`
+              on Windows.
+            - Indicates that the file is run with PowerShell.
+          enum:
+            - INTERPRETER_UNSPECIFIED
+            - NONE
+            - SHELL
+            - POWERSHELL
+      description: Common configurations for an ExecStep.
+    ZypperRepository:
+      description: >-
+        Represents a single Zypper package repository. This repository is added
+        to a repo file that is stored at
+        `/etc/zypp/repos.d/google_osconfig.repo`.
+      properties:
+        gpgKeys:
+          description: URIs of GPG keys.
+          type: array
+          items:
+            type: string
+        baseUrl:
+          description: Required. The location of the repository directory.
+          type: string
+        id:
+          type: string
+          description: >-
+            Required. A one word, unique name for this repository. This is the
+            `repo id` in the zypper config file and also the `display_name` if
+            `display_name` is omitted. This id is also used as the unique
+            identifier when checking for guest policy conflicts.
+        displayName:
+          description: The display name of the repository.
+          type: string
+      id: ZypperRepository
+      type: object
+    SoftwareRecipeArtifactRemote:
+      properties:
+        uri:
+          type: string
+          description: >-
+            URI from which to fetch the object. It should contain both the
+            protocol and path following the format {protocol}://{location}.
+        checksum:
+          description: >-
+            Must be provided if `allow_insecure` is `false`. SHA256 checksum in
+            hex format, to compare to the checksum of the artifact. If the
+            checksum is not empty and it doesn't match the artifact then the
+            recipe installation fails before running any of the steps.
+          type: string
+      id: SoftwareRecipeArtifactRemote
+      description: Specifies an artifact available via some URI.
+      type: object
+    SoftwareRecipeStepRunScript:
+      properties:
+        script:
+          description: Required. The shell script to be executed.
+          type: string
+        allowedExitCodes:
+          type: array
+          items:
+            format: int32
+            type: integer
+          description: >-
+            Return codes that indicate that the software installed or updated
+            successfully. Behaviour defaults to [0]
+        interpreter:
+          enumDescriptions:
+            - Default value for ScriptType.
+            - >-
+              Indicates that the script is run with `/bin/sh` on Linux and `cmd`
+              on windows.
+            - Indicates that the script is run with powershell.
+          type: string
+          enum:
+            - INTERPRETER_UNSPECIFIED
+            - SHELL
+            - POWERSHELL
+          description: >-
+            The script interpreter to use to run the script. If no interpreter
+            is specified the script is executed directly, which likely only
+            succeed for scripts with [shebang
+            lines](https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
+      id: SoftwareRecipeStepRunScript
+      type: object
+      description: Runs a script through an interpreter.
+    GuestPolicy:
+      properties:
+        packages:
+          type: array
+          description: The software packages to be managed by this policy.
+          items:
+            $ref: '#/components/schemas/Package'
+        recipes:
+          description: A list of Recipes to install on the VM instance.
+          type: array
+          items:
+            $ref: '#/components/schemas/SoftwareRecipe'
+        etag:
+          type: string
+          description: >-
+            The etag for this guest policy. If this is provided on update, it
+            must match the server's etag.
+        createTime:
+          format: google-datetime
+          description: Output only. Time this guest policy was created.
+          readOnly: true
+          type: string
+        packageRepositories:
+          type: array
+          description: >-
+            A list of package repositories to configure on the VM instance. This
+            is done before any other configs are applied so they can use these
+            repos. Package repositories are only configured if the corresponding
+            package manager(s) are available.
+          items:
+            $ref: '#/components/schemas/PackageRepository'
+        name:
+          type: string
+          description: >-
+            Required. Unique name of the resource in this project using one of
+            the following forms:
+            `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+        assignment:
+          $ref: '#/components/schemas/Assignment'
+          description: >-
+            Required. Specifies the VM instances that are assigned to this
+            policy. This allows you to target sets or groups of VM instances by
+            different parameters such as labels, names, OS, or zones. If left
+            empty, all VM instances underneath this policy are targeted. At the
+            same level in the resource hierarchy (that is within a project), the
+            service prevents the creation of multiple policies that conflict
+            with each other. For more information, see how the service [handles
+            assignment
+            conflicts](/compute/docs/os-config-management/create-guest-policy#handle-conflicts).
+        description:
+          description: >-
+            Description of the guest policy. Length of the description is
+            limited to 1024 characters.
+          type: string
+        updateTime:
+          format: google-datetime
+          type: string
+          description: Output only. Last time this guest policy was updated.
+          readOnly: true
+      id: GuestPolicy
+      description: >-
+        An OS Config resource representing a guest configuration policy. These
+        policies represent the desired state for VM instance guest environments
+        including packages to install or remove, package repository
+        configurations, and software to install.
+      type: object
+    EffectiveGuestPolicySourcedSoftwareRecipe:
+      description: A guest policy recipe including its source.
+      properties:
+        softwareRecipe:
+          description: A software recipe to configure on the VM instance.
+          $ref: '#/components/schemas/SoftwareRecipe'
+        source:
+          description: Name of the guest policy providing this config.
+          type: string
+      id: EffectiveGuestPolicySourcedSoftwareRecipe
+      type: object
+    ResumePatchDeploymentRequest:
+      properties: {}
+      id: ResumePatchDeploymentRequest
+      description: A request message for resuming a patch deployment.
+      type: object
+    SoftwareRecipeArtifactGcs:
+      id: SoftwareRecipeArtifactGcs
+      properties:
+        object:
+          type: string
+          description: >-
+            Name of the Google Cloud Storage object. As specified [here]
+            (https://cloud.google.com/storage/docs/naming#objectnames) Given an
+            example URL:
+            `https://storage.googleapis.com/my-bucket/foo/bar#1234567` this
+            value would be `foo/bar`.
+        generation:
+          type: string
+          format: int64
+          description: >-
+            Must be provided if allow_insecure is false. Generation number of
+            the Google Cloud Storage object.
+            `https://storage.googleapis.com/my-bucket/foo/bar#1234567` this
+            value would be `1234567`.
+        bucket:
+          description: >-
+            Bucket of the Google Cloud Storage object. Given an example URL:
+            `https://storage.googleapis.com/my-bucket/foo/bar#1234567` this
+            value would be `my-bucket`.
+          type: string
+      description: Specifies an artifact available as a Google Cloud Storage object.
+      type: object
+    TimeZone:
+      description: >-
+        Represents a time zone from the [IANA Time Zone
+        Database](https://www.iana.org/time-zones).
+      id: TimeZone
+      properties:
+        id:
+          type: string
+          description: IANA Time Zone Database time zone, e.g. "America/New_York".
+        version:
+          type: string
+          description: Optional. IANA Time Zone Database version number, e.g. "2019a".
+      type: object
+    EffectiveGuestPolicySourcedPackage:
+      type: object
+      id: EffectiveGuestPolicySourcedPackage
+      description: A guest policy package including its source.
+      properties:
+        source:
+          description: Name of the guest policy providing this config.
+          type: string
+        package:
+          $ref: '#/components/schemas/Package'
+          description: A software package to configure on the VM instance.
+    PatchJobInstanceDetailsSummary:
+      id: PatchJobInstanceDetailsSummary
+      properties:
+        rebootingInstanceCount:
+          description: Number of instances rebooting.
+          format: int64
+          type: string
+        ackedInstanceCount:
+          description: Number of instances that have acked and will start shortly.
+          type: string
+          format: int64
+        noAgentDetectedInstanceCount:
+          description: >-
+            Number of instances that do not appear to be running the agent.
+            Check to ensure that the agent is installed, running, and able to
+            communicate with the service.
+          format: int64
+          type: string
+        startedInstanceCount:
+          format: int64
+          type: string
+          description: Number of instances that have started.
+        postPatchStepInstanceCount:
+          format: int64
+          description: Number of instances that are running the post-patch step.
+          type: string
+        succeededRebootRequiredInstanceCount:
+          description: Number of instances that require reboot.
+          format: int64
+          type: string
+        downloadingPatchesInstanceCount:
+          type: string
+          format: int64
+          description: Number of instances that are downloading patches.
+        failedInstanceCount:
+          type: string
+          description: Number of instances that failed.
+          format: int64
+        succeededInstanceCount:
+          description: Number of instances that have completed successfully.
+          type: string
+          format: int64
+        prePatchStepInstanceCount:
+          description: Number of instances that are running the pre-patch step.
+          format: int64
+          type: string
+        pendingInstanceCount:
+          type: string
+          description: Number of instances pending patch job.
+          format: int64
+        applyingPatchesInstanceCount:
+          description: Number of instances that are applying patches.
+          format: int64
+          type: string
+        inactiveInstanceCount:
+          type: string
+          description: Number of instances that are inactive.
+          format: int64
+        timedOutInstanceCount:
+          description: >-
+            Number of instances that exceeded the time out while applying the
+            patch.
+          type: string
+          format: int64
+        notifiedInstanceCount:
+          type: string
+          format: int64
+          description: Number of instances notified about patch job.
+      type: object
+      description: >-
+        A summary of the current patch state across all instances that this
+        patch job affects. Contains counts of instances in different states.
+        These states map to `InstancePatchState`. List patch job instance
+        details to see the specific states of each instance.
+    PausePatchDeploymentRequest:
+      id: PausePatchDeploymentRequest
+      properties: {}
+      description: A request message for pausing a patch deployment.
+      type: object
+    SoftwareRecipeStepExtractArchive:
+      description: Extracts an archive of the type specified in the specified directory.
+      id: SoftwareRecipeStepExtractArchive
+      properties:
+        artifactId:
+          type: string
+          description: Required. The id of the relevant artifact in the recipe.
+        type:
+          description: Required. The type of the archive to extract.
+          enumDescriptions:
+            - Indicates that the archive type isn't specified.
+            - Indicates that the archive is a tar archive with no encryption.
+            - Indicates that the archive is a tar archive with gzip encryption.
+            - Indicates that the archive is a tar archive with bzip encryption.
+            - Indicates that the archive is a tar archive with lzma encryption.
+            - Indicates that the archive is a tar archive with xz encryption.
+            - Indicates that the archive is a zip archive.
+          type: string
+          enum:
+            - ARCHIVE_TYPE_UNSPECIFIED
+            - TAR
+            - TAR_GZIP
+            - TAR_BZIP
+            - TAR_LZMA
+            - TAR_XZ
+            - ZIP
+        destination:
+          type: string
+          description: >-
+            Directory to extract archive to. Defaults to `/` on Linux or `C:\`
+            on Windows.
+      type: object
+    SoftwareRecipeStepInstallRpm:
+      properties:
+        artifactId:
+          description: Required. The id of the relevant artifact in the recipe.
+          type: string
+      description: Installs an rpm file via the rpm utility.
+      type: object
+      id: SoftwareRecipeStepInstallRpm
+    SoftwareRecipeStep:
+      properties:
+        fileExec:
+          $ref: '#/components/schemas/SoftwareRecipeStepExecFile'
+          description: Executes an artifact or local file.
+        archiveExtraction:
+          description: Extracts an archive into the specified directory.
+          $ref: '#/components/schemas/SoftwareRecipeStepExtractArchive'
+        fileCopy:
+          description: Copies a file onto the instance.
+          $ref: '#/components/schemas/SoftwareRecipeStepCopyFile'
+        msiInstallation:
+          $ref: '#/components/schemas/SoftwareRecipeStepInstallMsi'
+          description: Installs an MSI file.
+        dpkgInstallation:
+          description: Installs a deb file via dpkg.
+          $ref: '#/components/schemas/SoftwareRecipeStepInstallDpkg'
+        rpmInstallation:
+          $ref: '#/components/schemas/SoftwareRecipeStepInstallRpm'
+          description: Installs an rpm file via the rpm utility.
+        scriptRun:
+          description: Runs commands in a shell.
+          $ref: '#/components/schemas/SoftwareRecipeStepRunScript'
+      type: object
+      description: An action that can be taken as part of installing or updating a recipe.
+      id: SoftwareRecipeStep
+    GooSettings:
+      properties: {}
+      description: Googet patching is performed by running `googet update`.
+      id: GooSettings
+      type: object
+    ListGuestPoliciesResponse:
+      id: ListGuestPoliciesResponse
+      properties:
+        guestPolicies:
+          description: The list of GuestPolicies.
+          type: array
+          items:
+            $ref: '#/components/schemas/GuestPolicy'
+        nextPageToken:
+          description: >-
+            A pagination token that can be used to get the next page of guest
+            policies.
+          type: string
+      description: A response message for listing guest policies.
+      type: object
+    PatchJob:
+      description: >-
+        A high level representation of a patch job that is either in progress or
+        has completed. Instance details are not included in the job. To paginate
+        through instance details, use `ListPatchJobInstanceDetails`. For more
+        information about patch jobs, see [Creating patch
+        jobs](https://cloud.google.com/compute/docs/os-patch-management/create-patch-job).
+      type: object
+      properties:
+        state:
+          enum:
+            - STATE_UNSPECIFIED
+            - STARTED
+            - INSTANCE_LOOKUP
+            - PATCHING
+            - SUCCEEDED
+            - COMPLETED_WITH_ERRORS
+            - CANCELED
+            - TIMED_OUT
+          description: The current state of the PatchJob.
+          enumDescriptions:
+            - State must be specified.
+            - The patch job was successfully initiated.
+            - The patch job is looking up instances to run the patch on.
+            - Instances are being patched.
+            - Patch job completed successfully.
+            - Patch job completed but there were errors.
+            - The patch job was canceled.
+            - The patch job timed out.
+          type: string
+        description:
+          description: >-
+            Description of the patch job. Length of the description is limited
+            to 1024 characters.
+          type: string
+        percentComplete:
+          type: number
+          description: >-
+            Reflects the overall progress of the patch job in the range of 0.0
+            being no progress to 100.0 being complete.
+          format: double
+        name:
+          type: string
+          description: >-
+            Unique identifier for this patch job in the form
+            `projects/*/patchJobs/*`
+        patchDeployment:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. Name of the patch deployment that created this patch
+            job.
+        patchConfig:
+          $ref: '#/components/schemas/PatchConfig'
+          description: Patch configuration being applied.
+        dryRun:
+          description: >-
+            If this patch job is a dry run, the agent reports that it has
+            finished without running any updates on the VM instance.
+          type: boolean
+        displayName:
+          type: string
+          description: Display name for this patch job. This is not a unique identifier.
+        errorMessage:
+          type: string
+          description: >-
+            If this patch job failed, this message provides information about
+            the failure.
+        updateTime:
+          format: google-datetime
+          description: Last time this patch job was updated.
+          type: string
+        createTime:
+          description: Time this patch job was created.
+          format: google-datetime
+          type: string
+        rollout:
+          description: Rollout strategy being applied.
+          $ref: '#/components/schemas/PatchRollout'
+        instanceFilter:
+          $ref: '#/components/schemas/PatchInstanceFilter'
+          description: Instances to patch.
+        instanceDetailsSummary:
+          description: Summary of instance details.
+          $ref: '#/components/schemas/PatchJobInstanceDetailsSummary'
+        duration:
+          description: >-
+            Duration of the patch job. After the duration ends, the patch job
+            times out.
+          format: google-duration
+          type: string
+      id: PatchJob
+    SoftwareRecipeStepInstallDpkg:
+      id: SoftwareRecipeStepInstallDpkg
+      type: object
+      description: Installs a deb via dpkg.
+      properties:
+        artifactId:
+          type: string
+          description: Required. The id of the relevant artifact in the recipe.
+    SoftwareRecipeStepInstallMsi:
+      properties:
+        flags:
+          items:
+            type: string
+          type: array
+          description: >-
+            The flags to use when installing the MSI defaults to ["/i"] (i.e.
+            the install flag).
+        artifactId:
+          description: Required. The id of the relevant artifact in the recipe.
+          type: string
+        allowedExitCodes:
+          type: array
+          description: >-
+            Return codes that indicate that the software installed or updated
+            successfully. Behaviour defaults to [0]
+          items:
+            format: int32
+            type: integer
+      type: object
+      description: Installs an MSI file.
+      id: SoftwareRecipeStepInstallMsi
+    GcsObject:
+      description: Google Cloud Storage object representation.
+      properties:
+        generationNumber:
+          description: >-
+            Required. Generation number of the Google Cloud Storage object. This
+            is used to ensure that the ExecStep specified by this PatchJob does
+            not change.
+          type: string
+          format: int64
+        bucket:
+          type: string
+          description: Required. Bucket of the Google Cloud Storage object.
+        object:
+          description: Required. Name of the Google Cloud Storage object.
+          type: string
+      type: object
+      id: GcsObject
+    WeekDayOfMonth:
+      description: Represents one week day in a month. An example is "the 4th Sunday".
+      type: object
+      id: WeekDayOfMonth
+      properties:
+        weekOrdinal:
+          description: >-
+            Required. Week number in a month. 1-4 indicates the 1st to 4th week
+            of the month. -1 indicates the last week of the month.
+          type: integer
+          format: int32
+        dayOfWeek:
+          enumDescriptions:
+            - The day of the week is unspecified.
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Friday
+            - Saturday
+            - Sunday
+          description: Required. A day of the week.
+          enum:
+            - DAY_OF_WEEK_UNSPECIFIED
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+          type: string
+        dayOffset:
+          type: integer
+          format: int32
+          description: >-
+            Optional. Represents the number of days before or after the given
+            week day of month that the patch deployment is scheduled for. For
+            example if `week_ordinal` and `day_of_week` values point to the
+            second day of the month and this `day_offset` value is set to `3`,
+            the patch deployment takes place three days after the second Tuesday
+            of the month. If this value is negative, for example -5, the patches
+            are deployed five days before before the second Tuesday of the
+            month. Allowed values are in range [-30, 30].
+    PatchJobInstanceDetails:
+      properties:
+        name:
+          description: The instance name in the form `projects/*/zones/*/instances/*`
+          type: string
+        instanceSystemId:
+          description: >-
+            The unique identifier for the instance. This identifier is defined
+            by the server.
+          type: string
+        state:
+          description: Current state of instance patch.
+          enumDescriptions:
+            - Unspecified.
+            - The instance is not yet notified.
+            - Instance is inactive and cannot be patched.
+            - The instance is notified that it should be patched.
+            - The instance has started the patching process.
+            - The instance is downloading patches.
+            - The instance is applying patches.
+            - The instance is rebooting.
+            - The instance has completed applying patches.
+            - >-
+              The instance has completed applying patches but a reboot is
+              required.
+            - The instance has failed to apply the patch.
+            - The instance acked the notification and will start shortly.
+            - The instance exceeded the time out while applying the patch.
+            - The instance is running the pre-patch step.
+            - The instance is running the post-patch step.
+            - >-
+              The service could not detect the presence of the agent. Check to
+              ensure that the agent is installed, running, and able to
+              communicate with the service.
+          type: string
+          enum:
+            - PATCH_STATE_UNSPECIFIED
+            - PENDING
+            - INACTIVE
+            - NOTIFIED
+            - STARTED
+            - DOWNLOADING_PATCHES
+            - APPLYING_PATCHES
+            - REBOOTING
+            - SUCCEEDED
+            - SUCCEEDED_REBOOT_REQUIRED
+            - FAILED
+            - ACKED
+            - TIMED_OUT
+            - RUNNING_PRE_PATCH_STEP
+            - RUNNING_POST_PATCH_STEP
+            - NO_AGENT_DETECTED
+        attemptCount:
+          type: string
+          description: >-
+            The number of times the agent that the agent attempts to apply the
+            patch.
+          format: int64
+        failureReason:
+          description: If the patch fails, this field provides the reason.
+          type: string
+      id: PatchJobInstanceDetails
+      description: >-
+        Patch details for a VM instance. For more information about reviewing VM
+        instance details, see [Listing all VM instance details for a specific
+        patch
+        job](https://cloud.google.com/compute/docs/os-patch-management/manage-patch-jobs#list-instance-details).
+      type: object
+    SoftwareRecipeStepExecFile:
+      description: Executes an artifact or local file.
+      properties:
+        localPath:
+          description: The absolute path of the file on the local filesystem.
+          type: string
+        args:
+          items:
+            type: string
+          type: array
+          description: Arguments to be passed to the provided executable.
+        allowedExitCodes:
+          description: >-
+            Defaults to [0]. A list of possible return values that the program
+            can return to indicate a success.
+          items:
+            format: int32
+            type: integer
+          type: array
+        artifactId:
+          description: The id of the relevant artifact in the recipe.
+          type: string
+      id: SoftwareRecipeStepExecFile
+      type: object
+    AssignmentGroupLabel:
+      properties:
+        labels:
+          type: object
+          description: >-
+            Google Compute Engine instance labels that must be present for an
+            instance to be included in this assignment group.
+          additionalProperties:
+            type: string
+      id: AssignmentGroupLabel
+      description: >-
+        Represents a group of VM intances that can be identified as having all
+        these labels, for example "env=prod and app=web".
+      type: object
+    EffectiveGuestPolicySourcedPackageRepository:
+      id: EffectiveGuestPolicySourcedPackageRepository
+      description: A guest policy package repository including its source.
+      properties:
+        source:
+          type: string
+          description: Name of the guest policy providing this config.
+        packageRepository:
+          $ref: '#/components/schemas/PackageRepository'
+          description: A software package repository to configure on the VM instance.
+      type: object
+    PatchInstanceFilterGroupLabel:
+      type: object
+      properties:
+        labels:
+          description: >-
+            Compute Engine instance labels that must be present for a VM
+            instance to be targeted by this filter.
+          additionalProperties:
+            type: string
+          type: object
+      description: >-
+        Represents a group of VMs that can be identified as having all these
+        labels, for example "env=prod and app=web".
+      id: PatchInstanceFilterGroupLabel
+    PatchConfig:
+      id: PatchConfig
+      description: >-
+        Patch configuration specifications. Contains details on how to apply the
+        patch(es) to a VM instance.
+      type: object
+      properties:
+        postStep:
+          $ref: '#/components/schemas/ExecStep'
+          description: The `ExecStep` to run after the patch update.
+        rebootConfig:
+          type: string
+          enum:
+            - REBOOT_CONFIG_UNSPECIFIED
+            - DEFAULT
+            - ALWAYS
+            - NEVER
+          description: Post-patch reboot settings.
+          enumDescriptions:
+            - The default behavior is DEFAULT.
+            - >-
+              The agent decides if a reboot is necessary by checking signals
+              such as registry keys on Windows or `/var/run/reboot-required` on
+              APT based systems. On RPM based systems, a set of core system
+              package install times are compared with system boot time.
+            - Always reboot the machine after the update completes.
+            - Never reboot the machine after the update completes.
+        zypper:
+          $ref: '#/components/schemas/ZypperSettings'
+          description: >-
+            Zypper update settings. Use this setting to override the default
+            `zypper` patch rules.
+        migInstancesAllowed:
+          type: boolean
+          description: Allows the patch job to run on Managed instance groups (MIGs).
+        yum:
+          $ref: '#/components/schemas/YumSettings'
+          description: >-
+            Yum update settings. Use this setting to override the default `yum`
+            patch rules.
+        apt:
+          $ref: '#/components/schemas/AptSettings'
+          description: >-
+            Apt update settings. Use this setting to override the default `apt`
+            patch rules.
+        preStep:
+          description: The `ExecStep` to run before the patch update.
+          $ref: '#/components/schemas/ExecStep'
+        goo:
+          $ref: '#/components/schemas/GooSettings'
+          description: >-
+            Goo update settings. Use this setting to override the default `goo`
+            patch rules.
+        windowsUpdate:
+          $ref: '#/components/schemas/WindowsUpdateSettings'
+          description: >-
+            Windows update settings. Use this override the default windows patch
+            rules.
+    ListPatchJobsResponse:
+      properties:
+        patchJobs:
+          items:
+            $ref: '#/components/schemas/PatchJob'
+          type: array
+          description: The list of patch jobs.
+        nextPageToken:
+          type: string
+          description: A pagination token that can be used to get the next page of results.
+      description: A response message for listing patch jobs.
+      id: ListPatchJobsResponse
+      type: object
+    AptRepository:
+      id: AptRepository
+      description: >-
+        Represents a single Apt package repository. This repository is added to
+        a repo file that is stored at
+        `/etc/apt/sources.list.d/google_osconfig.list`.
+      type: object
+      properties:
+        archiveType:
+          type: string
+          description: >-
+            Type of archive files in this repository. The default behavior is
+            DEB.
+          enumDescriptions:
+            - Unspecified.
+            - DEB indicates that the archive contains binary files.
+            - DEB_SRC indicates that the archive contains source files.
+          enum:
+            - ARCHIVE_TYPE_UNSPECIFIED
+            - DEB
+            - DEB_SRC
+        uri:
+          type: string
+          description: Required. URI for this repository.
+        distribution:
+          description: Required. Distribution of this repository.
+          type: string
+        components:
+          items:
+            type: string
+          type: array
+          description: >-
+            Required. List of components for this repository. Must contain at
+            least one item.
+        gpgKey:
+          type: string
+          description: >-
+            URI of the key file for this repository. The agent maintains a
+            keyring at `/etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg`
+            containing all the keys in any applied guest policy.
+    FixedOrPercent:
+      type: object
+      id: FixedOrPercent
+      description: >-
+        Message encapsulating a value that can be either absolute ("fixed") or
+        relative ("percent") to a value.
+      properties:
+        percent:
+          type: integer
+          format: int32
+          description: >-
+            Specifies the relative value defined as a percentage, which will be
+            multiplied by a reference value.
+        fixed:
+          format: int32
+          type: integer
+          description: Specifies a fixed value.
+    GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata:
+      description: >-
+        OS policy assignment operation metadata provided by OS policy assignment
+        API methods that return long running operations.
+      id: GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata
+      type: object
+      properties:
+        osPolicyAssignment:
+          description: >-
+            Reference to the `OSPolicyAssignment` API resource. Format:
+            `projects/{project_number}/locations/{location}/osPolicyAssignments/{os_policy_assignment_id@revision_id}`
+          type: string
+        rolloutUpdateTime:
+          description: Rollout update time
+          type: string
+          format: google-datetime
+        apiMethod:
+          type: string
+          enumDescriptions:
+            - Invalid value
+            - Create OS policy assignment API method
+            - Update OS policy assignment API method
+            - Delete OS policy assignment API method
+          enum:
+            - API_METHOD_UNSPECIFIED
+            - CREATE
+            - UPDATE
+            - DELETE
+          description: The OS policy assignment API method.
+        rolloutState:
+          enum:
+            - ROLLOUT_STATE_UNSPECIFIED
+            - IN_PROGRESS
+            - CANCELLING
+            - CANCELLED
+            - SUCCEEDED
+          description: State of the rollout
+          type: string
+          enumDescriptions:
+            - Invalid value
+            - The rollout is in progress.
+            - The rollout is being cancelled.
+            - The rollout is cancelled.
+            - The rollout has completed successfully.
+        rolloutStartTime:
+          format: google-datetime
+          description: Rollout start time
+          type: string
+  parameters:
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/key'
+    post:
+      description: >-
+        Change state of patch deployment to "PAUSED". Patch deployment in paused
+        state doesn't generate patch jobs.
+      operationId: osconfig.projects.patchDeployments.pause
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PausePatchDeploymentRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchDeployment'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchDeploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:
+    parameters: *ref_1
+    delete:
+      description: Delete an OS Config patch deployment.
+      operationId: osconfig.projects.patchDeployments.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchDeploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: delete
+    patch:
+      description: Update an OS Config patch deployment.
+      operationId: osconfig.projects.patchDeployments.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchDeployment'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchDeploymentsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: exec
+    get:
+      description: Get an OS Config patch deployment.
+      operationId: osconfig.projects.patchDeployments.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchDeployment'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchDeploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/patchDeployments:
+    parameters: *ref_1
+    post:
+      description: Create an OS Config patch deployment.
+      operationId: osconfig.projects.patchDeployments.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchDeployment'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchDeployment'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: patchDeploymentId
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: insert
+    get:
+      description: Get a page of OS Config patch deployments.
+      operationId: osconfig.projects.patchDeployments.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPatchDeploymentsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume:
+    parameters: *ref_1
+    post:
+      description: >-
+        Change state of patch deployment back to "ACTIVE". Patch deployment in
+        active state continues to generate patch jobs.
+      operationId: osconfig.projects.patchDeployments.resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumePatchDeploymentRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchDeployment'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchDeploymentsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_deployments
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:lookupEffectiveGuestPolicy:
+    parameters: *ref_1
+    post:
+      description: >-
+        Lookup the effective guest policy that applies to a VM instance. This
+        lookup merges all policies that are assigned to the instance ancestry.
+      operationId: osconfig.projects.zones.instances.lookupEffectiveGuestPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupEffectiveGuestPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EffectiveGuestPolicy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: zonesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: instancesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: instances
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}:
+    parameters: *ref_1
+    delete:
+      description: Delete an OS Config guest policy.
+      operationId: osconfig.projects.guestPolicies.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: guestPoliciesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: guest_policies
+      x-stackQL-verb: delete
+    get:
+      description: Get an OS Config guest policy.
+      operationId: osconfig.projects.guestPolicies.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestPolicy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: guestPoliciesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: guest_policies
+      x-stackQL-verb: select
+    patch:
+      description: Update an OS Config guest policy.
+      operationId: osconfig.projects.guestPolicies.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestPolicy'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestPolicy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: guestPoliciesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: guest_policies
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/guestPolicies:
+    parameters: *ref_1
+    post:
+      description: Create an OS Config guest policy.
+      operationId: osconfig.projects.guestPolicies.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestPolicy'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestPolicy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: guestPolicyId
+          schema:
+            type: string
+      x-stackQL-resource: guest_policies
+      x-stackQL-verb: insert
+    get:
+      description: Get a page of OS Config guest policies.
+      operationId: osconfig.projects.guestPolicies.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListGuestPoliciesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: guest_policies
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/patchJobs/{patchJobsId}:cancel:
+    parameters: *ref_1
+    post:
+      description: >-
+        Cancel a patch job. The patch job must be active. Canceled patch jobs
+        cannot be restarted.
+      operationId: osconfig.projects.patchJobs.cancel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPatchJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchJob'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_jobs
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/patchJobs:
+    parameters: *ref_1
+    get:
+      description: Get a list of patch jobs.
+      operationId: osconfig.projects.patchJobs.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPatchJobsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: patch_jobs
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/patchJobs:execute:
+    parameters: *ref_1
+    post:
+      description: Patch VM instances by creating and running a patch job.
+      operationId: osconfig.projects.patchJobs.execute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutePatchJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchJob'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_jobs
+      x-stackQL-verb: exec
+  /v1beta/projects/{projectsId}/patchJobs/{patchJobsId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get the patch job. This can be used to track the progress of an ongoing
+        patch job or review the details of completed jobs.
+      operationId: osconfig.projects.patchJobs.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchJob'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: patch_jobs
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails:
+    parameters: *ref_1
+    get:
+      description: Get a list of instance details for a given patch job.
+      operationId: osconfig.projects.patchJobs.instanceDetails.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPatchJobInstanceDetailsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: patchJobsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: instance_details
+      x-stackQL-verb: select

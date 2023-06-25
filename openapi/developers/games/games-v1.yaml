@@ -1,0 +1,2930 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Google Play Game Services
+  description: >-
+    The Google Play games service allows developers to enhance games with social
+    leaderboards, achievements, game state, sign-in with Google, and more.
+  version: v1
+  x-discovery-doc-revision: '20230621'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/games/
+servers:
+  - url: https://games.googleapis.com
+components:
+  schemas:
+    ApplicationVerifyResponse:
+      type: object
+      properties:
+        alternate_player_id:
+          type: string
+          description: >-
+            An alternate ID that was once used for the player that was issued
+            the auth token used in this request. (This field is not normally
+            populated.)
+        player_id:
+          description: >-
+            The ID of the player that was issued the auth token used in this
+            request.
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#applicationVerifyResponse`.
+          type: string
+      id: ApplicationVerifyResponse
+      description: A third party application verification response resource.
+    AchievementDefinition:
+      description: An achievement definition object.
+      type: object
+      id: AchievementDefinition
+      properties:
+        description:
+          description: The description of the achievement.
+          type: string
+        formattedTotalSteps:
+          type: string
+          description: The total steps for an incremental achievement as a string.
+        experiencePoints:
+          format: int64
+          description: >-
+            Experience points which will be earned when unlocking this
+            achievement.
+          type: string
+        achievementType:
+          enumDescriptions:
+            - Safe default, don't use.
+            - Achievement is either locked or unlocked.
+            - Achievement is incremental.
+          type: string
+          description: The type of the achievement.
+          enum:
+            - ACHIEVEMENT_TYPE_UNSPECIFIED
+            - STANDARD
+            - INCREMENTAL
+        isRevealedIconUrlDefault:
+          type: boolean
+          description: >-
+            Indicates whether the revealed icon image being returned is a
+            default image, or is provided by the game.
+        unlockedIconUrl:
+          type: string
+          description: The image URL for the unlocked achievement icon.
+        isUnlockedIconUrlDefault:
+          description: >-
+            Indicates whether the unlocked icon image being returned is a
+            default image, or is game-provided.
+          type: boolean
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementDefinition`.
+          type: string
+        revealedIconUrl:
+          type: string
+          description: The image URL for the revealed achievement icon.
+        name:
+          description: The name of the achievement.
+          type: string
+        id:
+          type: string
+          description: The ID of the achievement.
+        initialState:
+          enum:
+            - INITIAL_ACHIEVEMENT_STATE_UNSPECIFIED
+            - HIDDEN
+            - REVEALED
+            - UNLOCKED
+          enumDescriptions:
+            - Safe default, don't use.
+            - Achievement is hidden.
+            - Achievement is revealed.
+            - Achievement is unlocked.
+          description: The initial state of the achievement.
+          type: string
+        totalSteps:
+          description: The total steps for an incremental achievement.
+          type: integer
+          format: int32
+    LeaderboardListResponse:
+      type: object
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#leaderboardListResponse`.
+          type: string
+        nextPageToken:
+          description: Token corresponding to the next page of results.
+          type: string
+        items:
+          type: array
+          description: The leaderboards.
+          items:
+            $ref: '#/components/schemas/Leaderboard'
+      id: LeaderboardListResponse
+      description: A list of leaderboard objects.
+    PlayerAchievementListResponse:
+      type: object
+      description: A list of achievement objects.
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerAchievementListResponse`.
+        nextPageToken:
+          type: string
+          description: Token corresponding to the next page of results.
+        items:
+          description: The achievements.
+          items:
+            $ref: '#/components/schemas/PlayerAchievement'
+          type: array
+      id: PlayerAchievementListResponse
+    EventChild:
+      id: EventChild
+      type: object
+      description: An event child relationship resource.
+      properties:
+        childId:
+          type: string
+          description: The ID of the child event.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventChild`.
+          type: string
+    CategoryListResponse:
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#categoryListResponse`.
+          type: string
+        nextPageToken:
+          description: Token corresponding to the next page of results.
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          description: The list of categories with usage data.
+      type: object
+      id: CategoryListResponse
+      description: A third party list metagame categories response.
+    InstanceIosDetails:
+      id: InstanceIosDetails
+      type: object
+      description: The iOS details resource.
+      properties:
+        supportIpad:
+          description: Flag to indicate if this instance supports iPad.
+          type: boolean
+        preferredForIpad:
+          type: boolean
+          description: >-
+            Indicates that this instance is the default for new installations on
+            iPad devices.
+        bundleIdentifier:
+          description: Bundle identifier.
+          type: string
+        supportIphone:
+          type: boolean
+          description: Flag to indicate if this instance supports iPhone.
+        itunesAppId:
+          description: iTunes App ID.
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#instanceIosDetails`.
+        preferredForIphone:
+          description: >-
+            Indicates that this instance is the default for new installations on
+            iPhone devices.
+          type: boolean
+    InstanceAndroidDetails:
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#instanceAndroidDetails`.
+        preferred:
+          type: boolean
+          description: Indicates that this instance is the default for new installations.
+        packageName:
+          type: string
+          description: Android package name which maps to Google Play URL.
+        enablePiracyCheck:
+          type: boolean
+          description: Flag indicating whether the anti-piracy check is enabled.
+      id: InstanceAndroidDetails
+      description: The Android instance details resource.
+      type: object
+    AchievementRevealResponse:
+      id: AchievementRevealResponse
+      description: An achievement reveal response
+      properties:
+        currentState:
+          description: >-
+            The current state of the achievement for which a reveal was
+            attempted. This might be `UNLOCKED` if the achievement was already
+            unlocked.
+          enumDescriptions:
+            - Safe default, don't use.
+            - Achievement is revealed.
+            - Achievement is unlocked.
+          enum:
+            - REVEAL_ACHIEVEMENT_STATE_UNSPECIFIED
+            - REVEALED
+            - UNLOCKED
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementRevealResponse`.
+          type: string
+      type: object
+    MetagameConfig:
+      type: object
+      id: MetagameConfig
+      description: The metagame config resource
+      properties:
+        playerLevels:
+          items:
+            $ref: '#/components/schemas/PlayerLevel'
+          type: array
+          description: The list of player levels.
+        currentVersion:
+          description: >-
+            Current version of the metagame configuration data. When this data
+            is updated, the version number will be increased by one.
+          format: int32
+          type: integer
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#metagameConfig`.
+          type: string
+    EventRecordFailure:
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventRecordFailure`.
+          type: string
+        eventId:
+          description: The ID of the event that was not updated.
+          type: string
+        failureCause:
+          enumDescriptions:
+            - Default value. Should not use.
+            - An attempt was made to set an event that was not defined.
+            - An attempt was made to increment an event by a non-positive value.
+          enum:
+            - EVENT_UPDATE_FAILURE_CAUSE_UNSPECIFIED
+            - NOT_FOUND
+            - INVALID_UPDATE_VALUE
+          description: The cause for the update failure.
+          type: string
+      id: EventRecordFailure
+      type: object
+      description: An event update failure resource.
+    InstanceWebDetails:
+      id: InstanceWebDetails
+      type: object
+      description: The Web details resource.
+      properties:
+        preferred:
+          description: Indicates that this instance is the default for new installations.
+          type: boolean
+        launchUrl:
+          type: string
+          description: Launch URL for the game.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#instanceWebDetails`.
+          type: string
+    PlayerEventListResponse:
+      type: object
+      description: A ListByPlayer response.
+      properties:
+        items:
+          description: The player events.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerEvent'
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerEventListResponse`.
+          type: string
+        nextPageToken:
+          description: The pagination token for the next page of results.
+          type: string
+      id: PlayerEventListResponse
+    AchievementSetStepsAtLeastResponse:
+      description: An achievement set steps at least response.
+      type: object
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementSetStepsAtLeastResponse`.
+        newlyUnlocked:
+          description: >-
+            Whether the current steps for the achievement has reached the number
+            of steps required to unlock.
+          type: boolean
+        currentSteps:
+          type: integer
+          format: int32
+          description: The current steps recorded for this incremental achievement.
+      id: AchievementSetStepsAtLeastResponse
+    PlayerScoreListResponse:
+      type: object
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerScoreListResponse`.
+        submittedScores:
+          items:
+            $ref: '#/components/schemas/PlayerScoreResponse'
+          type: array
+          description: The score submissions statuses.
+      description: A list of score submission statuses.
+      id: PlayerScoreListResponse
+    EventDefinition:
+      description: An event definition resource.
+      properties:
+        isDefaultImageUrl:
+          description: >-
+            Indicates whether the icon image being returned is a default image,
+            or is game-provided.
+          type: boolean
+        imageUrl:
+          description: The base URL for the image that represents the event.
+          type: string
+        description:
+          description: Description of what this event represents.
+          type: string
+        visibility:
+          enumDescriptions:
+            - Default value. Should not be used.
+            - This event should be visible to all users.
+            - >-
+              This event should only be shown to users that have recorded this
+              event at least once.
+          type: string
+          description: The visibility of event being tracked in this definition.
+          enum:
+            - EVENT_VISIBILITY_UNSPECIFIED
+            - REVEALED
+            - HIDDEN
+        id:
+          description: The ID of the event.
+          type: string
+        displayName:
+          type: string
+          description: The name to display for the event.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventDefinition`.
+          type: string
+        childEvents:
+          type: array
+          description: A list of events that are a child of this event.
+          items:
+            $ref: '#/components/schemas/EventChild'
+      id: EventDefinition
+      type: object
+    AchievementUpdateMultipleResponse:
+      id: AchievementUpdateMultipleResponse
+      type: object
+      description: Response message for UpdateMultipleAchievements rpc.
+      properties:
+        updatedAchievements:
+          description: The updated state of the achievements.
+          type: array
+          items:
+            $ref: '#/components/schemas/AchievementUpdateResponse'
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementUpdateMultipleResponse`.
+          type: string
+    PlayerLeaderboardScoreListResponse:
+      type: object
+      properties:
+        items:
+          description: The leaderboard scores.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerLeaderboardScore'
+        player:
+          $ref: '#/components/schemas/Player'
+          description: The Player resources for the owner of this score.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerLeaderboardScoreListResponse`.
+          type: string
+        nextPageToken:
+          type: string
+          description: The pagination token for the next page of results.
+      description: A list of player leaderboard scores.
+      id: PlayerLeaderboardScoreListResponse
+    AchievementUnlockResponse:
+      properties:
+        newlyUnlocked:
+          type: boolean
+          description: >-
+            Whether this achievement was newly unlocked (that is, whether the
+            unlock request for the achievement was the first for the player).
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementUnlockResponse`.
+      type: object
+      description: An achievement unlock response
+      id: AchievementUnlockResponse
+    EventBatchRecordFailure:
+      type: object
+      id: EventBatchRecordFailure
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventBatchRecordFailure`.
+        failureCause:
+          enumDescriptions:
+            - Default value. Should not be used.
+            - >-
+              A batch request was issued with more events than are allowed in a
+              single batch.
+            - A batch was sent with data too far in the past to record.
+            - A batch was sent with a time range that was too short.
+            - A batch was sent with a time range that was too long.
+            - >-
+              An attempt was made to record a batch of data which was already
+              seen.
+            - >-
+              An attempt was made to record data faster than the server will
+              apply updates.
+          description: The cause for the update failure.
+          type: string
+          enum:
+            - EVENT_FAILURE_CAUSE_UNSPECIFIED
+            - TOO_LARGE
+            - TIME_PERIOD_EXPIRED
+            - TIME_PERIOD_SHORT
+            - TIME_PERIOD_LONG
+            - ALREADY_UPDATED
+            - RECORD_RATE_HIGH
+        range:
+          description: The time range which was rejected; empty for a request-wide failure.
+          $ref: '#/components/schemas/EventPeriodRange'
+      description: A batch update failure resource.
+    PlayerScore:
+      description: A player score.
+      properties:
+        formattedScore:
+          description: The formatted score for this player score.
+          type: string
+        scoreTag:
+          type: string
+          description: >-
+            Additional information about this score. Values will contain no more
+            than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
+        score:
+          format: int64
+          type: string
+          description: The numerical value for this player score.
+        timeSpan:
+          enum:
+            - SCORE_TIME_SPAN_UNSPECIFIED
+            - ALL_TIME
+            - WEEKLY
+            - DAILY
+          enumDescriptions:
+            - Default value. This value is unused.
+            - The score is an all-time score.
+            - The score is a weekly score.
+            - The score is a daily score.
+          type: string
+          description: The time span for this player score.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerScore`.
+      id: PlayerScore
+      type: object
+    GamesAchievementSetStepsAtLeast:
+      type: object
+      description: The payload to request to increment an achievement.
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#GamesAchievementSetStepsAtLeast`.
+          type: string
+        steps:
+          description: The minimum number of steps for the achievement to be set to.
+          type: integer
+          format: int32
+      id: GamesAchievementSetStepsAtLeast
+    PlayerScoreResponse:
+      properties:
+        leaderboardId:
+          type: string
+          description: The leaderboard ID that this score was submitted to.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerScoreResponse`.
+          type: string
+        unbeatenScores:
+          items:
+            $ref: '#/components/schemas/PlayerScore'
+          type: array
+          description: >-
+            The scores in time spans that have not been beaten. As an example,
+            the submitted score may be better than the player's `DAILY` score,
+            but not better than the player's scores for the `WEEKLY` or
+            `ALL_TIME` time spans.
+        scoreTag:
+          type: string
+          description: >-
+            Additional information about this score. Values will contain no more
+            than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
+        formattedScore:
+          type: string
+          description: The formatted value of the submitted score.
+        beatenScoreTimeSpans:
+          type: array
+          description: >-
+            The time spans where the submitted score is better than the existing
+            score for that time span.
+          items:
+            type: string
+            enum:
+              - SCORE_TIME_SPAN_UNSPECIFIED
+              - ALL_TIME
+              - WEEKLY
+              - DAILY
+            enumDescriptions:
+              - Default value. This value is unused.
+              - The score is an all-time score.
+              - The score is a weekly score.
+              - The score is a daily score.
+      type: object
+      description: A list of leaderboard entry resources.
+      id: PlayerScoreResponse
+    AchievementUpdateRequest:
+      properties:
+        achievementId:
+          type: string
+          description: The achievement this update is being applied to.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementUpdateRequest`.
+        incrementPayload:
+          description: >-
+            The payload if an update of type `INCREMENT` was requested for the
+            achievement.
+          $ref: '#/components/schemas/GamesAchievementIncrement'
+        setStepsAtLeastPayload:
+          description: >-
+            The payload if an update of type `SET_STEPS_AT_LEAST` was requested
+            for the achievement.
+          $ref: '#/components/schemas/GamesAchievementSetStepsAtLeast'
+        updateType:
+          enum:
+            - ACHIEVEMENT_UPDATE_TYPE_UNSPECIFIED
+            - REVEAL
+            - UNLOCK
+            - INCREMENT
+            - SET_STEPS_AT_LEAST
+          enumDescriptions:
+            - Safe default, don't use.
+            - Achievement is revealed.
+            - Achievement is unlocked.
+            - Achievement is incremented.
+            - Achievement progress is set to at least the passed value.
+          description: The type of update being applied.
+          type: string
+      description: A request to update an achievement.
+      type: object
+      id: AchievementUpdateRequest
+    SnapshotImage:
+      id: SnapshotImage
+      type: object
+      description: An image of a snapshot.
+      properties:
+        mime_type:
+          type: string
+          description: The MIME type of the image.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#snapshotImage`.
+        url:
+          type: string
+          description: >-
+            The URL of the image. This URL may be invalidated at any time and
+            should not be cached.
+        width:
+          description: The width of the image.
+          format: int32
+          type: integer
+        height:
+          type: integer
+          description: The height of the image.
+          format: int32
+    PlayerScoreSubmissionList:
+      id: PlayerScoreSubmissionList
+      type: object
+      properties:
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScoreSubmission'
+          description: The score submissions.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerScoreSubmissionList`.
+          type: string
+      description: A list of score submission requests.
+    EventRecordRequest:
+      description: An event period update resource.
+      id: EventRecordRequest
+      properties:
+        requestId:
+          description: The request ID used to identify this attempt to record events.
+          type: string
+          format: int64
+        timePeriods:
+          type: array
+          description: A list of the time period updates being made in this request.
+          items:
+            $ref: '#/components/schemas/EventPeriodUpdate'
+        currentTimeMillis:
+          description: >-
+            The current time when this update was sent, in milliseconds, since
+            1970 UTC (Unix Epoch).
+          type: string
+          format: int64
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventRecordRequest`.
+          type: string
+      type: object
+    EventUpdateResponse:
+      properties:
+        batchFailures:
+          description: Any batch-wide failures which occurred applying updates.
+          type: array
+          items:
+            $ref: '#/components/schemas/EventBatchRecordFailure'
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventUpdateResponse`.
+        playerEvents:
+          items:
+            $ref: '#/components/schemas/PlayerEvent'
+          type: array
+          description: The current status of any updated events
+        eventFailures:
+          type: array
+          description: Any failures updating a particular event.
+          items:
+            $ref: '#/components/schemas/EventRecordFailure'
+      id: EventUpdateResponse
+      description: An event period update resource.
+      type: object
+    Application:
+      type: object
+      description: The Application resource.
+      id: Application
+      properties:
+        description:
+          type: string
+          description: The description of the application.
+        id:
+          type: string
+          description: The ID of the application.
+        leaderboard_count:
+          type: integer
+          format: int32
+          description: >-
+            The number of leaderboards visible to the currently authenticated
+            player.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#application`.
+          type: string
+        category:
+          $ref: '#/components/schemas/ApplicationCategory'
+          description: The category of the application.
+        achievement_count:
+          type: integer
+          format: int32
+          description: >-
+            The number of achievements visible to the currently authenticated
+            player.
+        name:
+          description: The name of the application.
+          type: string
+        assets:
+          type: array
+          description: The assets of the application.
+          items:
+            $ref: '#/components/schemas/ImageAsset'
+        instances:
+          description: The instances of the application.
+          type: array
+          items:
+            $ref: '#/components/schemas/Instance'
+        themeColor:
+          description: >-
+            A hint to the client UI for what color to use as an app-themed
+            color. The color is given as an RGB triplet (e.g. "E0E0E0").
+          type: string
+        author:
+          type: string
+          description: The author of the application.
+        lastUpdatedTimestamp:
+          type: string
+          format: int64
+          description: The last updated timestamp of the application.
+        enabledFeatures:
+          type: array
+          items:
+            enum:
+              - APPLICATION_FEATURE_UNSPECIFIED
+              - SNAPSHOTS
+            type: string
+            enumDescriptions:
+              - Safe default, don't use.
+              - Saved Games (snapshots).
+          description: A list of features that have been enabled for the application.
+    ApplicationPlayerId:
+      description: Primary scoped player identifier for an application.
+      id: ApplicationPlayerId
+      properties:
+        playerId:
+          type: string
+          description: The player identifier for the application.
+        applicationId:
+          type: string
+          description: The application that this player identifier is for.
+      type: object
+    ImageAsset:
+      description: An image asset object.
+      id: ImageAsset
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL of the asset.
+        name:
+          description: The name of the asset.
+          type: string
+        width:
+          type: integer
+          format: int32
+          description: The width of the asset.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#imageAsset`.
+        height:
+          description: The height of the asset.
+          type: integer
+          format: int32
+    RevisionCheckResponse:
+      id: RevisionCheckResponse
+      properties:
+        revisionStatus:
+          enum:
+            - REVISION_STATUS_UNSPECIFIED
+            - OK
+            - DEPRECATED
+            - INVALID
+          type: string
+          enumDescriptions:
+            - Default value. This value is unused.
+            - The revision being used is current.
+            - >-
+              There is currently a newer version available, but the revision
+              being used still works.
+            - The revision being used is not supported in any released version.
+          description: The result of the revision check.
+        apiVersion:
+          description: >-
+            The version of the API this client revision should use when calling
+            API methods.
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#revisionCheckResponse`.
+      description: A third party checking a revision response.
+      type: object
+    PlayerListResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: Token corresponding to the next page of results.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerListResponse`.
+        items:
+          items:
+            $ref: '#/components/schemas/Player'
+          type: array
+          description: The players.
+      id: PlayerListResponse
+      description: A third party player list response.
+      type: object
+    LeaderboardScores:
+      type: object
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#leaderboardScores`.
+          type: string
+        numScores:
+          format: int64
+          type: string
+          description: The total number of scores in the leaderboard.
+        prevPageToken:
+          description: The pagination token for the previous page of results.
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          description: The scores in the leaderboard.
+        playerScore:
+          $ref: '#/components/schemas/LeaderboardEntry'
+          description: >-
+            The score of the requesting player on the leaderboard. The player's
+            score may appear both here and in the list of scores above. If you
+            are viewing a public leaderboard and the player is not sharing their
+            gameplay information publicly, the `scoreRank`and
+            `formattedScoreRank` values will not be present.
+        nextPageToken:
+          description: The pagination token for the next page of results.
+          type: string
+      id: LeaderboardScores
+      description: A ListScores response.
+    GetMultipleApplicationPlayerIdsResponse:
+      description: Response message for GetMultipleApplicationPlayerIds rpc.
+      id: GetMultipleApplicationPlayerIdsResponse
+      properties:
+        playerIds:
+          items:
+            $ref: '#/components/schemas/ApplicationPlayerId'
+          description: >-
+            Output only. The requested applications along with the scoped ids
+            for tha player, if that player has an id for the application. If
+            not, the application is not included in the response.
+          type: array
+          readOnly: true
+      type: object
+    AchievementUpdateMultipleRequest:
+      description: A list of achievement update requests.
+      id: AchievementUpdateMultipleRequest
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementUpdateMultipleRequest`.
+        updates:
+          items:
+            $ref: '#/components/schemas/AchievementUpdateRequest'
+          type: array
+          description: The individual achievement update requests.
+      type: object
+    PlayerLevel:
+      description: 1P/3P metadata about a user's level.
+      id: PlayerLevel
+      properties:
+        level:
+          description: The level for the user.
+          format: int32
+          type: integer
+        minExperiencePoints:
+          format: int64
+          description: The minimum experience points for this level.
+          type: string
+        maxExperiencePoints:
+          description: The maximum experience points for this level.
+          type: string
+          format: int64
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerLevel`.
+      type: object
+    AchievementIncrementResponse:
+      description: An achievement increment response
+      id: AchievementIncrementResponse
+      properties:
+        currentSteps:
+          type: integer
+          format: int32
+          description: The current steps recorded for this incremental achievement.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementIncrementResponse`.
+          type: string
+        newlyUnlocked:
+          type: boolean
+          description: >-
+            Whether the current steps for the achievement has reached the number
+            of steps required to unlock.
+      type: object
+    PlayerLeaderboardScore:
+      id: PlayerLeaderboardScore
+      properties:
+        leaderboard_id:
+          description: The ID of the leaderboard this score is in.
+          type: string
+        scoreString:
+          description: The formatted value of this score.
+          type: string
+        scoreTag:
+          type: string
+          description: >-
+            Additional information about the score. Values must contain no more
+            than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
+        timeSpan:
+          enum:
+            - SCORE_TIME_SPAN_UNSPECIFIED
+            - ALL_TIME
+            - WEEKLY
+            - DAILY
+          type: string
+          description: The time span of this score.
+          enumDescriptions:
+            - Default value. This value is unused.
+            - The score is an all-time score.
+            - The score is a weekly score.
+            - The score is a daily score.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerLeaderboardScore`.
+          type: string
+        socialRank:
+          description: The social rank of the score in this leaderboard.
+          $ref: '#/components/schemas/LeaderboardScoreRank'
+        writeTimestamp:
+          format: int64
+          description: >-
+            The timestamp at which this score was recorded, in milliseconds
+            since the epoch in UTC.
+          type: string
+        publicRank:
+          description: >-
+            The public rank of the score in this leaderboard. This object will
+            not be present if the user is not sharing their scores publicly.
+          $ref: '#/components/schemas/LeaderboardScoreRank'
+        friendsRank:
+          description: >-
+            The rank of the score in the friends collection for this
+            leaderboard.
+          $ref: '#/components/schemas/LeaderboardScoreRank'
+        scoreValue:
+          format: int64
+          description: The numerical value of this score.
+          type: string
+      description: A player leaderboard score object.
+      type: object
+    GamesAchievementIncrement:
+      id: GamesAchievementIncrement
+      properties:
+        steps:
+          type: integer
+          description: The number of steps to be incremented.
+          format: int32
+        requestId:
+          format: int64
+          description: The requestId associated with an increment to an achievement.
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#GamesAchievementIncrement`.
+          type: string
+      type: object
+      description: The payload to request to increment an achievement.
+    AchievementUpdateResponse:
+      properties:
+        currentSteps:
+          description: >-
+            The current steps recorded for this achievement if it is
+            incremental.
+          type: integer
+          format: int32
+        updateOccurred:
+          description: Whether the requested updates actually affected the achievement.
+          type: boolean
+        currentState:
+          enum:
+            - UPDATED_ACHIEVEMENT_STATE_UNSPECIFIED
+            - HIDDEN
+            - REVEALED
+            - UNLOCKED
+          type: string
+          enumDescriptions:
+            - Safe default, don't use.
+            - Achievement is hidden.
+            - Achievement is revealed.
+            - Achievement is unlocked.
+          description: The current state of the achievement.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementUpdateResponse`.
+        achievementId:
+          description: The achievement this update is was applied to.
+          type: string
+        newlyUnlocked:
+          type: boolean
+          description: >-
+            Whether this achievement was newly unlocked (that is, whether the
+            unlock request for the achievement was the first for the player).
+      id: AchievementUpdateResponse
+      type: object
+      description: An updated achievement.
+    Snapshot:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description of this snapshot.
+        id:
+          description: The ID of the snapshot.
+          type: string
+        title:
+          type: string
+          description: The title of this snapshot.
+        progressValue:
+          type: string
+          format: int64
+          description: >-
+            The progress value (64-bit integer set by developer) associated with
+            this snapshot.
+        lastModifiedMillis:
+          format: int64
+          type: string
+          description: >-
+            The timestamp (in millis since Unix epoch) of the last modification
+            to this snapshot.
+        coverImage:
+          $ref: '#/components/schemas/SnapshotImage'
+          description: >-
+            The cover image of this snapshot. May be absent if there is no
+            image.
+        driveId:
+          type: string
+          description: >-
+            The ID of the file underlying this snapshot in the Drive API. Only
+            present if the snapshot is a view on a Drive file and the file is
+            owned by the caller.
+        durationMillis:
+          type: string
+          format: int64
+          description: The duration associated with this snapshot, in millis.
+        uniqueName:
+          type: string
+          description: The unique name provided when the snapshot was created.
+        type:
+          enumDescriptions:
+            - Default value. This value is unused.
+            - A snapshot representing a save game.
+          description: The type of this snapshot.
+          enum:
+            - SNAPSHOT_TYPE_UNSPECIFIED
+            - SAVE_GAME
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#snapshot`.
+      description: An snapshot object.
+      id: Snapshot
+    Player:
+      id: Player
+      type: object
+      description: A Player resource.
+      properties:
+        friendStatus:
+          type: string
+          enumDescriptions:
+            - Default value. This value is unused.
+            - There is no relationship between the players.
+            - The player and requester are friends.
+          description: >-
+            The friend status of the given player, relative to the requester.
+            This is unset if the player is not sharing their friends list with
+            the game.
+          enum:
+            - FRIEND_STATUS_UNSPECIFIED
+            - NO_RELATIONSHIP
+            - FRIEND
+        bannerUrlLandscape:
+          type: string
+          description: The url to the landscape mode player banner image.
+        name:
+          type: object
+          properties:
+            givenName:
+              description: >-
+                The given name of this player. In some places, this is known as
+                the first name.
+              type: string
+            familyName:
+              description: >-
+                The family name of this player. In some places, this is known as
+                the last name.
+              type: string
+          description: A representation of the individual components of the name.
+        experienceInfo:
+          $ref: '#/components/schemas/PlayerExperienceInfo'
+          description: >-
+            An object to represent Play Game experience information for the
+            player.
+        avatarImageUrl:
+          type: string
+          description: The base URL for the image that represents the player.
+        playerId:
+          description: The ID of the player.
+          type: string
+        title:
+          description: The player's title rewarded for their game activities.
+          type: string
+        bannerUrlPortrait:
+          type: string
+          description: The url to the portrait mode player banner image.
+        originalPlayerId:
+          type: string
+          description: >-
+            The player ID that was used for this player the first time they
+            signed into the game in question. This is only populated for calls
+            to player.get for the requesting player, only if the player ID has
+            subsequently changed, and only to clients that support remapping
+            player IDs.
+        gamePlayerId:
+          description: Per-application unique player identifier.
+          type: string
+        displayName:
+          description: The name to display for the player.
+          type: string
+        profileSettings:
+          $ref: '#/components/schemas/ProfileSettings'
+          description: >-
+            The player's profile settings. Controls whether or not the player's
+            profile is visible to other players.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#player`
+          type: string
+    EventPeriodRange:
+      properties:
+        periodEndMillis:
+          format: int64
+          type: string
+          description: >-
+            The time when this update period ends, in millis, since 1970 UTC
+            (Unix Epoch).
+        periodStartMillis:
+          description: >-
+            The time when this update period begins, in millis, since 1970 UTC
+            (Unix Epoch).
+          type: string
+          format: int64
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventPeriodRange`.
+          type: string
+      description: An event period time range.
+      id: EventPeriodRange
+      type: object
+    SnapshotListResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            Token corresponding to the next page of results. If there are no
+            more results, the token is omitted.
+        items:
+          items:
+            $ref: '#/components/schemas/Snapshot'
+          description: The snapshots.
+          type: array
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#snapshotListResponse`.
+          type: string
+      description: A third party list snapshots response.
+      type: object
+      id: SnapshotListResponse
+    PlayerEvent:
+      properties:
+        formattedNumEvents:
+          type: string
+          description: >-
+            The current number of times this event has occurred, as a string.
+            The formatting of this string depends on the configuration of your
+            event in the Play Games Developer Console.
+        numEvents:
+          type: string
+          format: int64
+          description: The current number of times this event has occurred.
+        definitionId:
+          description: The ID of the event definition.
+          type: string
+        playerId:
+          description: The ID of the player.
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerEvent`.
+      id: PlayerEvent
+      description: An event status resource.
+      type: object
+    LeaderboardEntry:
+      description: The Leaderboard Entry resource.
+      id: LeaderboardEntry
+      properties:
+        player:
+          $ref: '#/components/schemas/Player'
+          description: The player who holds this score.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#leaderboardEntry`.
+        scoreTag:
+          description: >-
+            Additional information about the score. Values must contain no more
+            than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
+          type: string
+        formattedScore:
+          description: The localized string for the numerical value of this score.
+          type: string
+        timeSpan:
+          description: The time span of this high score.
+          type: string
+          enumDescriptions:
+            - Default value. This value is unused.
+            - The score is an all-time score.
+            - The score is a weekly score.
+            - The score is a daily score.
+          enum:
+            - SCORE_TIME_SPAN_UNSPECIFIED
+            - ALL_TIME
+            - WEEKLY
+            - DAILY
+        formattedScoreRank:
+          description: >-
+            The localized string for the rank of this score for this
+            leaderboard.
+          type: string
+        scoreRank:
+          description: The rank of this score for this leaderboard.
+          type: string
+          format: int64
+        writeTimestampMillis:
+          description: >-
+            The timestamp at which this score was recorded, in milliseconds
+            since the epoch in UTC.
+          type: string
+          format: int64
+        scoreValue:
+          format: int64
+          description: The numerical value of this score.
+          type: string
+      type: object
+    ScopedPlayerIds:
+      type: object
+      properties:
+        gamePlayerId:
+          type: string
+          description: >-
+            Game-scoped player identifier. This is the same id that is returned
+            in GetPlayer game_player_id field.
+        developerPlayerKey:
+          type: string
+          description: >-
+            Identifier of the player across all games of the given developer.
+            Every player has the same developer_player_key in all games of one
+            developer. Developer player key changes for the game if the game is
+            transferred to another developer. Note that game_player_id will stay
+            unchanged.
+      id: ScopedPlayerIds
+      description: Scoped player identifiers.
+    ApplicationCategory:
+      description: An application category object.
+      id: ApplicationCategory
+      type: object
+      properties:
+        primary:
+          description: The primary category.
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#applicationCategory`.
+          type: string
+        secondary:
+          description: The secondary category.
+          type: string
+    LeaderboardScoreRank:
+      description: A score rank in a leaderboard.
+      properties:
+        formattedRank:
+          description: The rank in the leaderboard as a string.
+          type: string
+        formattedNumScores:
+          description: The number of scores in the leaderboard as a string.
+          type: string
+        numScores:
+          format: int64
+          description: The number of scores in the leaderboard.
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#leaderboardScoreRank`.
+        rank:
+          format: int64
+          type: string
+          description: The rank in the leaderboard.
+      type: object
+      id: LeaderboardScoreRank
+    ProfileSettings:
+      id: ProfileSettings
+      properties:
+        profileVisible:
+          type: boolean
+          description: >-
+            Whether the player's profile is visible to the currently signed in
+            player.
+        friendsListVisibility:
+          enumDescriptions:
+            - Unused.
+            - The friends list is currently visible to the game.
+            - >-
+              The developer does not have access to the friends list, but can
+              call the Android API to show a consent dialog.
+            - >-
+              The friends list is currently unavailable for this user, and it is
+              not possible to request access at this time, either because the
+              user has permanently declined or the friends feature is not
+              available to them. In this state, any attempts to request access
+              to the friends list will be unsuccessful.
+          type: string
+          enum:
+            - FRIENDS_LIST_VISIBILITY_UNSPECIFIED
+            - VISIBLE
+            - REQUEST_REQUIRED
+            - UNAVAILABLE
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#profileSettings`.
+      description: Profile settings
+      type: object
+    EndPoint:
+      type: object
+      id: EndPoint
+      description: Container for a URL end point of the requested type.
+      properties:
+        url:
+          type: string
+          description: >-
+            A URL suitable for loading in a web browser for the requested
+            endpoint.
+    ScoreSubmission:
+      type: object
+      id: ScoreSubmission
+      description: A request to submit a score to leaderboards.
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#scoreSubmission`.
+        signature:
+          type: string
+          description: >-
+            Signature Values will contain URI-safe characters as defined by
+            section 2.3 of RFC 3986.
+        leaderboardId:
+          description: The leaderboard this score is being submitted to.
+          type: string
+        score:
+          format: int64
+          description: The new score being submitted.
+          type: string
+        scoreTag:
+          type: string
+          description: >-
+            Additional information about this score. Values will contain no more
+            than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
+    PlayerExperienceInfo:
+      type: object
+      description: 1P/3P metadata about the player's experience.
+      id: PlayerExperienceInfo
+      properties:
+        currentLevel:
+          $ref: '#/components/schemas/PlayerLevel'
+          description: The current level of the player.
+        lastLevelUpTimestampMillis:
+          description: >-
+            The timestamp when the player was leveled up, in millis since Unix
+            epoch UTC.
+          format: int64
+          type: string
+        nextLevel:
+          $ref: '#/components/schemas/PlayerLevel'
+          description: >-
+            The next level of the player. If the current level is the maximum
+            level, this should be same as the current level.
+        currentExperiencePoints:
+          type: string
+          format: int64
+          description: The current number of experience points for the player.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerExperienceInfo`.
+          type: string
+    EventUpdateRequest:
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventUpdateRequest`.
+          type: string
+        definitionId:
+          type: string
+          description: The ID of the event being modified in this update.
+        updateCount:
+          format: int64
+          description: The number of times this event occurred in this time period.
+          type: string
+      type: object
+      description: An event period update resource.
+      id: EventUpdateRequest
+    EventDefinitionListResponse:
+      id: EventDefinitionListResponse
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventDefinitionListResponse`.
+        items:
+          type: array
+          description: The event definitions.
+          items:
+            $ref: '#/components/schemas/EventDefinition'
+        nextPageToken:
+          description: The pagination token for the next page of results.
+          type: string
+      description: A ListDefinitions response.
+      type: object
+    AchievementDefinitionsListResponse:
+      id: AchievementDefinitionsListResponse
+      description: A list of achievement definition objects.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AchievementDefinition'
+          description: The achievement definitions.
+          type: array
+        nextPageToken:
+          description: Token corresponding to the next page of results.
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#achievementDefinitionsListResponse`.
+          type: string
+      type: object
+    StatsResponse:
+      properties:
+        total_spend_next_28_days:
+          format: float
+          type: number
+          description: >-
+            The predicted amount of money that the player going to spend in the
+            next 28 days. E.g., 1, 30, 60, ... . Not populated if there is not
+            enough information.
+        high_spender_probability:
+          format: float
+          type: number
+          description: >-
+            The probability of the player going to spend beyond a threshold
+            amount of money. E.g., 0, 0.25, 0.50, 0.75. Not populated if there
+            is not enough information.
+        spend_probability:
+          format: float
+          description: >-
+            The probability of the player going to spend the game in the next
+            seven days. E.g., 0, 0.25, 0.50, 0.75. Not populated if there is not
+            enough information.
+          type: number
+        days_since_last_played:
+          description: >-
+            Number of days since the player last played this game. E.g., 0, 1,
+            5, 10, ... . Not populated if there is not enough information.
+          format: int32
+          type: integer
+        num_sessions_percentile:
+          description: >-
+            The approximation of the sessions percentile of the player within
+            the last 30 days, where a session begins when the player is
+            connected to Play Games Services and ends when they are
+            disconnected. E.g., 0, 0.25, 0.5, 0.75. Not populated if there is
+            not enough information.
+          type: number
+          format: float
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#statsResponse`.
+        num_purchases:
+          format: int32
+          description: >-
+            Number of in-app purchases made by the player in this game. E.g., 0,
+            1, 5, 10, ... . Not populated if there is not enough information.
+          type: integer
+        avg_session_length_minutes:
+          type: number
+          description: >-
+            Average session length in minutes of the player. E.g., 1, 30, 60,
+            ... . Not populated if there is not enough information.
+          format: float
+        churn_probability:
+          description: >-
+            The probability of the player not returning to play the game in the
+            next day. E.g., 0, 0.1, 0.5, ..., 1.0. Not populated if there is not
+            enough information.
+          type: number
+          format: float
+        num_sessions:
+          type: integer
+          description: >-
+            The approximate number of sessions of the player within the last 28
+            days, where a session begins when the player is connected to Play
+            Games Services and ends when they are disconnected. E.g., 0, 1, 5,
+            10, ... . Not populated if there is not enough information.
+          format: int32
+        spend_percentile:
+          type: number
+          description: >-
+            The approximate spend percentile of the player in this game. E.g.,
+            0, 0.25, 0.5, 0.75. Not populated if there is not enough
+            information.
+          format: float
+      description: A third party stats resource.
+      id: StatsResponse
+      type: object
+    PlayerAchievement:
+      properties:
+        lastUpdatedTimestamp:
+          description: The timestamp of the last modification to this achievement's state.
+          format: int64
+          type: string
+        currentSteps:
+          format: int32
+          description: The current steps for an incremental achievement.
+          type: integer
+        formattedCurrentStepsString:
+          type: string
+          description: The current steps for an incremental achievement as a string.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#playerAchievement`.
+          type: string
+        experiencePoints:
+          type: string
+          description: >-
+            Experience points earned for the achievement. This field is absent
+            for achievements that have not yet been unlocked and 0 for
+            achievements that have been unlocked by testers but that are
+            unpublished.
+          format: int64
+        id:
+          type: string
+          description: The ID of the achievement.
+        achievementState:
+          enumDescriptions:
+            - Default value. This value is unused.
+            - Achievement is hidden.
+            - Achievement is revealed.
+            - Achievement is unlocked.
+          type: string
+          description: The state of the achievement.
+          enum:
+            - STATE_UNSPECIFIED
+            - HIDDEN
+            - REVEALED
+            - UNLOCKED
+      id: PlayerAchievement
+      description: An achievement object.
+      type: object
+    Instance:
+      id: Instance
+      description: The Instance resource.
+      type: object
+      properties:
+        name:
+          type: string
+          description: Localized display name.
+        webInstance:
+          description: Platform dependent details for Web.
+          $ref: '#/components/schemas/InstanceWebDetails'
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#instance`.
+        iosInstance:
+          description: Platform dependent details for iOS.
+          $ref: '#/components/schemas/InstanceIosDetails'
+        acquisitionUri:
+          description: URI which shows where a user can acquire this instance.
+          type: string
+        realtimePlay:
+          description: Flag to show if this game instance supports realtime play.
+          type: boolean
+        androidInstance:
+          description: Platform dependent details for Android.
+          $ref: '#/components/schemas/InstanceAndroidDetails'
+        turnBasedPlay:
+          type: boolean
+          description: Flag to show if this game instance supports turn based play.
+        platformType:
+          description: The platform type.
+          enum:
+            - PLATFORM_TYPE_UNSPECIFIED
+            - ANDROID
+            - IOS
+            - WEB_APP
+          enumDescriptions:
+            - Default value. Should be unused.
+            - Instance is for Android.
+            - Instance is for iOS.
+            - Instance is for Web App.
+          type: string
+    Leaderboard:
+      properties:
+        order:
+          enumDescriptions:
+            - Default value. This value is unused.
+            - Larger values are better; scores are sorted in descending order
+            - Smaller values are better; scores are sorted in ascending order
+          type: string
+          enum:
+            - SCORE_ORDER_UNSPECIFIED
+            - LARGER_IS_BETTER
+            - SMALLER_IS_BETTER
+          description: How scores are ordered.
+        name:
+          type: string
+          description: The name of the leaderboard.
+        id:
+          type: string
+          description: The leaderboard ID.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#leaderboard`.
+          type: string
+        isIconUrlDefault:
+          type: boolean
+          description: >-
+            Indicates whether the icon image being returned is a default image,
+            or is game-provided.
+        iconUrl:
+          type: string
+          description: The icon for the leaderboard.
+      type: object
+      id: Leaderboard
+      description: The Leaderboard resource.
+    EventPeriodUpdate:
+      id: EventPeriodUpdate
+      type: object
+      description: An event period update resource.
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#eventPeriodUpdate`.
+          type: string
+        timePeriod:
+          $ref: '#/components/schemas/EventPeriodRange'
+          description: The time period being covered by this update.
+        updates:
+          items:
+            $ref: '#/components/schemas/EventUpdateRequest'
+          type: array
+          description: The updates being made for this time period.
+    Category:
+      id: Category
+      properties:
+        category:
+          type: string
+          description: The category name.
+        experiencePoints:
+          type: string
+          format: int64
+          description: Experience points earned in this category.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `games#category`.
+          type: string
+      type: object
+      description: Data related to individual game categories.
+  parameters:
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/drive.appdata: >-
+              See, create, and delete its own configuration data in your Google
+              Drive
+            https://www.googleapis.com/auth/games: Create, edit, and delete your Google Play Games activity
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /games/v1/stats:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/quotaUser'
+    get:
+      description: >-
+        Returns engagement and spend statistics in this application for the
+        currently authenticated user.
+      operationId: games.stats.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+      parameters: []
+      x-stackQL-resource: stats
+      x-stackQL-verb: select
+  /games/v1/snapshots/{snapshotId}:
+    parameters: *ref_1
+    get:
+      description: Retrieves the metadata for a given snapshot ID.
+      operationId: games.snapshots.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/drive.appdata
+          Oauth2c:
+            - https://www.googleapis.com/auth/drive.appdata
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+      parameters:
+        - in: path
+          name: snapshotId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: snapshots
+      x-stackQL-verb: select
+  /games/v1/players/{playerId}/snapshots:
+    parameters: *ref_1
+    get:
+      description: >-
+        Retrieves a list of snapshots created by your application for the player
+        corresponding to the player ID.
+      operationId: games.snapshots.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/drive.appdata
+          Oauth2c:
+            - https://www.googleapis.com/auth/drive.appdata
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotListResponse'
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: snapshots
+      x-stackQL-verb: select
+  /games/v1/events:
+    parameters: *ref_1
+    post:
+      description: >-
+        Records a batch of changes to the number of times events have occurred
+        for the currently authenticated user of this application.
+      operationId: games.events.record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRecordRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventUpdateResponse'
+      parameters:
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+    get:
+      description: >-
+        Returns a list showing the current progress on events in this
+        application for the currently authenticated user.
+      operationId: games.events.listByPlayer
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerEventListResponse'
+      parameters:
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: events__by_player
+      x-stackQL-verb: select
+  /games/v1/eventDefinitions:
+    parameters: *ref_1
+    get:
+      description: Returns a list of the event definitions in this application.
+      operationId: games.events.listDefinitions
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDefinitionListResponse'
+      parameters:
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: events__definitions
+      x-stackQL-verb: select
+  /games/v1/revisions/check:
+    parameters: *ref_1
+    get:
+      description: Checks whether the games client is out of date.
+      operationId: games.revisions.check
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevisionCheckResponse'
+      parameters:
+        - in: query
+          name: clientRevision
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: revisions
+      x-stackQL-verb: exec
+  /games/v1/leaderboards:
+    parameters: *ref_1
+    get:
+      description: Lists all the leaderboard metadata for your application.
+      operationId: games.leaderboards.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardListResponse'
+      parameters:
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: leaderboards
+      x-stackQL-verb: select
+  /games/v1/leaderboards/{leaderboardId}:
+    parameters: *ref_1
+    get:
+      description: Retrieves the metadata of the leaderboard with the given ID.
+      operationId: games.leaderboards.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Leaderboard'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: leaderboards
+      x-stackQL-verb: select
+  /games/v1/players/{playerId}/categories/{collection}:
+    parameters: *ref_1
+    get:
+      description: >-
+        List play data aggregated per category for the player corresponding to
+        `playerId`.
+      operationId: games.metagame.listCategoriesByPlayer
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collection
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: metagame__categories_by_player
+      x-stackQL-verb: select
+  /games/v1/metagameConfig:
+    parameters: *ref_1
+    get:
+      description: Return the metagame configuration data for the calling application.
+      operationId: games.metagame.getMetagameConfig
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetagameConfig'
+      parameters: []
+      x-stackQL-resource: metagame__metagame_config
+      x-stackQL-verb: select
+  /games/v1/achievements:
+    parameters: *ref_1
+    get:
+      description: Lists all the achievement definitions for your application.
+      operationId: games.achievementDefinitions.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementDefinitionsListResponse'
+      parameters:
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: achievement_definitions
+      x-stackQL-verb: select
+  /games/v1/applications/{applicationId}/verify:
+    parameters: *ref_1
+    get:
+      description: >-
+        Verifies the auth token provided with this request is for the
+        application with the specified ID, and returns the ID of the player it
+        was granted for.
+      operationId: games.applications.verify
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationVerifyResponse'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: applications
+      x-stackQL-verb: exec
+  /games/v1/applications/getEndPoint:
+    parameters: *ref_1
+    post:
+      description: Returns a URL for the requested end point type.
+      operationId: games.applications.getEndPoint
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndPoint'
+      parameters:
+        - in: query
+          name: applicationId
+          schema:
+            type: string
+        - in: query
+          name: endPointType
+          schema:
+            type: string
+      x-stackQL-resource: applications__end_point
+      x-stackQL-verb: select
+  /games/v1/applications/played:
+    parameters: *ref_1
+    post:
+      description: >-
+        Indicate that the currently authenticated user is playing your
+        application.
+      operationId: games.applications.played
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: applications
+      x-stackQL-verb: exec
+  /games/v1/applications/{applicationId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Retrieves the metadata of the application with the given ID. If the
+        requested application is not available for the specified `platformType`,
+        the returned response will not include any instance data.
+      operationId: games.applications.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: platformType
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: applications
+      x-stackQL-verb: select
+  /games/v1/achievements/{achievementId}/setStepsAtLeast:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the steps for the currently authenticated player towards unlocking
+        an achievement. If the steps parameter is less than the current number
+        of steps that the player already gained for the achievement, the
+        achievement is not modified.
+      operationId: games.achievements.setStepsAtLeast
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementSetStepsAtLeastResponse'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: steps
+          required: true
+          schema:
+            type: integer
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1/players/{playerId}/achievements:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists the progress for all your application's achievements for the
+        currently authenticated player.
+      operationId: games.achievements.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerAchievementListResponse'
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: state
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: select
+  /games/v1/achievements/{achievementId}/increment:
+    parameters: *ref_1
+    post:
+      description: >-
+        Increments the steps of the achievement with the given ID for the
+        currently authenticated player.
+      operationId: games.achievements.increment
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementIncrementResponse'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: stepsToIncrement
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1/achievements/{achievementId}/unlock:
+    parameters: *ref_1
+    post:
+      description: Unlocks this achievement for the currently authenticated player.
+      operationId: games.achievements.unlock
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementUnlockResponse'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1/achievements/{achievementId}/reveal:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the state of the achievement with the given ID to `REVEALED` for
+        the currently authenticated player.
+      operationId: games.achievements.reveal
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementRevealResponse'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1/achievements/updateMultiple:
+    parameters: *ref_1
+    post:
+      description: Updates multiple achievements for the currently authenticated player.
+      operationId: games.achievements.updateMultiple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementUpdateMultipleRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementUpdateMultipleResponse'
+      parameters: []
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1/leaderboards/{leaderboardId}/scores/{collection}:
+    parameters: *ref_1
+    get:
+      description: Lists the scores in a leaderboard, starting from the top.
+      operationId: games.scores.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardScores'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collection
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: timeSpan
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: scores
+      x-stackQL-verb: select
+  /games/v1/leaderboards/{leaderboardId}/window/{collection}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists the scores in a leaderboard around (and including) a player's
+        score.
+      operationId: games.scores.listWindow
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardScores'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collection
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: timeSpan
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: returnTopIfAbsent
+          schema:
+            type: boolean
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: resultsAbove
+          schema:
+            type: integer
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: scores__window
+      x-stackQL-verb: select
+  /games/v1/players/{playerId}/leaderboards/{leaderboardId}/scores/{timeSpan}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get high scores, and optionally ranks, in leaderboards for the currently
+        authenticated player. For a specific time span, `leaderboardId` can be
+        set to `ALL` to retrieve data for all leaderboards in a given time span.
+        `NOTE: You cannot ask for 'ALL' leaderboards and 'ALL' timeSpans in the
+        same request; only one parameter may be set to 'ALL'.
+      operationId: games.scores.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerLeaderboardScoreListResponse'
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: timeSpan
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: includeRankType
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: scores
+      x-stackQL-verb: select
+  /games/v1/leaderboards/scores:
+    parameters: *ref_1
+    post:
+      description: Submits multiple scores to leaderboards.
+      operationId: games.scores.submitMultiple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerScoreSubmissionList'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerScoreListResponse'
+      parameters:
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1/leaderboards/{leaderboardId}/scores:
+    parameters: *ref_1
+    post:
+      description: Submits a score to the specified leaderboard.
+      operationId: games.scores.submit
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerScoreResponse'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: score
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: scoreTag
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1/players/me/players/{collection}:
+    parameters: *ref_1
+    get:
+      description: Get the collection of players for the currently authenticated user.
+      operationId: games.players.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerListResponse'
+      parameters:
+        - in: path
+          name: collection
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: players
+      x-stackQL-verb: select
+  /games/v1/players/me/scopedIds:
+    parameters: *ref_1
+    get:
+      description: Retrieves scoped player identifiers for currently authenticated user.
+      operationId: games.players.getScopedPlayerIds
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopedPlayerIds'
+      parameters: []
+      x-stackQL-resource: players__scoped_player_ids
+      x-stackQL-verb: select
+  /games/v1/players/{playerId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Retrieves the Player resource with the given ID. To retrieve the player
+        for the currently authenticated user, set `playerId` to `me`.
+      operationId: games.players.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: playerIdConsistencyToken
+          schema:
+            type: string
+      x-stackQL-resource: players
+      x-stackQL-verb: select
+  /games/v1/players/me/multipleApplicationPlayerIds:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get the application player ids for the currently authenticated player
+        across all requested games by the same developer as the calling
+        application. This will only return ids for players that actually have an
+        id (scoped or otherwise) with that game.
+      operationId: games.players.getMultipleApplicationPlayerIds
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMultipleApplicationPlayerIdsResponse'
+      parameters:
+        - in: query
+          name: applicationIds
+          schema:
+            type: string
+      x-stackQL-resource: players__multiple_application_player_ids
+      x-stackQL-verb: select

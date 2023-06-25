@@ -1,0 +1,3260 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Calendar API
+  description: Manipulates events and other calendar data.
+  version: v3
+  x-discovery-doc-revision: '20230616'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/google-apps/calendar/firstapp
+servers:
+  - url: https://www.googleapis.com/calendar/v3
+components:
+  schemas:
+    ColorDefinition:
+      properties:
+        background:
+          type: string
+          description: The background color associated with this color definition.
+        foreground:
+          description: >-
+            The foreground color that can be used to write on top of a
+            background with 'background' color.
+          type: string
+      type: object
+      id: ColorDefinition
+    CreateConferenceRequest:
+      properties:
+        status:
+          description: The status of the conference create request.
+          $ref: '#/components/schemas/ConferenceRequestStatus'
+        requestId:
+          description: >-
+            The client-generated unique ID for this request.
+
+            Clients should regenerate this ID for every new request. If an ID
+            provided is the same as for the previous request, the request is
+            ignored.
+          type: string
+        conferenceSolutionKey:
+          description: The conference solution, such as Hangouts or Google Meet.
+          $ref: '#/components/schemas/ConferenceSolutionKey'
+      type: object
+      id: CreateConferenceRequest
+    Setting:
+      type: object
+      id: Setting
+      properties:
+        id:
+          description: The id of the user setting.
+          type: string
+        etag:
+          description: ETag of the resource.
+          type: string
+        value:
+          description: >-
+            Value of the user setting. The format of the value depends on the ID
+            of the setting. It must always be a UTF-8 string of length up to
+            1024 characters.
+          type: string
+        kind:
+          description: Type of the resource ("calendar#setting").
+          type: string
+          default: calendar#setting
+    Settings:
+      properties:
+        kind:
+          description: Type of the collection ("calendar#settings").
+          type: string
+          default: calendar#settings
+        nextSyncToken:
+          type: string
+          description: >-
+            Token used at a later point in time to retrieve only the entries
+            that have changed since this result was returned. Omitted if further
+            results are available, in which case nextPageToken is provided.
+        items:
+          description: List of user settings.
+          items:
+            $ref: '#/components/schemas/Setting'
+          type: array
+        nextPageToken:
+          description: >-
+            Token used to access the next page of this result. Omitted if no
+            further results are available, in which case nextSyncToken is
+            provided.
+          type: string
+        etag:
+          description: Etag of the collection.
+          type: string
+      id: Settings
+      type: object
+    FreeBusyRequest:
+      id: FreeBusyRequest
+      type: object
+      properties:
+        timeMin:
+          type: string
+          description: The start of the interval for the query formatted as per RFC3339.
+          format: date-time
+        groupExpansionMax:
+          format: int32
+          type: integer
+          description: >-
+            Maximal number of calendar identifiers to be provided for a single
+            group. Optional. An error is returned for a group with more members
+            than this value. Maximum value is 100.
+        calendarExpansionMax:
+          format: int32
+          type: integer
+          description: >-
+            Maximal number of calendars for which FreeBusy information is to be
+            provided. Optional. Maximum value is 50.
+        items:
+          description: List of calendars and/or groups to query.
+          items:
+            $ref: '#/components/schemas/FreeBusyRequestItem'
+          type: array
+        timeMax:
+          description: The end of the interval for the query formatted as per RFC3339.
+          type: string
+          format: date-time
+        timeZone:
+          type: string
+          default: UTC
+          description: Time zone used in the response. Optional. The default is UTC.
+    EventReminder:
+      type: object
+      properties:
+        method:
+          description: |-
+            The method used by this reminder. Possible values are:  
+            - "email" - Reminders are sent via email. 
+            - "popup" - Reminders are sent via a UI popup.  
+            Required when adding a reminder.
+          type: string
+        minutes:
+          description: >-
+            Number of minutes before the start of the event when the reminder
+            should trigger. Valid values are between 0 and 40320 (4 weeks in
+            minutes).
+
+            Required when adding a reminder.
+          type: integer
+          format: int32
+      id: EventReminder
+    TimePeriod:
+      id: TimePeriod
+      properties:
+        start:
+          description: The (inclusive) start of the time period.
+          type: string
+          format: date-time
+        end:
+          format: date-time
+          description: The (exclusive) end of the time period.
+          type: string
+      type: object
+    ConferenceRequestStatus:
+      type: object
+      id: ConferenceRequestStatus
+      properties:
+        statusCode:
+          description: >-
+            The current status of the conference create request. Read-only.
+
+            The possible values are:  
+
+            - "pending": the conference create request is still being processed.
+
+            - "success": the conference create request succeeded, the entry
+            points are populated.
+
+            - "failure": the conference create request failed, there are no
+            entry points.
+          type: string
+    ConferenceProperties:
+      properties:
+        allowedConferenceSolutionTypes:
+          description: >-
+            The types of conference solutions that are supported for this
+            calendar.
+
+            The possible values are:  
+
+            - "eventHangout" 
+
+            - "eventNamedHangout" 
+
+            - "hangoutsMeet"  Optional.
+          type: array
+          items:
+            type: string
+      id: ConferenceProperties
+      type: object
+    EventAttachment:
+      type: object
+      id: EventAttachment
+      properties:
+        iconLink:
+          type: string
+          description: >-
+            URL link to the attachment's icon. This field can only be modified
+            for custom third-party attachments.
+        fileUrl:
+          description: >-
+            URL link to the attachment.
+
+            For adding Google Drive file attachments use the same format as in
+            alternateLink property of the Files resource in the Drive API.
+
+            Required when adding an attachment.
+          type: string
+        title:
+          description: Attachment title.
+          type: string
+        fileId:
+          type: string
+          description: >-
+            ID of the attached file. Read-only.
+
+            For Google Drive files, this is the ID of the corresponding Files
+            resource entry in the Drive API.
+        mimeType:
+          type: string
+          description: Internet media type (MIME type) of the attachment.
+    Channel:
+      properties:
+        token:
+          description: >-
+            An arbitrary string delivered to the target address with each
+            notification delivered over this channel. Optional.
+          type: string
+        params:
+          additionalProperties:
+            type: string
+            description: Declares a new parameter by name.
+          description: >-
+            Additional parameters controlling delivery channel behavior.
+            Optional.
+          type: object
+        type:
+          description: >-
+            The type of delivery mechanism used for this channel. Valid values
+            are "web_hook" (or "webhook"). Both values refer to a channel where
+            Http requests are used to deliver messages.
+          type: string
+        id:
+          description: A UUID or similar unique string that identifies this channel.
+          type: string
+        resourceId:
+          type: string
+          description: >-
+            An opaque ID that identifies the resource being watched on this
+            channel. Stable across different API versions.
+        address:
+          type: string
+          description: The address where notifications are delivered for this channel.
+        payload:
+          description: A Boolean value to indicate whether payload is wanted. Optional.
+          type: boolean
+        kind:
+          description: >-
+            Identifies this as a notification channel used to watch for changes
+            to a resource, which is "api#channel".
+          default: api#channel
+          type: string
+        resourceUri:
+          type: string
+          description: A version-specific identifier for the watched resource.
+        expiration:
+          description: >-
+            Date and time of notification channel expiration, expressed as a
+            Unix timestamp, in milliseconds. Optional.
+          type: string
+          format: int64
+      type: object
+      id: Channel
+    ConferenceSolution:
+      properties:
+        key:
+          description: >-
+            The key which can uniquely identify the conference solution for this
+            event.
+          $ref: '#/components/schemas/ConferenceSolutionKey'
+        name:
+          description: The user-visible name of this solution. Not localized.
+          type: string
+        iconUri:
+          description: The user-visible icon for this solution.
+          type: string
+      type: object
+      id: ConferenceSolution
+    Calendar:
+      type: object
+      properties:
+        kind:
+          description: Type of the resource ("calendar#calendar").
+          default: calendar#calendar
+          type: string
+        id:
+          type: string
+          description: >-
+            Identifier of the calendar. To retrieve IDs call the
+            calendarList.list() method.
+        location:
+          description: Geographic location of the calendar as free-form text. Optional.
+          type: string
+        description:
+          type: string
+          description: Description of the calendar. Optional.
+        summary:
+          description: Title of the calendar.
+          annotations:
+            required:
+              - calendar.calendars.insert
+          type: string
+        timeZone:
+          type: string
+          description: >-
+            The time zone of the calendar. (Formatted as an IANA Time Zone
+            Database name, e.g. "Europe/Zurich".) Optional.
+        conferenceProperties:
+          $ref: '#/components/schemas/ConferenceProperties'
+          description: >-
+            Conferencing properties for this calendar, for example what types of
+            conferences are allowed.
+        etag:
+          type: string
+          description: ETag of the resource.
+      id: Calendar
+    EventWorkingLocationProperties:
+      properties:
+        officeLocation:
+          description: If present, specifies that the user is working from an office.
+          properties:
+            buildingId:
+              description: >-
+                An optional building identifier. This should reference a
+                building ID in the organization's Resources database.
+              type: string
+            floorSectionId:
+              description: An optional arbitrary floor section identifier.
+              type: string
+            label:
+              type: string
+              description: An optional extra label for additional information.
+            floorId:
+              description: An optional arbitrary floor identifier.
+              type: string
+            deskId:
+              type: string
+              description: An optional arbitrary desk identifier.
+          type: object
+        customLocation:
+          description: >-
+            If present, specifies that the user is working from a custom
+            location.
+          type: object
+          properties:
+            label:
+              description: An optional extra label for additional information.
+              type: string
+        type:
+          type: string
+          description: >-
+            Indicates what kind of location this is. Any details are specified
+            in a sub-field of the specified name (but which may be missing if
+            empty). Any other fields are ignored.
+        homeOffice:
+          type: any
+          description: If present, specifies that the user is working at home.
+      id: EventWorkingLocationProperties
+      type: object
+    ConferenceParametersAddOnParameters:
+      properties:
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+      type: object
+      id: ConferenceParametersAddOnParameters
+    CalendarList:
+      properties:
+        kind:
+          default: calendar#calendarList
+          type: string
+          description: Type of the collection ("calendar#calendarList").
+        etag:
+          type: string
+          description: ETag of the collection.
+        nextSyncToken:
+          description: >-
+            Token used at a later point in time to retrieve only the entries
+            that have changed since this result was returned. Omitted if further
+            results are available, in which case nextPageToken is provided.
+          type: string
+        nextPageToken:
+          type: string
+          description: >-
+            Token used to access the next page of this result. Omitted if no
+            further results are available, in which case nextSyncToken is
+            provided.
+        items:
+          items:
+            $ref: '#/components/schemas/CalendarListEntry'
+          type: array
+          description: Calendars that are present on the user's calendar list.
+      id: CalendarList
+      type: object
+    Events:
+      id: Events
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the calendar. Read-only.
+        etag:
+          description: ETag of the collection.
+          type: string
+        nextSyncToken:
+          type: string
+          description: >-
+            Token used at a later point in time to retrieve only the entries
+            that have changed since this result was returned. Omitted if further
+            results are available, in which case nextPageToken is provided.
+        defaultReminders:
+          description: >-
+            The default reminders on the calendar for the authenticated user.
+            These reminders apply to all events on this calendar that do not
+            explicitly override them (i.e. do not have reminders.useDefault set
+            to True).
+          type: array
+          items:
+            $ref: '#/components/schemas/EventReminder'
+        summary:
+          type: string
+          description: Title of the calendar. Read-only.
+        items:
+          type: array
+          description: List of events on the calendar.
+          items:
+            $ref: '#/components/schemas/Event'
+        accessRole:
+          description: >-
+            The user's access role for this calendar. Read-only. Possible values
+            are:  
+
+            - "none" - The user has no access. 
+
+            - "freeBusyReader" - The user has read access to free/busy
+            information. 
+
+            - "reader" - The user has read access to the calendar. Private
+            events will appear to users with reader access, but event details
+            will be hidden. 
+
+            - "writer" - The user has read and write access to the calendar.
+            Private events will appear to users with writer access, and event
+            details will be visible. 
+
+            - "owner" - The user has ownership of the calendar. This role has
+            all of the permissions of the writer role with the additional
+            ability to see and manipulate ACLs.
+          type: string
+        nextPageToken:
+          description: >-
+            Token used to access the next page of this result. Omitted if no
+            further results are available, in which case nextSyncToken is
+            provided.
+          type: string
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            Last modification time of the calendar (as a RFC3339 timestamp).
+            Read-only.
+        timeZone:
+          description: The time zone of the calendar. Read-only.
+          type: string
+        kind:
+          type: string
+          default: calendar#events
+          description: Type of the collection ("calendar#events").
+    FreeBusyResponse:
+      id: FreeBusyResponse
+      properties:
+        calendars:
+          description: List of free/busy information for calendars.
+          additionalProperties:
+            $ref: '#/components/schemas/FreeBusyCalendar'
+            description: Free/busy expansions for a single calendar.
+          type: object
+        timeMin:
+          format: date-time
+          description: The start of the interval.
+          type: string
+        timeMax:
+          format: date-time
+          type: string
+          description: The end of the interval.
+        groups:
+          additionalProperties:
+            $ref: '#/components/schemas/FreeBusyGroup'
+            description: List of calendars that are members of this group.
+          description: Expansion of groups.
+          type: object
+        kind:
+          default: calendar#freeBusy
+          type: string
+          description: Type of the resource ("calendar#freeBusy").
+      type: object
+    CalendarNotification:
+      type: object
+      id: CalendarNotification
+      properties:
+        method:
+          type: string
+          description: >-
+            The method used to deliver the notification. The possible value
+            is:  
+
+            - "email" - Notifications are sent via email.  
+
+            Required when adding a notification.
+        type:
+          description: >-
+            The type of notification. Possible values are:  
+
+            - "eventCreation" - Notification sent when a new event is put on the
+            calendar. 
+
+            - "eventChange" - Notification sent when an event is changed. 
+
+            - "eventCancellation" - Notification sent when an event is
+            cancelled. 
+
+            - "eventResponse" - Notification sent when an attendee responds to
+            the event invitation. 
+
+            - "agenda" - An agenda with the events of the day (sent out in the
+            morning).  
+
+            Required when adding a notification.
+          type: string
+    Acl:
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AclRule'
+          description: List of rules on the access control list.
+        kind:
+          type: string
+          description: Type of the collection ("calendar#acl").
+          default: calendar#acl
+        etag:
+          description: ETag of the collection.
+          type: string
+        nextPageToken:
+          description: >-
+            Token used to access the next page of this result. Omitted if no
+            further results are available, in which case nextSyncToken is
+            provided.
+          type: string
+        nextSyncToken:
+          type: string
+          description: >-
+            Token used at a later point in time to retrieve only the entries
+            that have changed since this result was returned. Omitted if further
+            results are available, in which case nextPageToken is provided.
+      type: object
+      id: Acl
+    ConferenceData:
+      id: ConferenceData
+      type: object
+      properties:
+        createRequest:
+          $ref: '#/components/schemas/CreateConferenceRequest'
+          description: >-
+            A request to generate a new conference and attach it to the event.
+            The data is generated asynchronously. To see whether the data is
+            present check the status field.
+
+            Either conferenceSolution and at least one entryPoint, or
+            createRequest is required.
+        notes:
+          type: string
+          description: >-
+            Additional notes (such as instructions from the domain
+            administrator, legal notices) to display to the user. Can contain
+            HTML. The maximum length is 2048 characters. Optional.
+        parameters:
+          description: >-
+            Additional properties related to a conference. An example would be a
+            solution-specific setting for enabling video streaming.
+          $ref: '#/components/schemas/ConferenceParameters'
+        conferenceId:
+          description: >-
+            The ID of the conference.
+
+            Can be used by developers to keep track of conferences, should not
+            be displayed to users.
+
+            The ID value is formed differently for each conference solution
+            type:  
+
+            - eventHangout: ID is not set. (This conference type is deprecated.)
+
+            - eventNamedHangout: ID is the name of the Hangout. (This conference
+            type is deprecated.)
+
+            - hangoutsMeet: ID is the 10-letter meeting code, for example
+            aaa-bbbb-ccc.
+
+            - addOn: ID is defined by the third-party provider.  Optional.
+          type: string
+        conferenceSolution:
+          $ref: '#/components/schemas/ConferenceSolution'
+          description: >-
+            The conference solution, such as Google Meet.
+
+            Unset for a conference with a failed create request.
+
+            Either conferenceSolution and at least one entryPoint, or
+            createRequest is required.
+        entryPoints:
+          description: >-
+            Information about individual conference entry points, such as URLs
+            or phone numbers.
+
+            All of them must belong to the same conference.
+
+            Either conferenceSolution and at least one entryPoint, or
+            createRequest is required.
+          type: array
+          items:
+            $ref: '#/components/schemas/EntryPoint'
+        signature:
+          type: string
+          description: |-
+            The signature of the conference data.
+            Generated on server side.
+            Unset for a conference with a failed create request.
+            Optional for a conference with a pending create request.
+    CalendarListEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier of the calendar.
+          annotations:
+            required:
+              - calendar.calendarList.insert
+        description:
+          type: string
+          description: Description of the calendar. Optional. Read-only.
+        summary:
+          description: Title of the calendar. Read-only.
+          type: string
+        timeZone:
+          description: The time zone of the calendar. Optional. Read-only.
+          type: string
+        kind:
+          type: string
+          description: Type of the resource ("calendar#calendarListEntry").
+          default: calendar#calendarListEntry
+        accessRole:
+          description: >-
+            The effective access role that the authenticated user has on the
+            calendar. Read-only. Possible values are:  
+
+            - "freeBusyReader" - Provides read access to free/busy information. 
+
+            - "reader" - Provides read access to the calendar. Private events
+            will appear to users with reader access, but event details will be
+            hidden. 
+
+            - "writer" - Provides read and write access to the calendar. Private
+            events will appear to users with writer access, and event details
+            will be visible. 
+
+            - "owner" - Provides ownership of the calendar. This role has all of
+            the permissions of the writer role with the additional ability to
+            see and manipulate ACLs.
+          type: string
+        backgroundColor:
+          description: >-
+            The main color of the calendar in the hexadecimal format "#0088aa".
+            This property supersedes the index-based colorId property. To set or
+            change this property, you need to specify colorRgbFormat=true in the
+            parameters of the insert, update and patch methods. Optional.
+          type: string
+        primary:
+          description: >-
+            Whether the calendar is the primary calendar of the authenticated
+            user. Read-only. Optional. The default is False.
+          type: boolean
+          default: 'false'
+        deleted:
+          type: boolean
+          default: 'false'
+          description: >-
+            Whether this calendar list entry has been deleted from the calendar
+            list. Read-only. Optional. The default is False.
+        notificationSettings:
+          properties:
+            notifications:
+              description: The list of notifications set for this calendar.
+              type: array
+              items:
+                $ref: '#/components/schemas/CalendarNotification'
+          type: object
+          description: >-
+            The notifications that the authenticated user is receiving for this
+            calendar.
+        defaultReminders:
+          type: array
+          description: >-
+            The default reminders that the authenticated user has for this
+            calendar.
+          items:
+            $ref: '#/components/schemas/EventReminder'
+        etag:
+          description: ETag of the resource.
+          type: string
+        hidden:
+          description: >-
+            Whether the calendar has been hidden from the list. Optional. The
+            attribute is only returned when the calendar is hidden, in which
+            case the value is true.
+          type: boolean
+          default: 'false'
+        foregroundColor:
+          description: >-
+            The foreground color of the calendar in the hexadecimal format
+            "#ffffff". This property supersedes the index-based colorId
+            property. To set or change this property, you need to specify
+            colorRgbFormat=true in the parameters of the insert, update and
+            patch methods. Optional.
+          type: string
+        colorId:
+          type: string
+          description: >-
+            The color of the calendar. This is an ID referring to an entry in
+            the calendar section of the colors definition (see the colors
+            endpoint). This property is superseded by the backgroundColor and
+            foregroundColor properties and can be ignored when using these
+            properties. Optional.
+        summaryOverride:
+          description: >-
+            The summary that the authenticated user has set for this calendar.
+            Optional.
+          type: string
+        location:
+          description: >-
+            Geographic location of the calendar as free-form text. Optional.
+            Read-only.
+          type: string
+        conferenceProperties:
+          $ref: '#/components/schemas/ConferenceProperties'
+          description: >-
+            Conferencing properties for this calendar, for example what types of
+            conferences are allowed.
+        selected:
+          description: >-
+            Whether the calendar content shows up in the calendar UI. Optional.
+            The default is False.
+          type: boolean
+          default: 'false'
+      id: CalendarListEntry
+    Error:
+      id: Error
+      properties:
+        reason:
+          description: >-
+            Specific reason for the error. Some of the possible values are:  
+
+            - "groupTooBig" - The group of users requested is too large for a
+            single query. 
+
+            - "tooManyCalendarsRequested" - The number of calendars requested is
+            too large for a single query. 
+
+            - "notFound" - The requested resource was not found. 
+
+            - "internalError" - The API service has encountered an internal
+            error.  Additional error types may be added in the future, so
+            clients should gracefully handle additional error statuses not
+            included in this list.
+          type: string
+        domain:
+          description: Domain, or broad category, of the error.
+          type: string
+      type: object
+    FreeBusyRequestItem:
+      type: object
+      id: FreeBusyRequestItem
+      properties:
+        id:
+          description: The identifier of a calendar or a group.
+          type: string
+    FreeBusyCalendar:
+      id: FreeBusyCalendar
+      type: object
+      properties:
+        errors:
+          description: Optional error(s) (if computation for the calendar failed).
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+        busy:
+          description: >-
+            List of time ranges during which this calendar should be regarded as
+            busy.
+          items:
+            $ref: '#/components/schemas/TimePeriod'
+          type: array
+    EventDateTime:
+      properties:
+        timeZone:
+          type: string
+          description: >-
+            The time zone in which the time is specified. (Formatted as an IANA
+            Time Zone Database name, e.g. "Europe/Zurich".) For recurring events
+            this field is required and specifies the time zone in which the
+            recurrence is expanded. For single events this field is optional and
+            indicates a custom time zone for the event start/end.
+        date:
+          format: date
+          type: string
+          description: The date, in the format "yyyy-mm-dd", if this is an all-day event.
+        dateTime:
+          type: string
+          format: date-time
+          description: >-
+            The time, as a combined date-time value (formatted according to
+            RFC3339). A time zone offset is required unless a time zone is
+            explicitly specified in timeZone.
+      id: EventDateTime
+      type: object
+    FreeBusyGroup:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+          description: Optional error(s) (if computation for the group failed).
+        calendars:
+          description: List of calendars' identifiers within a group.
+          items:
+            type: string
+          type: array
+      id: FreeBusyGroup
+      type: object
+    ConferenceParameters:
+      id: ConferenceParameters
+      properties:
+        addOnParameters:
+          $ref: '#/components/schemas/ConferenceParametersAddOnParameters'
+          description: Additional add-on specific data.
+      type: object
+    EntryPoint:
+      id: EntryPoint
+      properties:
+        password:
+          description: >-
+            The password to access the conference. The maximum length is 128
+            characters.
+
+            When creating new conference data, populate only the subset of
+            {meetingCode, accessCode, passcode, password, pin} fields that match
+            the terminology that the conference provider uses. Only the
+            populated fields should be displayed.
+
+            Optional.
+          type: string
+        accessCode:
+          type: string
+          description: >-
+            The access code to access the conference. The maximum length is 128
+            characters.
+
+            When creating new conference data, populate only the subset of
+            {meetingCode, accessCode, passcode, password, pin} fields that match
+            the terminology that the conference provider uses. Only the
+            populated fields should be displayed.
+
+            Optional.
+        label:
+          type: string
+          description: >-
+            The label for the URI. Visible to end users. Not localized. The
+            maximum length is 512 characters.
+
+            Examples:  
+
+            - for video: meet.google.com/aaa-bbbb-ccc
+
+            - for phone: +1 123 268 2601
+
+            - for sip: 12345678@altostrat.com
+
+            - for more: should not be filled  
+
+            Optional.
+        entryPointFeatures:
+          items:
+            type: string
+          type: array
+          description: >-
+            Features of the entry point, such as being toll or toll-free. One
+            entry point can have multiple features. However, toll and toll-free
+            cannot be both set on the same entry point.
+        entryPointType:
+          description: >-
+            The type of the conference entry point.
+
+            Possible values are:  
+
+            - "video" - joining a conference over HTTP. A conference can have
+            zero or one video entry point.
+
+            - "phone" - joining a conference by dialing a phone number. A
+            conference can have zero or more phone entry points.
+
+            - "sip" - joining a conference over SIP. A conference can have zero
+            or one sip entry point.
+
+            - "more" - further conference joining instructions, for example
+            additional phone numbers. A conference can have zero or one more
+            entry point. A conference with only a more entry point is not a
+            valid conference.
+          type: string
+        regionCode:
+          description: >-
+            The CLDR/ISO 3166 region code for the country associated with this
+            phone access. Example: "SE" for Sweden.
+
+            Calendar backend will populate this field only for
+            EntryPointType.PHONE.
+          type: string
+        passcode:
+          description: >-
+            The passcode to access the conference. The maximum length is 128
+            characters.
+
+            When creating new conference data, populate only the subset of
+            {meetingCode, accessCode, passcode, password, pin} fields that match
+            the terminology that the conference provider uses. Only the
+            populated fields should be displayed.
+          type: string
+        uri:
+          description: >-
+            The URI of the entry point. The maximum length is 1300 characters.
+
+            Format:  
+
+            - for video, http: or https: schema is required.
+
+            - for phone, tel: schema is required. The URI should include the
+            entire dial sequence (e.g., tel:+12345678900,,,123456789;1234).
+
+            - for sip, sip: schema is required, e.g.,
+            sip:12345678@myprovider.com.
+
+            - for more, http: or https: schema is required.
+          type: string
+        pin:
+          type: string
+          description: >-
+            The PIN to access the conference. The maximum length is 128
+            characters.
+
+            When creating new conference data, populate only the subset of
+            {meetingCode, accessCode, passcode, password, pin} fields that match
+            the terminology that the conference provider uses. Only the
+            populated fields should be displayed.
+
+            Optional.
+        meetingCode:
+          description: >-
+            The meeting code to access the conference. The maximum length is 128
+            characters.
+
+            When creating new conference data, populate only the subset of
+            {meetingCode, accessCode, passcode, password, pin} fields that match
+            the terminology that the conference provider uses. Only the
+            populated fields should be displayed.
+
+            Optional.
+          type: string
+      type: object
+    Event:
+      id: Event
+      type: object
+      properties:
+        attachments:
+          type: array
+          description: >-
+            File attachments for the event.
+
+            In order to modify attachments the supportsAttachments request
+            parameter should be set to true.
+
+            There can be at most 25 attachments per event,
+          items:
+            $ref: '#/components/schemas/EventAttachment'
+        htmlLink:
+          description: >-
+            An absolute link to this event in the Google Calendar Web UI.
+            Read-only.
+          type: string
+        reminders:
+          properties:
+            useDefault:
+              type: boolean
+              description: >-
+                Whether the default reminders of the calendar apply to the
+                event.
+            overrides:
+              description: >-
+                If the event doesn't use the default reminders, this lists the
+                reminders specific to the event, or, if not set, indicates that
+                no reminders are set for this event. The maximum number of
+                override reminders is 5.
+              items:
+                $ref: '#/components/schemas/EventReminder'
+              type: array
+          type: object
+          description: Information about the event's reminders for the authenticated user.
+        attendees:
+          description: >-
+            The attendees of the event. See the Events with attendees guide for
+            more information on scheduling events with other calendar users.
+            Service accounts need to use domain-wide delegation of authority to
+            populate the attendee list.
+          type: array
+          items:
+            $ref: '#/components/schemas/EventAttendee'
+        colorId:
+          description: >-
+            The color of the event. This is an ID referring to an entry in the
+            event section of the colors definition (see the  colors endpoint).
+            Optional.
+          type: string
+        recurringEventId:
+          description: >-
+            For an instance of a recurring event, this is the id of the
+            recurring event to which this instance belongs. Immutable.
+          type: string
+        etag:
+          description: ETag of the resource.
+          type: string
+        eventType:
+          type: string
+          default: default
+          description: |-
+            Specific type of the event. Read-only. Possible values are:  
+            - "default" - A regular event or not further specified. 
+            - "outOfOffice" - An out-of-office event. 
+            - "focusTime" - A focus-time event. 
+            - "workingLocation" - A working location event. Developer Preview.
+        creator:
+          properties:
+            email:
+              description: The creator's email address, if available.
+              type: string
+            id:
+              type: string
+              description: The creator's Profile ID, if available.
+            self:
+              default: 'false'
+              description: >-
+                Whether the creator corresponds to the calendar on which this
+                copy of the event appears. Read-only. The default is False.
+              type: boolean
+            displayName:
+              type: string
+              description: The creator's name, if available.
+          description: The creator of the event. Read-only.
+          type: object
+        privateCopy:
+          type: boolean
+          default: 'false'
+          description: >-
+            If set to True, Event propagation is disabled. Note that it is not
+            the same thing as Private event properties. Optional. Immutable. The
+            default is False.
+        conferenceData:
+          $ref: '#/components/schemas/ConferenceData'
+          description: >-
+            The conference-related information, such as details of a Google Meet
+            conference. To create new conference details use the createRequest
+            field. To persist your changes, remember to set the
+            conferenceDataVersion request parameter to 1 for all event
+            modification requests.
+        guestsCanSeeOtherGuests:
+          default: 'true'
+          type: boolean
+          description: >-
+            Whether attendees other than the organizer can see who the event's
+            attendees are. Optional. The default is True.
+        organizer:
+          type: object
+          properties:
+            id:
+              description: The organizer's Profile ID, if available.
+              type: string
+            self:
+              type: boolean
+              description: >-
+                Whether the organizer corresponds to the calendar on which this
+                copy of the event appears. Read-only. The default is False.
+              default: 'false'
+            email:
+              type: string
+              description: >-
+                The organizer's email address, if available. It must be a valid
+                email address as per RFC5322.
+            displayName:
+              description: The organizer's name, if available.
+              type: string
+          description: >-
+            The organizer of the event. If the organizer is also an attendee,
+            this is indicated with a separate entry in attendees with the
+            organizer field set to True. To change the organizer, use the move
+            operation. Read-only, except when importing an event.
+        visibility:
+          type: string
+          default: default
+          description: >-
+            Visibility of the event. Optional. Possible values are:  
+
+            - "default" - Uses the default visibility for events on the
+            calendar. This is the default value. 
+
+            - "public" - The event is public and event details are visible to
+            all readers of the calendar. 
+
+            - "private" - The event is private and only event attendees may view
+            event details. 
+
+            - "confidential" - The event is private. This value is provided for
+            compatibility reasons.
+        status:
+          type: string
+          description: >-
+            Status of the event. Optional. Possible values are:  
+
+            - "confirmed" - The event is confirmed. This is the default status. 
+
+            - "tentative" - The event is tentatively confirmed. 
+
+            - "cancelled" - The event is cancelled (deleted). The list method
+            returns cancelled events only on incremental sync (when syncToken or
+            updatedMin are specified) or if the showDeleted flag is set to true.
+            The get method always returns them.
+
+            A cancelled status represents two different states depending on the
+            event type:  
+
+            - Cancelled exceptions of an uncancelled recurring event indicate
+            that this instance should no longer be presented to the user.
+            Clients should store these events for the lifetime of the parent
+            recurring event.
+
+            Cancelled exceptions are only guaranteed to have values for the id,
+            recurringEventId and originalStartTime fields populated. The other
+            fields might be empty.  
+
+            - All other cancelled events represent deleted events. Clients
+            should remove their locally synced copies. Such cancelled events
+            will eventually disappear, so do not rely on them being available
+            indefinitely.
+
+            Deleted events are only guaranteed to have the id field populated.  
+            On the organizer's calendar, cancelled events continue to expose
+            event details (summary, location, etc.) so that they can be restored
+            (undeleted). Similarly, the events to which the user was invited and
+            that they manually removed continue to provide details. However,
+            incremental sync requests with showDeleted set to false will not
+            return these details.
+
+            If an event changes its organizer (for example via the move
+            operation) and the original organizer is not on the attendee list,
+            it will leave behind a cancelled event where only the id field is
+            guaranteed to be populated.
+        originalStartTime:
+          description: >-
+            For an instance of a recurring event, this is the time at which this
+            event would start according to the recurrence data in the recurring
+            event identified by recurringEventId. It uniquely identifies the
+            instance within the recurring event series even if the instance was
+            moved to a different time. Immutable.
+          $ref: '#/components/schemas/EventDateTime'
+        updated:
+          type: string
+          description: >-
+            Last modification time of the event (as a RFC3339 timestamp).
+            Read-only.
+          format: date-time
+        endTimeUnspecified:
+          type: boolean
+          description: >-
+            Whether the end time is actually unspecified. An end time is still
+            provided for compatibility reasons, even if this attribute is set to
+            True. The default is False.
+          default: 'false'
+        summary:
+          type: string
+          description: Title of the event.
+        id:
+          type: string
+          description: >-
+            Opaque identifier of the event. When creating new single or
+            recurring events, you can specify their IDs. Provided IDs must
+            follow these rules:  
+
+            - characters allowed in the ID are those used in base32hex encoding,
+            i.e. lowercase letters a-v and digits 0-9, see section 3.1.2 in
+            RFC2938 
+
+            - the length of the ID must be between 5 and 1024 characters 
+
+            - the ID must be unique per calendar  Due to the globally
+            distributed nature of the system, we cannot guarantee that ID
+            collisions will be detected at event creation time. To minimize the
+            risk of collisions we recommend using an established UUID algorithm
+            such as one described in RFC4122.
+
+            If you do not specify an ID, it will be automatically generated by
+            the server.
+
+            Note that the icalUID and the id are not identical and only one of
+            them should be supplied at event creation time. One difference in
+            their semantics is that in recurring events, all occurrences of one
+            event have different ids while they all share the same icalUIDs.
+        locked:
+          description: >-
+            Whether this is a locked event copy where no changes can be made to
+            the main event fields "summary", "description", "location", "start",
+            "end" or "recurrence". The default is False. Read-Only.
+          type: boolean
+          default: 'false'
+        description:
+          type: string
+          description: Description of the event. Can contain HTML. Optional.
+        kind:
+          default: calendar#event
+          type: string
+          description: Type of the resource ("calendar#event").
+        guestsCanInviteOthers:
+          default: 'true'
+          description: >-
+            Whether attendees other than the organizer can invite others to the
+            event. Optional. The default is True.
+          type: boolean
+        workingLocationProperties:
+          $ref: '#/components/schemas/EventWorkingLocationProperties'
+          description: Working Location event data. Read-only. Developer Preview.
+        attendeesOmitted:
+          type: boolean
+          default: 'false'
+          description: >-
+            Whether attendees may have been omitted from the event's
+            representation. When retrieving an event, this may be due to a
+            restriction specified by the maxAttendee query parameter. When
+            updating an event, this can be used to only update the participant's
+            response. Optional. The default is False.
+        iCalUID:
+          description: >-
+            Event unique identifier as defined in RFC5545. It is used to
+            uniquely identify events accross calendaring systems and must be
+            supplied when importing events via the import method.
+
+            Note that the iCalUID and the id are not identical and only one of
+            them should be supplied at event creation time. One difference in
+            their semantics is that in recurring events, all occurrences of one
+            event have different ids while they all share the same iCalUIDs. To
+            retrieve an event using its iCalUID, call the events.list method
+            using the iCalUID parameter. To retrieve an event using its id, call
+            the events.get method.
+          annotations:
+            required:
+              - calendar.events.import
+          type: string
+        location:
+          description: Geographic location of the event as free-form text. Optional.
+          type: string
+        start:
+          description: >-
+            The (inclusive) start time of the event. For a recurring event, this
+            is the start time of the first instance.
+          $ref: '#/components/schemas/EventDateTime'
+          annotations:
+            required:
+              - calendar.events.import
+              - calendar.events.insert
+              - calendar.events.update
+        hangoutLink:
+          description: >-
+            An absolute link to the Google Hangout associated with this event.
+            Read-only.
+          type: string
+        sequence:
+          format: int32
+          type: integer
+          description: Sequence number as per iCalendar.
+        extendedProperties:
+          description: Extended properties of the event.
+          type: object
+          properties:
+            shared:
+              description: >-
+                Properties that are shared between copies of the event on other
+                attendees' calendars.
+              additionalProperties:
+                description: The name of the shared property and the corresponding value.
+                type: string
+              type: object
+            private:
+              additionalProperties:
+                description: The name of the private property and the corresponding value.
+                type: string
+              description: >-
+                Properties that are private to the copy of the event that
+                appears on this calendar.
+              type: object
+        guestsCanModify:
+          type: boolean
+          default: 'false'
+          description: >-
+            Whether attendees other than the organizer can modify the event.
+            Optional. The default is False.
+        anyoneCanAddSelf:
+          description: >-
+            Whether anyone can invite themselves to the event (deprecated).
+            Optional. The default is False.
+          type: boolean
+          default: 'false'
+        gadget:
+          properties:
+            title:
+              type: string
+              description: The gadget's title. Deprecated.
+            link:
+              type: string
+              description: The gadget's URL. The URL scheme must be HTTPS. Deprecated.
+            width:
+              format: int32
+              description: >-
+                The gadget's width in pixels. The width must be an integer
+                greater than 0. Optional. Deprecated.
+              type: integer
+            height:
+              type: integer
+              description: >-
+                The gadget's height in pixels. The height must be an integer
+                greater than 0. Optional. Deprecated.
+              format: int32
+            display:
+              description: >-
+                The gadget's display mode. Deprecated. Possible values are:  
+
+                - "icon" - The gadget displays next to the event's title in the
+                calendar view. 
+
+                - "chip" - The gadget displays when the event is clicked.
+              type: string
+            preferences:
+              additionalProperties:
+                description: The preference name and corresponding value.
+                type: string
+              type: object
+              description: Preferences.
+            iconLink:
+              description: The gadget's icon URL. The URL scheme must be HTTPS. Deprecated.
+              type: string
+            type:
+              type: string
+              description: The gadget's type. Deprecated.
+          type: object
+          description: >-
+            A gadget that extends this event. Gadgets are deprecated; this
+            structure is instead only used for returning birthday calendar
+            metadata.
+        created:
+          format: date-time
+          description: Creation time of the event (as a RFC3339 timestamp). Read-only.
+          type: string
+        end:
+          description: >-
+            The (exclusive) end time of the event. For a recurring event, this
+            is the end time of the first instance.
+          annotations:
+            required:
+              - calendar.events.import
+              - calendar.events.insert
+              - calendar.events.update
+          $ref: '#/components/schemas/EventDateTime'
+        recurrence:
+          description: >-
+            List of RRULE, EXRULE, RDATE and EXDATE lines for a recurring event,
+            as specified in RFC5545. Note that DTSTART and DTEND lines are not
+            allowed in this field; event start and end times are specified in
+            the start and end fields. This field is omitted for single events or
+            instances of recurring events.
+          items:
+            type: string
+          type: array
+        source:
+          properties:
+            title:
+              description: >-
+                Title of the source; for example a title of a web page or an
+                email subject.
+              type: string
+            url:
+              type: string
+              description: >-
+                URL of the source pointing to a resource. The URL scheme must be
+                HTTP or HTTPS.
+          description: >-
+            Source from which the event was created. For example, a web page, an
+            email message or any document identifiable by an URL with HTTP or
+            HTTPS scheme. Can only be seen or modified by the creator of the
+            event.
+          type: object
+        transparency:
+          type: string
+          description: >-
+            Whether the event blocks time on the calendar. Optional. Possible
+            values are:  
+
+            - "opaque" - Default value. The event does block time on the
+            calendar. This is equivalent to setting Show me as to Busy in the
+            Calendar UI. 
+
+            - "transparent" - The event does not block time on the calendar.
+            This is equivalent to setting Show me as to Available in the
+            Calendar UI.
+          default: opaque
+    ConferenceSolutionKey:
+      type: object
+      id: ConferenceSolutionKey
+      properties:
+        type:
+          type: string
+          description: >-
+            The conference solution type.
+
+            If a client encounters an unfamiliar or empty type, it should still
+            be able to display the entry points. However, it should disallow
+            modifications.
+
+            The possible values are:  
+
+            - "eventHangout" for Hangouts for consumers (deprecated; existing
+            events may show this conference solution type but new conferences
+            cannot be created)
+
+            - "eventNamedHangout" for classic Hangouts for Google Workspace
+            users (deprecated; existing events may show this conference solution
+            type but new conferences cannot be created)
+
+            - "hangoutsMeet" for Google Meet (http://meet.google.com)
+
+            - "addOn" for 3P conference providers
+    Colors:
+      properties:
+        event:
+          type: object
+          description: >-
+            A global palette of event colors, mapping from the color ID to its
+            definition. An event resource may refer to one of these color IDs in
+            its colorId field. Read-only.
+          additionalProperties:
+            description: An event color definition.
+            $ref: '#/components/schemas/ColorDefinition'
+        updated:
+          format: date-time
+          type: string
+          description: >-
+            Last modification time of the color palette (as a RFC3339
+            timestamp). Read-only.
+        calendar:
+          additionalProperties:
+            $ref: '#/components/schemas/ColorDefinition'
+            description: A calendar color definition.
+          description: >-
+            A global palette of calendar colors, mapping from the color ID to
+            its definition. A calendarListEntry resource refers to one of these
+            color IDs in its colorId field. Read-only.
+          type: object
+        kind:
+          description: Type of the resource ("calendar#colors").
+          default: calendar#colors
+          type: string
+      type: object
+      id: Colors
+    EventAttendee:
+      properties:
+        self:
+          description: >-
+            Whether this entry represents the calendar on which this copy of the
+            event appears. Read-only. The default is False.
+          default: 'false'
+          type: boolean
+        optional:
+          description: >-
+            Whether this is an optional attendee. Optional. The default is
+            False.
+          default: 'false'
+          type: boolean
+        displayName:
+          type: string
+          description: The attendee's name, if available. Optional.
+        email:
+          type: string
+          description: >-
+            The attendee's email address, if available. This field must be
+            present when adding an attendee. It must be a valid email address as
+            per RFC5322.
+
+            Required when adding an attendee.
+        id:
+          description: The attendee's Profile ID, if available.
+          type: string
+        organizer:
+          type: boolean
+          description: >-
+            Whether the attendee is the organizer of the event. Read-only. The
+            default is False.
+        additionalGuests:
+          default: '0'
+          description: Number of additional guests. Optional. The default is 0.
+          type: integer
+          format: int32
+        responseStatus:
+          description: >-
+            The attendee's response status. Possible values are:  
+
+            - "needsAction" - The attendee has not responded to the invitation
+            (recommended for new events). 
+
+            - "declined" - The attendee has declined the invitation. 
+
+            - "tentative" - The attendee has tentatively accepted the
+            invitation. 
+
+            - "accepted" - The attendee has accepted the invitation.  Warning:
+            If you add an event using the values declined, tentative, or
+            accepted, attendees with the "Add invitations to my calendar"
+            setting set to "When I respond to invitation in email" won't see an
+            event on their calendar unless they choose to change their
+            invitation response in the event invitation email.
+          type: string
+        resource:
+          description: >-
+            Whether the attendee is a resource. Can only be set when the
+            attendee is added to the event for the first time. Subsequent
+            modifications are ignored. Optional. The default is False.
+          type: boolean
+          default: 'false'
+        comment:
+          type: string
+          description: The attendee's response comment. Optional.
+      type: object
+      id: EventAttendee
+    AclRule:
+      properties:
+        role:
+          annotations:
+            required:
+              - calendar.acl.insert
+          description: >-
+            The role assigned to the scope. Possible values are:  
+
+            - "none" - Provides no access. 
+
+            - "freeBusyReader" - Provides read access to free/busy information. 
+
+            - "reader" - Provides read access to the calendar. Private events
+            will appear to users with reader access, but event details will be
+            hidden. 
+
+            - "writer" - Provides read and write access to the calendar. Private
+            events will appear to users with writer access, and event details
+            will be visible. 
+
+            - "owner" - Provides ownership of the calendar. This role has all of
+            the permissions of the writer role with the additional ability to
+            see and manipulate ACLs.
+          type: string
+        scope:
+          properties:
+            type:
+              description: >-
+                The type of the scope. Possible values are:  
+
+                - "default" - The public scope. This is the default value. 
+
+                - "user" - Limits the scope to a single user. 
+
+                - "group" - Limits the scope to a group. 
+
+                - "domain" - Limits the scope to a domain.  Note: The
+                permissions granted to the "default", or public, scope apply to
+                any user, authenticated or not.
+              annotations:
+                required:
+                  - calendar.acl.insert
+                  - calendar.acl.update
+              type: string
+            value:
+              description: >-
+                The email address of a user or group, or the name of a domain,
+                depending on the scope type. Omitted for type "default".
+              type: string
+          description: The extent to which calendar access is granted by this ACL rule.
+          type: object
+          annotations:
+            required:
+              - calendar.acl.insert
+              - calendar.acl.update
+        etag:
+          description: ETag of the resource.
+          type: string
+        id:
+          type: string
+          description: >-
+            Identifier of the Access Control List (ACL) rule. See Sharing
+            calendars.
+        kind:
+          description: Type of the resource ("calendar#aclRule").
+          type: string
+          default: calendar#aclRule
+      id: AclRule
+      type: object
+  parameters:
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    alt:
+      description: Data format for the response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+    userIp:
+      description: Deprecated. Please use quotaUser instead.
+      in: query
+      name: userIp
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        An opaque string that represents a user for quota purposes. Must not
+        exceed 40 characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/calendar: >-
+              See, edit, share, and permanently delete all the calendars you can
+              access using Google Calendar
+            https://www.googleapis.com/auth/calendar.events: View and edit events on all your calendars
+            https://www.googleapis.com/auth/calendar.events.readonly: View events on all your calendars
+            https://www.googleapis.com/auth/calendar.settings.readonly: View your Calendar settings
+            https://www.googleapis.com/auth/calendar.readonly: >-
+              See and download any calendar you can access using your Google
+              Calendar
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /colors:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/userIp'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/prettyPrint'
+    get:
+      description: Returns the color definitions for calendars and events.
+      operationId: calendar.colors.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Colors'
+      x-stackQL-resource: colors
+      x-stackQL-verb: select
+  /calendars/{calendarId}/clear:
+    parameters: *ref_1
+    post:
+      description: >-
+        Clears a primary calendar. This operation deletes all events associated
+        with the primary calendar of an account.
+      operationId: calendar.calendars.clear
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendars
+      x-stackQL-verb: exec
+  /calendars/{calendarId}:
+    parameters: *ref_1
+    get:
+      description: Returns metadata for a calendar.
+      operationId: calendar.calendars.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendars
+      x-stackQL-verb: select
+    delete:
+      description: >-
+        Deletes a secondary calendar. Use calendars.clear for clearing all
+        events on primary calendars.
+      operationId: calendar.calendars.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendars
+      x-stackQL-verb: delete
+    patch:
+      description: Updates metadata for a calendar. This method supports patch semantics.
+      operationId: calendar.calendars.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calendar'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendars
+      x-stackQL-verb: exec
+    put:
+      description: Updates metadata for a calendar.
+      operationId: calendar.calendars.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calendar'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendars
+      x-stackQL-verb: exec
+  /calendars:
+    parameters: *ref_1
+    post:
+      description: Creates a secondary calendar.
+      operationId: calendar.calendars.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calendar'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+      x-stackQL-resource: calendars
+      x-stackQL-verb: insert
+  /channels/stop:
+    parameters: *ref_1
+    post:
+      description: Stop watching resources through this channel
+      operationId: calendar.channels.stop
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+      x-stackQL-resource: channels
+      x-stackQL-verb: exec
+  /freeBusy:
+    parameters: *ref_1
+    post:
+      description: Returns free/busy information for a set of calendars.
+      operationId: calendar.freebusy.query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FreeBusyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeBusyResponse'
+      x-stackQL-resource: freebusy
+      x-stackQL-verb: exec
+  /users/me/settings:
+    parameters: *ref_1
+    get:
+      description: Returns all user settings for the authenticated user.
+      operationId: calendar.settings.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+      parameters:
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: settings
+      x-stackQL-verb: select
+  /users/me/settings/{setting}:
+    parameters: *ref_1
+    get:
+      description: Returns a single user setting.
+      operationId: calendar.settings.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Setting'
+      parameters:
+        - in: path
+          name: setting
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: settings
+      x-stackQL-verb: select
+  /users/me/settings/watch:
+    parameters: *ref_1
+    post:
+      description: Watch for changes to Settings resources.
+      operationId: calendar.settings.watch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.settings.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      parameters:
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+      x-stackQL-resource: settings
+      x-stackQL-verb: exec
+  /users/me/calendarList/{calendarId}:
+    parameters: *ref_1
+    patch:
+      description: >-
+        Updates an existing calendar on the user's calendar list. This method
+        supports patch semantics.
+      operationId: calendar.calendarList.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarListEntry'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarListEntry'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: colorRgbFormat
+          schema:
+            type: boolean
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: exec
+    put:
+      description: Updates an existing calendar on the user's calendar list.
+      operationId: calendar.calendarList.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarListEntry'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarListEntry'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: colorRgbFormat
+          schema:
+            type: boolean
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: exec
+    delete:
+      description: Removes a calendar from the user's calendar list.
+      operationId: calendar.calendarList.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: delete
+    get:
+      description: Returns a calendar from the user's calendar list.
+      operationId: calendar.calendarList.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarListEntry'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: select
+  /users/me/calendarList:
+    parameters: *ref_1
+    post:
+      description: Inserts an existing calendar into the user's calendar list.
+      operationId: calendar.calendarList.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarListEntry'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarListEntry'
+      parameters:
+        - in: query
+          name: colorRgbFormat
+          schema:
+            type: boolean
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: insert
+    get:
+      description: Returns the calendars on the user's calendar list.
+      operationId: calendar.calendarList.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarList'
+      parameters:
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: minAccessRole
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+        - in: query
+          name: showHidden
+          schema:
+            type: boolean
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: select
+  /users/me/calendarList/watch:
+    parameters: *ref_1
+    post:
+      description: Watch for changes to CalendarList resources.
+      operationId: calendar.calendarList.watch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      parameters:
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: showHidden
+          schema:
+            type: boolean
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: minAccessRole
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+      x-stackQL-resource: calendar_list
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/acl:
+    parameters: *ref_1
+    post:
+      description: Creates an access control rule.
+      operationId: calendar.acl.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRule'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclRule'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+      x-stackQL-resource: acl
+      x-stackQL-verb: insert
+    get:
+      description: Returns the rules in the access control list for the calendar.
+      operationId: calendar.acl.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Acl'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+      x-stackQL-resource: acl
+      x-stackQL-verb: select
+  /calendars/{calendarId}/acl/{ruleId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes an access control rule.
+      operationId: calendar.acl.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: acl
+      x-stackQL-verb: delete
+    put:
+      description: Updates an access control rule.
+      operationId: calendar.acl.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRule'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclRule'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+      x-stackQL-resource: acl
+      x-stackQL-verb: exec
+    get:
+      description: Returns an access control rule.
+      operationId: calendar.acl.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclRule'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: acl
+      x-stackQL-verb: select
+    patch:
+      description: Updates an access control rule. This method supports patch semantics.
+      operationId: calendar.acl.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRule'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclRule'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+      x-stackQL-resource: acl
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/acl/watch:
+    parameters: *ref_1
+    post:
+      description: Watch for changes to ACL resources.
+      operationId: calendar.acl.watch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+      x-stackQL-resource: acl
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/events/watch:
+    parameters: *ref_1
+    post:
+      description: Watch for changes to Events resources.
+      operationId: calendar.events.watch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: privateExtendedProperty
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+        - in: query
+          name: timeZone
+          schema:
+            type: string
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+        - in: query
+          name: updatedMin
+          schema:
+            type: string
+        - in: query
+          name: sharedExtendedProperty
+          schema:
+            type: string
+        - in: query
+          name: timeMax
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: iCalUID
+          schema:
+            type: string
+        - in: query
+          name: q
+          schema:
+            type: string
+        - in: query
+          name: showHiddenInvitations
+          schema:
+            type: boolean
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: timeMin
+          schema:
+            type: string
+        - in: query
+          name: eventTypes
+          schema:
+            type: string
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: singleEvents
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/events/{eventId}/instances:
+    parameters: *ref_1
+    get:
+      description: Returns instances of the specified recurring event.
+      operationId: calendar.events.instances
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: timeMin
+          schema:
+            type: string
+        - in: query
+          name: timeZone
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: timeMax
+          schema:
+            type: string
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+        - in: query
+          name: originalStart
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/events:
+    parameters: *ref_1
+    post:
+      description: Creates an event.
+      operationId: calendar.events.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: conferenceDataVersion
+          schema:
+            type: integer
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: supportsAttachments
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: insert
+    get:
+      description: Returns events on the specified calendar.
+      operationId: calendar.events.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: timeMin
+          schema:
+            type: string
+        - in: query
+          name: sharedExtendedProperty
+          schema:
+            type: string
+        - in: query
+          name: showDeleted
+          schema:
+            type: boolean
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: iCalUID
+          schema:
+            type: string
+        - in: query
+          name: syncToken
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: eventTypes
+          schema:
+            type: string
+        - in: query
+          name: timeZone
+          schema:
+            type: string
+        - in: query
+          name: timeMax
+          schema:
+            type: string
+        - in: query
+          name: q
+          schema:
+            type: string
+        - in: query
+          name: singleEvents
+          schema:
+            type: boolean
+        - in: query
+          name: updatedMin
+          schema:
+            type: string
+        - in: query
+          name: privateExtendedProperty
+          schema:
+            type: string
+        - in: query
+          name: showHiddenInvitations
+          schema:
+            type: boolean
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: events
+      x-stackQL-verb: select
+  /calendars/{calendarId}/events/{eventId}:
+    parameters: *ref_1
+    put:
+      description: Updates an event.
+      operationId: calendar.events.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: conferenceDataVersion
+          schema:
+            type: integer
+        - in: query
+          name: supportsAttachments
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+    delete:
+      description: Deletes an event.
+      operationId: calendar.events.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+      x-stackQL-resource: events
+      x-stackQL-verb: delete
+    patch:
+      description: Updates an event. This method supports patch semantics.
+      operationId: calendar.events.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: supportsAttachments
+          schema:
+            type: boolean
+        - in: query
+          name: conferenceDataVersion
+          schema:
+            type: integer
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+    get:
+      description: >-
+        Returns an event based on its Google Calendar ID. To retrieve an event
+        using its iCalendar ID, call the events.list method using the iCalUID
+        parameter.
+      operationId: calendar.events.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events.readonly
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.readonly
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.readonly
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxAttendees
+          schema:
+            type: integer
+        - in: query
+          name: timeZone
+          schema:
+            type: string
+        - in: query
+          name: alwaysIncludeEmail
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: select
+  /calendars/{calendarId}/events/{eventId}/move:
+    parameters: *ref_1
+    post:
+      description: Moves an event to another calendar, i.e. changes an event's organizer.
+      operationId: calendar.events.move
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: destination
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/events/quickAdd:
+    parameters: *ref_1
+    post:
+      description: Creates an event based on a simple text string.
+      operationId: calendar.events.quickAdd
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: text
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: sendNotifications
+          schema:
+            type: boolean
+        - in: query
+          name: sendUpdates
+          schema:
+            type: string
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /calendars/{calendarId}/events/import:
+    parameters: *ref_1
+    post:
+      description: >-
+        Imports an event. This operation is used to add a private copy of an
+        existing event to a calendar.
+      operationId: calendar.events.import
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar
+        - Oauth2:
+            - https://www.googleapis.com/auth/calendar.events
+          Oauth2c:
+            - https://www.googleapis.com/auth/calendar.events
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      parameters:
+        - in: path
+          name: calendarId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: supportsAttachments
+          schema:
+            type: boolean
+        - in: query
+          name: conferenceDataVersion
+          schema:
+            type: integer
+      x-stackQL-resource: events
+      x-stackQL-verb: exec

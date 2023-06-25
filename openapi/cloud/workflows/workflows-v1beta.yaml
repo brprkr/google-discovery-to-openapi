@@ -1,0 +1,795 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Workflows API
+  description: >-
+    Manage workflow definitions. To execute workflows and manage executions, see
+    the Workflows Executions API.
+  version: v1beta
+  x-discovery-doc-revision: '20230619'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/workflows
+servers:
+  - url: https://workflows.googleapis.com
+components:
+  schemas:
+    ListWorkflowsResponse:
+      description: Response for the ListWorkflows method.
+      id: ListWorkflowsResponse
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token, which can be sent as `page_token` to retrieve the next
+            page. If this field is omitted, there are no subsequent pages.
+        workflows:
+          description: The workflows which match the request.
+          items:
+            $ref: '#/components/schemas/Workflow'
+          type: array
+        unreachable:
+          type: array
+          items:
+            type: string
+          description: Unreachable resources.
+    ListOperationsResponse:
+      properties:
+        operations:
+          items:
+            $ref: '#/components/schemas/Operation'
+          type: array
+          description: >-
+            A list of operations that matches the specified filter in the
+            request.
+        nextPageToken:
+          description: The standard List next-page token.
+          type: string
+      description: The response message for Operations.ListOperations.
+      id: ListOperationsResponse
+      type: object
+    ListLocationsResponse:
+      id: ListLocationsResponse
+      properties:
+        nextPageToken:
+          description: The standard List next-page token.
+          type: string
+        locations:
+          items:
+            $ref: '#/components/schemas/Location'
+          description: >-
+            A list of locations that matches the specified filter in the
+            request.
+          type: array
+      description: The response message for Locations.ListLocations.
+      type: object
+    Empty:
+      properties: {}
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      id: Empty
+      type: object
+    OperationMetadata:
+      description: Represents the metadata of the long-running operation.
+      type: object
+      properties:
+        createTime:
+          format: google-datetime
+          description: The time the operation was created.
+          type: string
+        verb:
+          description: Name of the verb executed by the operation.
+          type: string
+        apiVersion:
+          description: API version used to start the operation.
+          type: string
+        endTime:
+          description: The time the operation finished running.
+          type: string
+          format: google-datetime
+        target:
+          type: string
+          description: Server-defined resource path for the target of the operation.
+      id: OperationMetadata
+    Operation:
+      properties:
+        metadata:
+          type: object
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+        response:
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+        done:
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+          type: boolean
+        name:
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+          type: string
+        error:
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+          $ref: '#/components/schemas/Status'
+      type: object
+      id: Operation
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+    Workflow:
+      id: Workflow
+      properties:
+        createTime:
+          format: google-datetime
+          type: string
+          readOnly: true
+          description: Output only. The timestamp of when the workflow was created.
+        name:
+          type: string
+          description: >-
+            The resource name of the workflow. Format:
+            projects/{project}/locations/{location}/workflows/{workflow}
+        description:
+          type: string
+          description: >-
+            Description of the workflow provided by the user. Must be at most
+            1000 unicode characters long.
+        labels:
+          description: >-
+            Labels associated with this workflow. Labels can contain at most 64
+            entries. Keys and values can be no longer than 63 characters and can
+            only contain lowercase letters, numeric characters, underscores and
+            dashes. Label keys must start with a letter. International
+            characters are allowed.
+          additionalProperties:
+            type: string
+          type: object
+        sourceContents:
+          type: string
+          description: Workflow code to be executed. The size limit is 128KB.
+        serviceAccount:
+          type: string
+          description: >-
+            The service account associated with the latest workflow version.
+            This service account represents the identity of the workflow and
+            determines what permissions the workflow has. Format:
+            projects/{project}/serviceAccounts/{account} or {account} Using `-`
+            as a wildcard for the `{project}` or not providing one at all will
+            infer the project from the account. The `{account}` value can be the
+            `email` address or the `unique_id` of the service account. If not
+            provided, workflow will use the project's default service account.
+            Modifying this field for an existing workflow results in a new
+            workflow revision.
+        updateTime:
+          readOnly: true
+          format: google-datetime
+          description: Output only. The last update timestamp of the workflow.
+          type: string
+        revisionCreateTime:
+          format: google-datetime
+          readOnly: true
+          type: string
+          description: >-
+            Output only. The timestamp that the latest revision of the workflow
+            was created.
+        state:
+          description: Output only. State of the workflow deployment.
+          enum:
+            - STATE_UNSPECIFIED
+            - ACTIVE
+          type: string
+          enumDescriptions:
+            - Invalid state.
+            - The workflow has been deployed successfully and is serving.
+          readOnly: true
+        revisionId:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The revision of the workflow. A new revision of a
+            workflow is created as a result of updating the following properties
+            of a workflow: - Service account - Workflow code to be executed The
+            format is "000001-a4d", where the first 6 characters define the
+            zero-padded revision ordinal number. They are followed by a hyphen
+            and 3 hexadecimal random characters.
+      type: object
+      description: Workflow program to be executed by Workflows.
+    Status:
+      type: object
+      properties:
+        details:
+          type: array
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          items:
+            additionalProperties:
+              description: Properties of the object. Contains field @type with type URL.
+              type: any
+            type: object
+        code:
+          format: int32
+          description: The status code, which should be an enum value of google.rpc.Code.
+          type: integer
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      id: Status
+    Location:
+      description: A resource that represents a Google Cloud location.
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: >-
+            The friendly name for this location, typically a nearby city name.
+            For example, "Tokyo".
+        locationId:
+          description: 'The canonical id for this location. For example: `"us-east1"`.'
+          type: string
+        name:
+          description: >-
+            Resource name for the location, which may vary between
+            implementations. For example:
+            `"projects/example-project/locations/us-east1"`
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+          description: >-
+            Cross-service attributes for the location. For example
+            {"cloud.googleapis.com/region": "us-east1"}
+        metadata:
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          type: object
+          description: >-
+            Service-specific metadata. For example the available capacity at the
+            given location.
+      id: Location
+  parameters:
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1beta/projects/{projectsId}/locations/{locationsId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/uploadType'
+    get:
+      description: Gets information about a location.
+      operationId: workflows.projects.locations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/locations:
+    parameters: *ref_1
+    get:
+      description: Lists information about the supported locations for this service.
+      operationId: workflows.projects.locations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLocationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/locations/{locationsId}/operations:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists operations that match the specified filter in the request. If the
+        server doesn't support this method, it returns `UNIMPLEMENTED`.
+      operationId: workflows.projects.locations.operations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOperationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:
+    parameters: *ref_1
+    delete:
+      description: >-
+        Deletes a long-running operation. This method indicates that the client
+        is no longer interested in the operation result. It does not cancel the
+        operation. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`.
+      operationId: workflows.projects.locations.operations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: delete
+    get:
+      description: >-
+        Gets the latest state of a long-running operation. Clients can use this
+        method to poll the operation result at intervals as recommended by the
+        API service.
+      operationId: workflows.projects.locations.operations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v1beta/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:
+    parameters: *ref_1
+    patch:
+      description: >-
+        Updates an existing workflow. Running this method has no impact on
+        already running executions of the workflow. A new revision of the
+        workflow may be created as a result of a successful update operation. In
+        that case, such revision will be used in new workflow executions.
+      operationId: workflows.projects.locations.workflows.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Workflow'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: workflowsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: workflows
+      x-stackQL-verb: exec
+    get:
+      description: Gets details of a single Workflow.
+      operationId: workflows.projects.locations.workflows.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: workflowsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: workflows
+      x-stackQL-verb: select
+    delete:
+      description: >-
+        Deletes a workflow with the specified name. This method also cancels and
+        deletes all running executions of the workflow.
+      operationId: workflows.projects.locations.workflows.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: workflowsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: workflows
+      x-stackQL-verb: delete
+  /v1beta/projects/{projectsId}/locations/{locationsId}/workflows:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists Workflows in a given project and location. The default order is
+        not specified.
+      operationId: workflows.projects.locations.workflows.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWorkflowsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: workflows
+      x-stackQL-verb: select
+    post:
+      description: >-
+        Creates a new workflow. If a workflow with the specified name already
+        exists in the specified project and location, the long running operation
+        will return ALREADY_EXISTS error.
+      operationId: workflows.projects.locations.workflows.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Workflow'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: workflowId
+          schema:
+            type: string
+      x-stackQL-resource: workflows
+      x-stackQL-verb: insert

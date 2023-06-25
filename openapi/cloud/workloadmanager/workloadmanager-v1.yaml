@@ -1,0 +1,1632 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Workload Manager API
+  description: ''
+  version: v1
+  x-discovery-doc-revision: '20230605'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/workload-manager/docs
+servers:
+  - url: https://workloadmanager.googleapis.com
+components:
+  schemas:
+    Resource:
+      properties:
+        serviceAccount:
+          type: string
+          description: the service account accosiate with resource
+        name:
+          type: string
+          description: the name of the resource
+        type:
+          type: string
+          description: the type of reresource
+      id: Resource
+      description: Message represent resource in execution result
+      type: object
+    ScannedResource:
+      description: Message of scanned resource
+      type: object
+      properties:
+        resource:
+          description: resource name
+          type: string
+      id: ScannedResource
+    SapDiscovery:
+      id: SapDiscovery
+      properties:
+        systemId:
+          type: string
+          description: >-
+            A combination of database SID, database instance URI and tenant DB
+            name to make a unique identifier per-system.
+        applicationLayer:
+          $ref: '#/components/schemas/SapDiscoveryComponent'
+          description: An SAP system may run without an application layer.
+        updateTime:
+          description: Unix timestamp this system has been updated last.
+          format: google-datetime
+          type: string
+        metadata:
+          description: The metadata for SAP system discovery data.
+          $ref: '#/components/schemas/SapDiscoveryMetadata'
+        databaseLayer:
+          description: An SAP System must have a database.
+          $ref: '#/components/schemas/SapDiscoveryComponent'
+      description: LINT.IfChange The schema of SAP system discovery data.
+      type: object
+    ViolationDetails:
+      properties:
+        asset:
+          type: string
+          description: the name of asset
+        observed:
+          additionalProperties:
+            type: string
+          type: object
+          description: observed
+        serviceAccount:
+          type: string
+          description: the service account associate with resource
+      type: object
+      id: ViolationDetails
+      description: Message describing the violdation in execution result
+    WriteInsightResponse:
+      description: The response for write insights request.
+      properties: {}
+      id: WriteInsightResponse
+      type: object
+    ExecutionResult:
+      id: ExecutionResult
+      properties:
+        rule:
+          type: string
+          description: the rule which violate in execution
+        documentationUrl:
+          description: the document url of the rule
+          type: string
+        resource:
+          $ref: '#/components/schemas/Resource'
+          description: the violate resource
+        severity:
+          description: severity of violation
+          type: string
+        violationMessage:
+          type: string
+          description: the violation message of an execution
+        violationDetails:
+          description: the details of violation in result
+          $ref: '#/components/schemas/ViolationDetails'
+      description: Message describing the result of an execution
+      type: object
+    ListRulesResponse:
+      id: ListRulesResponse
+      description: Mesesage of response of list rules
+      properties:
+        rules:
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: all rules in response
+          type: array
+        nextPageToken:
+          description: A token identifying a page of results the server should return.
+          type: string
+      type: object
+    WriteInsightRequest:
+      description: Request for sending the data insights.
+      id: WriteInsightRequest
+      properties:
+        requestId:
+          description: >-
+            Optional. An optional request ID to identify requests. Specify a
+            unique request ID so that if you must retry your request, the server
+            will know to ignore the request if it has already been completed.
+            The server will guarantee that for at least 60 minutes since the
+            first request. For example, consider a situation where you make an
+            initial request and the request times out. If you make the request
+            again with the same request ID, the server can check if original
+            operation with the same request ID was received, and if so, will
+            ignore the second request. This prevents clients from accidentally
+            creating duplicate commitments. The request ID must be a valid UUID
+            with the exception that zero UUID is not supported
+            (00000000-0000-0000-0000-000000000000).
+          type: string
+        insight:
+          $ref: '#/components/schemas/Insight'
+          description: Required. The metrics data details.
+      type: object
+    SapValidationValidationDetail:
+      id: SapValidationValidationDetail
+      properties:
+        details:
+          additionalProperties:
+            type: string
+          description: 'The pairs of metrics data: field name & field value.'
+          type: object
+        sapValidationType:
+          enumDescriptions:
+            - Unspecified type.
+            - The SAP system named SYSTEM.
+            - The SAP system named COROSYNC.
+            - The SAP system named PACEMAKER.
+            - The SAP system named HANA.
+            - The SAP system named NETWEAVER.
+          description: The SAP system that the validation data is from.
+          enum:
+            - SAP_VALIDATION_TYPE_UNSPECIFIED
+            - SYSTEM
+            - COROSYNC
+            - PACEMAKER
+            - HANA
+            - NETWEAVER
+          type: string
+      description: Message describing the SAP validation metrics.
+      type: object
+    Status:
+      id: Status
+      type: object
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      properties:
+        code:
+          description: The status code, which should be an enum value of google.rpc.Code.
+          format: int32
+          type: integer
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+        details:
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          items:
+            additionalProperties:
+              type: any
+              description: Properties of the object. Contains field @type with type URL.
+            type: object
+          type: array
+    ListExecutionsResponse:
+      type: object
+      id: ListExecutionsResponse
+      properties:
+        unreachable:
+          items:
+            type: string
+          description: Locations that could not be reached.
+          type: array
+        executions:
+          description: The list of Execution
+          type: array
+          items:
+            $ref: '#/components/schemas/Execution'
+        nextPageToken:
+          description: A token identifying a page of results the server should return.
+          type: string
+      description: Message for response to listing Executions
+    ListScannedResourcesResponse:
+      properties:
+        scannedResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScannedResource'
+          description: All scanned resources in response
+        nextPageToken:
+          description: >-
+            A token, which can be sent as `page_token` to retrieve the next
+            page. If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+      description: Message for response to list scanned resources
+      id: ListScannedResourcesResponse
+    ListLocationsResponse:
+      description: The response message for Locations.ListLocations.
+      properties:
+        nextPageToken:
+          type: string
+          description: The standard List next-page token.
+        locations:
+          type: array
+          description: >-
+            A list of locations that matches the specified filter in the
+            request.
+          items:
+            $ref: '#/components/schemas/Location'
+      type: object
+      id: ListLocationsResponse
+    SapDiscoveryMetadata:
+      properties:
+        definedSystem:
+          description: Customer defined, something like "E-commerce pre prod"
+          type: string
+        sapProduct:
+          type: string
+          description: This sap product name
+        customerRegion:
+          description: >-
+            Customer region string for customer's use. Does not represent GCP
+            region.
+          type: string
+        environmentType:
+          description: Should be "prod", "QA", "dev", "staging", etc.
+          type: string
+      type: object
+      id: SapDiscoveryMetadata
+      description: Message describing SAP discovery system metadata
+    SapDiscoveryResource:
+      properties:
+        relatedResources:
+          type: array
+          items:
+            type: string
+          description: A list of resource URIs related to this resource.
+        updateTime:
+          description: >-
+            Unix timestamp of when this resource last had its discovery data
+            updated.
+          type: string
+          format: google-datetime
+        resourceUri:
+          description: URI of the resource, includes project, location, and name.
+          type: string
+        resourceKind:
+          type: string
+          description: ComputeInstance, ComputeDisk, VPC, Bare Metal server, etc.
+        resourceType:
+          type: string
+          enum:
+            - RESOURCE_TYPE_UNSPECIFIED
+            - COMPUTE
+            - STORAGE
+            - NETWORK
+          enumDescriptions:
+            - Undefined resource type.
+            - This is a compute resource.
+            - This a storage resource.
+            - This is a network resource.
+          description: The type of this resource.
+      id: SapDiscoveryResource
+      type: object
+      description: Message describing a resource.
+    Execution:
+      description: Message describing Execution object
+      properties:
+        inventoryTime:
+          description: Output only. [Output only] Inventory time stamp
+          format: google-datetime
+          type: string
+          readOnly: true
+        startTime:
+          description: Output only. [Output only] Start time stamp
+          type: string
+          readOnly: true
+          format: google-datetime
+        name:
+          description: >-
+            The name of execution resource. The format is
+            projects/{project}/locations/{location}/evaluations/{evaluation}/executions/{execution}
+          type: string
+        state:
+          description: Output only. [Output only] State
+          readOnly: true
+          enum:
+            - STATE_UNSPECIFIED
+            - RUNNING
+            - SUCCEEDED
+            - FAILED
+          type: string
+          enumDescriptions:
+            - state of execution is unspecified
+            - the execution is running in backend service
+            - the execution run success
+            - the execution run failed
+        endTime:
+          readOnly: true
+          description: Output only. [Output only] End time stamp
+          format: google-datetime
+          type: string
+        labels:
+          type: object
+          description: Labels as key value pairs
+          additionalProperties:
+            type: string
+        runType:
+          description: >-
+            type represent whether the execution executed directly by user or
+            scheduled according evaluation.schedule field.
+          type: string
+          enumDescriptions:
+            - type of execution is unspecified
+            - type of execution is one time
+            - type of execution is scheduled
+          enum:
+            - TYPE_UNSPECIFIED
+            - ONE_TIME
+            - SCHEDULED
+        evaluationId:
+          type: string
+          readOnly: true
+          description: Output only. [Output only] Evaluation ID
+      id: Execution
+      type: object
+    Evaluation:
+      id: Evaluation
+      description: LINT.IfChange Message describing Evaluation object
+      properties:
+        resourceFilter:
+          description: annotations as key value pairs
+          $ref: '#/components/schemas/ResourceFilter'
+        name:
+          description: >-
+            name of resource names have the form
+            'projects/{project_id}/locations/{location_id}/evaluations/{evaluation_id}'
+          type: string
+        ruleVersions:
+          type: array
+          description: Output only. [Output only] The updated rule ids if exist.
+          readOnly: true
+          items:
+            type: string
+        updateTime:
+          readOnly: true
+          description: Output only. [Output only] Update time stamp
+          format: google-datetime
+          type: string
+        resourceStatus:
+          readOnly: true
+          description: Output only. [Output only] The updated rule ids if exist.
+          $ref: '#/components/schemas/ResourceStatus'
+        customRulesBucket:
+          type: string
+          description: The Cloud Storage bucket name for custom rules.
+        ruleNames:
+          items:
+            type: string
+          type: array
+          description: the name of the rule
+        labels:
+          type: object
+          description: Labels as key value pairs
+          additionalProperties:
+            type: string
+        description:
+          type: string
+          description: Description of the Evaluation
+        createTime:
+          type: string
+          description: Output only. [Output only] Create time stamp
+          format: google-datetime
+          readOnly: true
+        schedule:
+          type: string
+          description: >-
+            crontab format schedule for scheduled evaluation, currently only
+            support the following schedule: "0 */1 * * *", "0 */6 * * *", "0
+            */12 * * *", "0 0 */1 * *", "0 0 */7 * *",
+      type: object
+    Insight:
+      properties:
+        sapValidation:
+          $ref: '#/components/schemas/SapValidation'
+          description: The insights data for the sap workload validation.
+        sqlserverValidation:
+          description: The insights data for the sqlserver workload validation.
+          $ref: '#/components/schemas/SqlserverValidation'
+        instanceId:
+          description: Required. The instance id where the insight is generated from
+          type: string
+        sapDiscovery:
+          description: >-
+            The insights data for sap system discovery. This is a copy of SAP
+            System proto and should get updated whenever that one changes.
+          $ref: '#/components/schemas/SapDiscovery'
+        sentTime:
+          readOnly: true
+          description: Output only. [Output only] Create time stamp
+          type: string
+          format: google-datetime
+      description: A presentation of host resource usage where the workload runs.
+      id: Insight
+      type: object
+    SapDiscoveryComponent:
+      properties:
+        hostProject:
+          description: Pantheon Project in which the resources reside.
+          type: string
+        databaseType:
+          type: string
+          description: The component is a SAP database.
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SapDiscoveryResource'
+          description: The resources in a component.
+        applicationType:
+          type: string
+          description: The component is a SAP application.
+        sid:
+          description: >-
+            The sap identifier, used by the SAP software and helps differentiate
+            systems for customers.
+          type: string
+      description: Message describing the system component.
+      type: object
+      id: SapDiscoveryComponent
+    SapValidation:
+      description: >-
+        A presentation of SAP workload insight. The schema of SAP workloads
+        validation related data.
+      type: object
+      properties:
+        validationDetails:
+          items:
+            $ref: '#/components/schemas/SapValidationValidationDetail'
+          type: array
+          description: A list of SAP validation metrics data.
+      id: SapValidation
+    GceInstanceFilter:
+      type: object
+      properties:
+        serviceAccounts:
+          description: Service account of compute engine
+          type: array
+          items:
+            type: string
+      id: GceInstanceFilter
+      description: Message describing compute engine instance filter
+    CancelOperationRequest:
+      properties: {}
+      description: The request message for Operations.CancelOperation.
+      type: object
+      id: CancelOperationRequest
+    ListOperationsResponse:
+      description: The response message for Operations.ListOperations.
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operation'
+          description: >-
+            A list of operations that matches the specified filter in the
+            request.
+        nextPageToken:
+          description: The standard List next-page token.
+          type: string
+      id: ListOperationsResponse
+      type: object
+    ResourceFilter:
+      type: object
+      id: ResourceFilter
+      description: Message describing resource filters
+      properties:
+        inclusionLabels:
+          additionalProperties:
+            type: string
+          type: object
+          description: The label used for filter resource
+        resourceIdPatterns:
+          description: The id pattern for filter resource
+          type: array
+          items:
+            type: string
+        scopes:
+          items:
+            type: string
+          description: The scopes of evaluation resource
+          type: array
+        gceInstanceFilter:
+          description: Filter compute engine resource
+          $ref: '#/components/schemas/GceInstanceFilter'
+    SqlserverValidation:
+      id: SqlserverValidation
+      properties:
+        validationDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/SqlserverValidationValidationDetail'
+          description: A list of SqlServer validation metrics data.
+        agentVersion:
+          description: The agent version collected this data point
+          type: string
+      type: object
+      description: >-
+        A presentation of SQLServer workload insight. The schema of SqlServer
+        workloads validation related data.
+    Rule:
+      type: object
+      description: Message represent a rule
+      id: Rule
+      properties:
+        secondaryCategory:
+          type: string
+          description: the secondary category
+        severity:
+          description: the severity of the rule
+          type: string
+        revisionId:
+          description: Output only. the version of the rule
+          readOnly: true
+          type: string
+        uri:
+          type: string
+          description: the docuement url for the rule
+        displayName:
+          description: the name display in UI
+          type: string
+        remediation:
+          type: string
+          description: the remediation for the rule
+        description:
+          type: string
+          description: descrite rule in plain language
+        name:
+          description: rule name
+          type: string
+        primaryCategory:
+          description: the primary category
+          type: string
+        errorMessage:
+          description: the message template for rule
+          type: string
+    OperationMetadata:
+      type: object
+      description: Represents the metadata of the long-running operation.
+      id: OperationMetadata
+      properties:
+        requestedCancellation:
+          readOnly: true
+          description: >-
+            Output only. Identifies whether the user has requested cancellation
+            of the operation. Operations that have been cancelled successfully
+            have Operation.error value with a google.rpc.Status.code of 1,
+            corresponding to `Code.CANCELLED`.
+          type: boolean
+        endTime:
+          description: Output only. The time the operation finished running.
+          format: google-datetime
+          type: string
+          readOnly: true
+        target:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. Server-defined resource path for the target of the
+            operation.
+        apiVersion:
+          type: string
+          description: Output only. API version used to start the operation.
+          readOnly: true
+        verb:
+          type: string
+          description: Output only. Name of the verb executed by the operation.
+          readOnly: true
+        statusMessage:
+          type: string
+          readOnly: true
+          description: Output only. Human-readable status of the operation, if any.
+        createTime:
+          type: string
+          readOnly: true
+          description: Output only. The time the operation was created.
+          format: google-datetime
+    Empty:
+      id: Empty
+      type: object
+      properties: {}
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+    ListExecutionResultsResponse:
+      description: Message for response of list execution results
+      id: ListExecutionResultsResponse
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token, which can be sent as `page_token` to retrieve the next
+            page. If this field is omitted, there are no subsequent pages.
+        executionResults:
+          items:
+            $ref: '#/components/schemas/ExecutionResult'
+          type: array
+          description: The versions from the specified publisher.
+      type: object
+    RunEvaluationRequest:
+      id: RunEvaluationRequest
+      properties:
+        executionId:
+          description: >-
+            Required. Id of the requesting object If auto-generating Id
+            server-side, remove this field and execution_id from the
+            method_signature of Create RPC
+          type: string
+        requestId:
+          description: >-
+            Optional. An optional request ID to identify requests. Specify a
+            unique request ID so that if you must retry your request, the server
+            will know to ignore the request if it has already been completed.
+            The server will guarantee that for at least 60 minutes since the
+            first request. For example, consider a situation where you make an
+            initial request and the request times out. If you make the request
+            again with the same request ID, the server can check if original
+            operation with the same request ID was received, and if so, will
+            ignore the second request. This prevents clients from accidentally
+            creating duplicate commitments. The request ID must be a valid UUID
+            with the exception that zero UUID is not supported
+            (00000000-0000-0000-0000-000000000000).
+          type: string
+        execution:
+          description: Required. The resource being created
+          $ref: '#/components/schemas/Execution'
+      description: Message for creating a Execution
+      type: object
+    Location:
+      properties:
+        locationId:
+          description: 'The canonical id for this location. For example: `"us-east1"`.'
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Cross-service attributes for the location. For example
+            {"cloud.googleapis.com/region": "us-east1"}
+        name:
+          type: string
+          description: >-
+            Resource name for the location, which may vary between
+            implementations. For example:
+            `"projects/example-project/locations/us-east1"`
+        displayName:
+          description: >-
+            The friendly name for this location, typically a nearby city name.
+            For example, "Tokyo".
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            Service-specific metadata. For example the available capacity at the
+            given location.
+      id: Location
+      description: A resource that represents a Google Cloud location.
+      type: object
+    ResourceStatus:
+      properties:
+        rulesNewerVersions:
+          description: >-
+            Historical: Used before 2023-05-22 the new version of rule id if
+            exists
+          type: array
+          items:
+            type: string
+        state:
+          type: string
+          description: State of the resource
+          enumDescriptions:
+            - The state has not been populated in this message.
+            - Resource has an active Create operation.
+            - >-
+              Resource has no outstanding operations on it or has active Update
+              operations.
+            - Resource has an active Delete operation.
+          enum:
+            - STATE_UNSPECIFIED
+            - CREATING
+            - ACTIVE
+            - DELETING
+      id: ResourceStatus
+      description: Message describing resource status
+      type: object
+    ListEvaluationsResponse:
+      id: ListEvaluationsResponse
+      properties:
+        nextPageToken:
+          description: A token identifying a page of results the server should return.
+          type: string
+        evaluations:
+          description: The list of Evaluation
+          items:
+            $ref: '#/components/schemas/Evaluation'
+          type: array
+        unreachable:
+          type: array
+          items:
+            type: string
+          description: Locations that could not be reached.
+      description: Message for response to listing Evaluations
+      type: object
+    Operation:
+      properties:
+        response:
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+        name:
+          type: string
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+        done:
+          type: boolean
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+        metadata:
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          type: object
+        error:
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+          $ref: '#/components/schemas/Status'
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+      type: object
+      id: Operation
+    SqlserverValidationValidationDetail:
+      description: Message describing the Sqlserver validation metrics.
+      type: object
+      properties:
+        type:
+          enumDescriptions:
+            - Unspecified type.
+            - The Sqlserver system named OS
+            - The LOG_DISK_SEPARATION table
+            - The MAX_PARALLELISM table
+            - The CXPACKET_WAITS table
+            - The TRANSACTION_LOG_HANDLING table
+            - The VIRTUAL_LOG_FILE_COUNT table
+            - The BUFFER_POOL_EXTENSION table
+            - The MAX_SERVER_MEMORY table
+          description: The Sqlserver system that the validation data is from.
+          type: string
+          enum:
+            - SQLSERVER_VALIDATION_TYPE_UNSPECIFIED
+            - OS
+            - DB_LOG_DISK_SEPARATION
+            - DB_MAX_PARALLELISM
+            - DB_CXPACKET_WAITS
+            - DB_TRANSACTION_LOG_HANDLING
+            - DB_VIRTUAL_LOG_FILE_COUNT
+            - DB_BUFFER_POOL_EXTENSION
+            - DB_MAX_SERVER_MEMORY
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+          description: ' pairs of metrics data: column name & column value.'
+      id: SqlserverValidationValidationDetail
+  parameters:
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/fields'
+    delete:
+      description: >-
+        Deletes a long-running operation. This method indicates that the client
+        is no longer interested in the operation result. It does not cancel the
+        operation. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`.
+      operationId: workloadmanager.projects.locations.operations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: delete
+    get:
+      description: >-
+        Gets the latest state of a long-running operation. Clients can use this
+        method to poll the operation result at intervals as recommended by the
+        API service.
+      operationId: workloadmanager.projects.locations.operations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/operations:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists operations that match the specified filter in the request. If the
+        server doesn't support this method, it returns `UNIMPLEMENTED`.
+      operationId: workloadmanager.projects.locations.operations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOperationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel:
+    parameters: *ref_1
+    post:
+      description: >-
+        Starts asynchronous cancellation on a long-running operation. The server
+        makes a best effort to cancel the operation, but success is not
+        guaranteed. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation
+        or other methods to check whether the cancellation succeeded or whether
+        the operation completed despite cancellation. On successful
+        cancellation, the operation is not deleted; instead, it becomes an
+        operation with an Operation.error value with a google.rpc.Status.code of
+        1, corresponding to `Code.CANCELLED`.
+      operationId: workloadmanager.projects.locations.operations.cancel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOperationRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/insights:writeInsight:
+    parameters: *ref_1
+    post:
+      description: Write the data insights to workload manager data warehouse.
+      operationId: workloadmanager.projects.locations.insights.writeInsight
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteInsightRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WriteInsightResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: insights
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}/executions:run:
+    parameters: *ref_1
+    post:
+      description: Creates a new Execution in a given project and location.
+      operationId: workloadmanager.projects.locations.evaluations.executions.run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunEvaluationRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: executions
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}/executions/{executionsId}:
+    parameters: *ref_1
+    get:
+      description: Gets details of a single Execution.
+      operationId: workloadmanager.projects.locations.evaluations.executions.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Execution'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: executionsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: executions
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}/executions:
+    parameters: *ref_1
+    get:
+      description: Lists Executions in a given project and location.
+      operationId: workloadmanager.projects.locations.evaluations.executions.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListExecutionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: executions
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}/executions/{executionsId}/results:
+    parameters: *ref_1
+    get:
+      description: List the running result of a single Execution.
+      operationId: workloadmanager.projects.locations.evaluations.executions.results.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListExecutionResultsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: executionsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: results
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}/executions/{executionsId}/scannedResources:
+    parameters: *ref_1
+    get:
+      description: List all scanned resources for a single Execution.
+      operationId: >-
+        workloadmanager.projects.locations.evaluations.executions.scannedResources.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListScannedResourcesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: executionsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: rule
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: scanned_resources
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations:
+    parameters: *ref_1
+    get:
+      description: Lists Evaluations in a given project and location.
+      operationId: workloadmanager.projects.locations.evaluations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEvaluationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: evaluations
+      x-stackQL-verb: select
+    post:
+      description: Creates a new Evaluation in a given project and location.
+      operationId: workloadmanager.projects.locations.evaluations.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Evaluation'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: evaluationId
+          schema:
+            type: string
+      x-stackQL-resource: evaluations
+      x-stackQL-verb: insert
+  /v1/projects/{projectsId}/locations/{locationsId}/evaluations/{evaluationsId}:
+    parameters: *ref_1
+    get:
+      description: Gets details of a single Evaluation.
+      operationId: workloadmanager.projects.locations.evaluations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evaluation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: evaluationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: evaluations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/rules:
+    parameters: *ref_1
+    get:
+      description: Lists rules in a given project.
+      operationId: workloadmanager.projects.locations.rules.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRulesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: customRulesBucket
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: rules
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}:
+    parameters: *ref_1
+    get:
+      description: Gets information about a location.
+      operationId: workloadmanager.projects.locations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations:
+    parameters: *ref_1
+    get:
+      description: Lists information about the supported locations for this service.
+      operationId: workloadmanager.projects.locations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLocationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select

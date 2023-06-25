@@ -1,0 +1,5315 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Database Migration API
+  description: Manage Cloud Database Migration Service resources on Google Cloud Platform.
+  version: v1
+  x-discovery-doc-revision: '20230622'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/database-migration/
+servers:
+  - url: https://datamigration.googleapis.com
+components:
+  schemas:
+    StaticIpConnectivity:
+      description: >-
+        The source database will allow incoming connections from the public IP
+        of the destination database. You can retrieve the public IP of the Cloud
+        SQL instance from the Cloud SQL console or using Cloud SQL APIs. No
+        additional configuration is required.
+      properties: {}
+      type: object
+      id: StaticIpConnectivity
+    CloudSqlConnectionProfile:
+      type: object
+      id: CloudSqlConnectionProfile
+      properties:
+        privateIp:
+          description: Output only. The Cloud SQL database instance's private IP.
+          type: string
+          readOnly: true
+        cloudSqlId:
+          readOnly: true
+          description: >-
+            Output only. The Cloud SQL instance ID that this connection profile
+            is associated with.
+          type: string
+        publicIp:
+          type: string
+          description: Output only. The Cloud SQL database instance's public IP.
+          readOnly: true
+        settings:
+          $ref: '#/components/schemas/CloudSqlSettings'
+          description: >-
+            Immutable. Metadata used to create the destination Cloud SQL
+            database.
+        additionalPublicIp:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The Cloud SQL database instance's additional (outgoing)
+            public IP. Used when the Cloud SQL database availability type is
+            REGIONAL (i.e. multiple zones / highly available).
+      description: >-
+        Specifies required connection parameters, and, optionally, the
+        parameters required to create a Cloud SQL destination database instance.
+    ConvertConversionWorkspaceRequest:
+      description: Request message for 'ConvertConversionWorkspace' request.
+      properties:
+        autoCommit:
+          type: boolean
+          description: >-
+            Specifies whether the conversion workspace is to be committed
+            automatically after the conversion.
+        filter:
+          description: >-
+            Filter the entities to convert. Leaving this field empty will
+            convert all of the entities. Supports Google AIP-160 style
+            filtering.
+          type: string
+      type: object
+      id: ConvertConversionWorkspaceRequest
+    ForwardSshTunnelConnectivity:
+      description: Forward SSH Tunnel connectivity.
+      id: ForwardSshTunnelConnectivity
+      properties:
+        hostname:
+          description: Required. Hostname for the SSH tunnel.
+          type: string
+        username:
+          type: string
+          description: Required. Username for the SSH tunnel.
+        password:
+          type: string
+          description: Input only. SSH password.
+        port:
+          format: int32
+          type: integer
+          description: Port for the SSH tunnel, default value is 22.
+        privateKey:
+          type: string
+          description: Input only. SSH private key.
+      type: object
+    CommitConversionWorkspaceRequest:
+      id: CommitConversionWorkspaceRequest
+      properties:
+        commitName:
+          description: Optional. Optional name of the commit.
+          type: string
+      type: object
+      description: Request message for 'CommitConversionWorkspace' request.
+    Empty:
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      type: object
+      id: Empty
+      properties: {}
+    MigrationJob:
+      description: Represents a Database Migration Service migration job object.
+      properties:
+        reverseSshConnectivity:
+          $ref: '#/components/schemas/ReverseSshConnectivity'
+          description: >-
+            The details needed to communicate to the source over Reverse SSH
+            tunnel connectivity.
+        labels:
+          additionalProperties:
+            type: string
+          description: >-
+            The resource labels for migration job to use to annotate any related
+            underlying resources such as Compute Engine VMs. An object
+            containing a list of "key": "value" pairs. Example: `{ "name":
+            "wrench", "mass": "1.3kg", "count": "3" }`.
+          type: object
+        createTime:
+          description: >-
+            Output only. The timestamp when the migration job resource was
+            created. A timestamp in RFC3339 UTC "Zulu" format, accurate to
+            nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+          readOnly: true
+          format: google-datetime
+          type: string
+        filter:
+          type: string
+          description: >-
+            This field can be used to select the entities to migrate as part of
+            the migration job. It uses AIP-160 notation to select a subset of
+            the entities configured on the associated conversion-workspace. This
+            field should not be set on migration-jobs that are not associated
+            with a conversion workspace.
+        cmekKeyName:
+          type: string
+          description: >-
+            The CMEK (customer-managed encryption key) fully qualified key name
+            used for the migration job. This field supports all migration jobs
+            types except for: * Mysql to Mysql (use the cmek field in the
+            cloudsql connection profile instead). * PostrgeSQL to PostgreSQL
+            (use the cmek field in the cloudsql connection profile instead). *
+            PostgreSQL to AlloyDB (use the kms_key_name field in the alloydb
+            connection profile instead). Each Cloud CMEK key has the following
+            format:
+            projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]
+        duration:
+          format: google-duration
+          readOnly: true
+          description: >-
+            Output only. The duration of the migration job (in seconds). A
+            duration in seconds with up to nine fractional digits, terminated by
+            's'. Example: "3.5s".
+          type: string
+        updateTime:
+          description: >-
+            Output only. The timestamp when the migration job resource was last
+            updated. A timestamp in RFC3339 UTC "Zulu" format, accurate to
+            nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+          format: google-datetime
+          type: string
+          readOnly: true
+        displayName:
+          description: The migration job display name.
+          type: string
+        endTime:
+          readOnly: true
+          type: string
+          format: google-datetime
+          description: >-
+            Output only. If the migration job is completed, the time when it was
+            completed.
+        dumpPath:
+          type: string
+          description: >-
+            The path to the dump file in Google Cloud Storage, in the format:
+            (gs://[BUCKET_NAME]/[OBJECT_NAME]). This field and the "dump_flags"
+            field are mutually exclusive.
+        state:
+          enumDescriptions:
+            - The state of the migration job is unknown.
+            - The migration job is down for maintenance.
+            - The migration job is in draft mode and no resources are created.
+            - The migration job is being created.
+            - The migration job is created and not started.
+            - The migration job is running.
+            - The migration job failed.
+            - The migration job has been completed.
+            - The migration job is being deleted.
+            - The migration job is being stopped.
+            - The migration job is currently stopped.
+            - The migration job has been deleted.
+            - The migration job is being updated.
+            - The migration job is starting.
+            - The migration job is restarting.
+            - The migration job is resuming.
+          enum:
+            - STATE_UNSPECIFIED
+            - MAINTENANCE
+            - DRAFT
+            - CREATING
+            - NOT_STARTED
+            - RUNNING
+            - FAILED
+            - COMPLETED
+            - DELETING
+            - STOPPING
+            - STOPPED
+            - DELETED
+            - UPDATING
+            - STARTING
+            - RESTARTING
+            - RESUMING
+          description: The current migration job state.
+          type: string
+        sourceDatabase:
+          $ref: '#/components/schemas/DatabaseType'
+          description: The database engine type and provider of the source.
+        destinationDatabase:
+          description: The database engine type and provider of the destination.
+          $ref: '#/components/schemas/DatabaseType'
+        phase:
+          enum:
+            - PHASE_UNSPECIFIED
+            - FULL_DUMP
+            - CDC
+            - PROMOTE_IN_PROGRESS
+            - WAITING_FOR_SOURCE_WRITES_TO_STOP
+            - PREPARING_THE_DUMP
+          type: string
+          enumDescriptions:
+            - The phase of the migration job is unknown.
+            - The migration job is in the full dump phase.
+            - The migration job is CDC phase.
+            - The migration job is running the promote phase.
+            - Only RDS flow - waiting for source writes to stop
+            - >-
+              Only RDS flow - the sources writes stopped, waiting for dump to
+              begin
+          readOnly: true
+          description: Output only. The current migration job phase.
+        conversionWorkspace:
+          $ref: '#/components/schemas/ConversionWorkspaceInfo'
+          description: The conversion workspace used by the migration.
+        destination:
+          description: >-
+            Required. The resource name (URI) of the destination connection
+            profile.
+          type: string
+        dumpFlags:
+          $ref: '#/components/schemas/DumpFlags'
+          description: >-
+            The initial dump flags. This field and the "dump_path" field are
+            mutually exclusive.
+        source:
+          type: string
+          description: Required. The resource name (URI) of the source connection profile.
+        vpcPeeringConnectivity:
+          $ref: '#/components/schemas/VpcPeeringConnectivity'
+          description: >-
+            The details of the VPC network that the source database is located
+            in.
+        error:
+          description: Output only. The error details in case of state FAILED.
+          $ref: '#/components/schemas/Status'
+          readOnly: true
+        type:
+          enum:
+            - TYPE_UNSPECIFIED
+            - ONE_TIME
+            - CONTINUOUS
+          description: Required. The migration job type.
+          enumDescriptions:
+            - The type of the migration job is unknown.
+            - The migration job is a one time migration.
+            - The migration job is a continuous migration.
+          type: string
+        staticIpConnectivity:
+          $ref: '#/components/schemas/StaticIpConnectivity'
+          description: static ip connectivity data (default, no additional details needed).
+        name:
+          type: string
+          description: >-
+            The name (URI) of this migration job resource, in the form of:
+            projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
+      id: MigrationJob
+      type: object
+    ResumeMigrationJobRequest:
+      id: ResumeMigrationJobRequest
+      properties: {}
+      type: object
+      description: Request message for 'ResumeMigrationJob' request.
+    DatabaseEngineInfo:
+      id: DatabaseEngineInfo
+      type: object
+      description: The type and version of a source or destination database.
+      properties:
+        version:
+          description: Required. Engine named version, for example 12.c.1.
+          type: string
+        engine:
+          description: Required. Engine type.
+          enumDescriptions:
+            - The source database engine of the migration job is unknown.
+            - The source engine is MySQL.
+            - The source engine is PostgreSQL.
+            - The source engine is Oracle.
+          type: string
+          enum:
+            - DATABASE_ENGINE_UNSPECIFIED
+            - MYSQL
+            - POSTGRESQL
+            - ORACLE
+    RollbackConversionWorkspaceRequest:
+      type: object
+      id: RollbackConversionWorkspaceRequest
+      description: Request message for 'RollbackConversionWorkspace' request.
+      properties: {}
+    ConstraintEntity:
+      properties:
+        name:
+          type: string
+          description: The name of the table constraint.
+        referenceTable:
+          type: string
+          description: >-
+            Reference table which may be associated with the constraint. For
+            example, if the constraint is a FOREIGN_KEY, this represents the
+            list of full name of the referenced table by the foreign key.
+        type:
+          description: >-
+            Type of constraint, for example unique, primary key, foreign key
+            (currently only primary key is supported).
+          type: string
+        customFeatures:
+          description: Custom engine specific features.
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+        tableColumns:
+          type: array
+          description: >-
+            Table columns used as part of the Constraint, for example primary
+            key constraint should list the columns which constitutes the key.
+          items:
+            type: string
+        referenceColumns:
+          description: >-
+            Reference columns which may be associated with the constraint. For
+            example, if the constraint is a FOREIGN_KEY, this represents the
+            list of full names of referenced columns by the foreign key.
+          items:
+            type: string
+          type: array
+        tableName:
+          type: string
+          description: >-
+            Table which is associated with the constraint. In case the
+            constraint is defined on a table, this field is left empty as this
+            information is stored in parent_name. However, if constraint is
+            defined on a view, this field stores the table name on which the
+            view is defined.
+      type: object
+      id: ConstraintEntity
+      description: >-
+        Constraint is not used as an independent entity, it is retrieved as part
+        of another entity such as Table or View.
+    Operation:
+      id: Operation
+      type: object
+      properties:
+        response:
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+        error:
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+          $ref: '#/components/schemas/Status'
+        done:
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+          type: boolean
+        name:
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+          type: string
+        metadata:
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          type: object
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+    TestIamPermissionsRequest:
+      description: Request message for `TestIamPermissions` method.
+      id: TestIamPermissionsRequest
+      type: object
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string
+          description: >-
+            The set of permissions to check for the `resource`. Permissions with
+            wildcards (such as `*` or `storage.*`) are not allowed. For more
+            information see [IAM
+            Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    StartMigrationJobRequest:
+      id: StartMigrationJobRequest
+      description: Request message for 'StartMigrationJob' request.
+      properties: {}
+      type: object
+    CloudSqlSettings:
+      id: CloudSqlSettings
+      properties:
+        collation:
+          description: The Cloud SQL default instance level collation.
+          type: string
+        ipConfig:
+          $ref: '#/components/schemas/SqlIpConfig'
+          description: >-
+            The settings for IP Management. This allows to enable or disable the
+            instance IP and manage which external networks can connect to the
+            instance. The IPv4 address cannot be disabled.
+        storageAutoResizeLimit:
+          type: string
+          format: int64
+          description: >-
+            The maximum size to which storage capacity can be automatically
+            increased. The default value is 0, which specifies that there is no
+            limit.
+        tier:
+          type: string
+          description: >-
+            The tier (or machine type) for this instance, for example:
+            `db-n1-standard-1` (MySQL instances) or `db-custom-1-3840`
+            (PostgreSQL instances). For more information, see [Cloud SQL
+            Instance
+            Settings](https://cloud.google.com/sql/docs/mysql/instance-settings).
+        edition:
+          enumDescriptions:
+            - The instance did not specify the edition.
+            - The instance is an enterprise edition.
+            - The instance is an enterprise plus edition.
+          enum:
+            - EDITION_UNSPECIFIED
+            - ENTERPRISE
+            - ENTERPRISE_PLUS
+          description: Optional. The edition of the given Cloud SQL instance.
+          type: string
+        cmekKeyName:
+          description: The KMS key name used for the csql instance.
+          type: string
+        zone:
+          description: >-
+            The Google Cloud Platform zone where your Cloud SQL database
+            instance is located.
+          type: string
+        dataDiskType:
+          description: 'The type of storage: `PD_SSD` (default) or `PD_HDD`.'
+          type: string
+          enum:
+            - SQL_DATA_DISK_TYPE_UNSPECIFIED
+            - PD_SSD
+            - PD_HDD
+          enumDescriptions:
+            - Unspecified.
+            - SSD disk.
+            - HDD disk.
+        databaseVersion:
+          description: The database engine type and version.
+          enum:
+            - SQL_DATABASE_VERSION_UNSPECIFIED
+            - MYSQL_5_6
+            - MYSQL_5_7
+            - POSTGRES_9_6
+            - POSTGRES_11
+            - POSTGRES_10
+            - MYSQL_8_0
+            - POSTGRES_12
+            - POSTGRES_13
+            - POSTGRES_14
+            - POSTGRES_15
+          type: string
+          enumDescriptions:
+            - Unspecified version.
+            - MySQL 5.6.
+            - MySQL 5.7.
+            - PostgreSQL 9.6.
+            - PostgreSQL 11.
+            - PostgreSQL 10.
+            - MySQL 8.0.
+            - PostgreSQL 12.
+            - PostgreSQL 13.
+            - PostgreSQL 14.
+            - PostgreSQL 15.
+        rootPasswordSet:
+          description: >-
+            Output only. Indicates If this connection profile root password is
+            stored.
+          readOnly: true
+          type: boolean
+        userLabels:
+          additionalProperties:
+            type: string
+          description: >-
+            The resource labels for a Cloud SQL instance to use to annotate any
+            related underlying resources such as Compute Engine VMs. An object
+            containing a list of "key": "value" pairs. Example: `{ "name":
+            "wrench", "mass": "18kg", "count": "3" }`.
+          type: object
+        autoStorageIncrease:
+          type: boolean
+          description: >-
+            [default: ON] If you enable this setting, Cloud SQL checks your
+            available storage every 30 seconds. If the available storage falls
+            below a threshold size, Cloud SQL automatically adds additional
+            storage capacity. If the available storage repeatedly falls below
+            the threshold size, Cloud SQL continues to add storage until it
+            reaches the maximum of 30 TB.
+        dataDiskSizeGb:
+          description: >-
+            The storage capacity available to the database, in GB. The minimum
+            (and default) size is 10GB.
+          type: string
+          format: int64
+        rootPassword:
+          type: string
+          description: Input only. Initial root password.
+        secondaryZone:
+          description: >-
+            Optional. The Google Cloud Platform zone where the failover Cloud
+            SQL database instance is located. Used when the Cloud SQL database
+            availability type is REGIONAL (i.e. multiple zones / highly
+            available).
+          type: string
+        activationPolicy:
+          enumDescriptions:
+            - unspecified policy.
+            - The instance is always up and running.
+            - The instance should never spin up.
+          description: >-
+            The activation policy specifies when the instance is activated; it
+            is applicable only when the instance state is 'RUNNABLE'. Valid
+            values: 'ALWAYS': The instance is on, and remains so even in the
+            absence of connection requests. `NEVER`: The instance is off; it is
+            not activated, even if a connection request arrives.
+          type: string
+          enum:
+            - SQL_ACTIVATION_POLICY_UNSPECIFIED
+            - ALWAYS
+            - NEVER
+        databaseFlags:
+          type: object
+          description: >-
+            The database flags passed to the Cloud SQL instance at startup. An
+            object containing a list of "key": value pairs. Example: { "name":
+            "wrench", "mass": "1.3kg", "count": "3" }.
+          additionalProperties:
+            type: string
+        sourceId:
+          description: >-
+            The Database Migration Service source connection profile ID, in the
+            format:
+            `projects/my_project_name/locations/us-central1/connectionProfiles/connection_profile_ID`
+          type: string
+        availabilityType:
+          type: string
+          enumDescriptions:
+            - This is an unknown Availability type.
+            - Zonal availablility instance.
+            - Regional availability instance.
+          description: >-
+            Optional. Availability type. Potential values: * `ZONAL`: The
+            instance serves data from only one zone. Outages in that zone affect
+            data availability. * `REGIONAL`: The instance can serve data from
+            more than one zone in a region (it is highly available).
+          enum:
+            - SQL_AVAILABILITY_TYPE_UNSPECIFIED
+            - ZONAL
+            - REGIONAL
+      type: object
+      description: Settings for creating a Cloud SQL database instance.
+    Status:
+      properties:
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: any
+              description: Properties of the object. Contains field @type with type URL.
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+        code:
+          format: int32
+          type: integer
+          description: The status code, which should be an enum value of google.rpc.Code.
+      id: Status
+      type: object
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+    SearchBackgroundJobsResponse:
+      description: Response message for 'SearchBackgroundJobs' request.
+      type: object
+      properties:
+        jobs:
+          description: The list of conversion workspace mapping rules.
+          type: array
+          items:
+            $ref: '#/components/schemas/BackgroundJobLogEntry'
+      id: SearchBackgroundJobsResponse
+    ImportRulesJobDetails:
+      description: Details regarding an Import Rules background job.
+      properties:
+        files:
+          description: File names used for the import rules job.
+          items:
+            type: string
+          type: array
+        fileFormat:
+          enumDescriptions:
+            - Unspecified rules format.
+            - HarbourBridge session file.
+            - Ora2Pg configuration file.
+          type: string
+          enum:
+            - IMPORT_RULES_FILE_FORMAT_UNSPECIFIED
+            - IMPORT_RULES_FILE_FORMAT_HARBOUR_BRIDGE_SESSION_FILE
+            - IMPORT_RULES_FILE_FORMAT_ORATOPG_CONFIG_FILE
+          description: The requested file format.
+      type: object
+      id: ImportRulesJobDetails
+    AlloyDbSettings:
+      description: Settings for creating an AlloyDB cluster.
+      properties:
+        vpcNetwork:
+          type: string
+          description: >-
+            Required. The resource link for the VPC network in which cluster
+            resources are created and from which they are accessible via Private
+            IP. The network must belong to the same project as the cluster. It
+            is specified in the form:
+            "projects/{project_number}/global/networks/{network_id}". This is
+            required to create a cluster.
+        encryptionConfig:
+          $ref: '#/components/schemas/EncryptionConfig'
+          description: >-
+            Optional. The encryption config can be specified to encrypt the data
+            disks and other persistent data resources of a cluster with a
+            customer-managed encryption key (CMEK). When this field is not
+            specified, the cluster will then use default encryption scheme to
+            protect the user data.
+        primaryInstanceSettings:
+          $ref: '#/components/schemas/PrimaryInstanceSettings'
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+          description: >-
+            Labels for the AlloyDB cluster created by DMS. An object containing
+            a list of 'key', 'value' pairs.
+        initialUser:
+          $ref: '#/components/schemas/UserPassword'
+          description: >-
+            Required. Input only. Initial user to setup during cluster creation.
+            Required.
+      id: AlloyDbSettings
+      type: object
+    StopMigrationJobRequest:
+      description: Request message for 'StopMigrationJob' request.
+      properties: {}
+      id: StopMigrationJobRequest
+      type: object
+    ImportMappingRulesRequest:
+      type: object
+      properties:
+        rulesFiles:
+          items:
+            $ref: '#/components/schemas/RulesFile'
+          type: array
+          description: One or more rules files.
+        rulesFormat:
+          enum:
+            - IMPORT_RULES_FILE_FORMAT_UNSPECIFIED
+            - IMPORT_RULES_FILE_FORMAT_HARBOUR_BRIDGE_SESSION_FILE
+            - IMPORT_RULES_FILE_FORMAT_ORATOPG_CONFIG_FILE
+          enumDescriptions:
+            - Unspecified rules format.
+            - HarbourBridge session file.
+            - Ora2Pg configuration file.
+          type: string
+          description: The format of the rules content file.
+        autoCommit:
+          description: >-
+            Should the conversion workspace be committed automatically after the
+            import operation.
+          type: boolean
+      description: Request message for 'ImportMappingRules' request.
+      id: ImportMappingRulesRequest
+    ApplyConversionWorkspaceRequest:
+      description: Request message for 'ApplyConversionWorkspace' request.
+      properties:
+        filter:
+          type: string
+          description: >-
+            Filter which entities to apply. Leaving this field empty will apply
+            all of the entities. Supports Google AIP 160 based filtering.
+        connectionProfile:
+          type: string
+          description: Fully qualified (Uri) name of the destination connection profile.
+      id: ApplyConversionWorkspaceRequest
+      type: object
+    AuditConfig:
+      id: AuditConfig
+      description: >-
+        Specifies the audit configuration for a service. The configuration
+        determines which permission types are logged, and what identities, if
+        any, are exempted from logging. An AuditConfig must have one or more
+        AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+        specific service, the union of the two AuditConfigs is used for that
+        service: the log_types specified in each AuditConfig are enabled, and
+        the exempted_members in each AuditLogConfig are exempted. Example Policy
+        with multiple AuditConfigs: { "audit_configs": [ { "service":
+        "allServices", "audit_log_configs": [ { "log_type": "DATA_READ",
+        "exempted_members": [ "user:jose@example.com" ] }, { "log_type":
+        "DATA_WRITE" }, { "log_type": "ADMIN_READ" } ] }, { "service":
+        "sampleservice.googleapis.com", "audit_log_configs": [ { "log_type":
+        "DATA_READ" }, { "log_type": "DATA_WRITE", "exempted_members": [
+        "user:aliya@example.com" ] } ] } ] } For sampleservice, this policy
+        enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts
+        `jose@example.com` from DATA_READ logging, and `aliya@example.com` from
+        DATA_WRITE logging.
+      properties:
+        auditLogConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLogConfig'
+          description: The configuration for logging of each type of permission.
+        service:
+          description: >-
+            Specifies a service that will be enabled for audit logging. For
+            example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+            `allServices` is a special value that covers all services.
+          type: string
+      type: object
+    ConvertJobDetails:
+      id: ConvertJobDetails
+      description: Details regarding a Convert background job.
+      properties:
+        filter:
+          type: string
+          description: AIP-160 based filter used to specify the entities to convert
+      type: object
+    DumpFlags:
+      id: DumpFlags
+      properties:
+        dumpFlags:
+          items:
+            $ref: '#/components/schemas/DumpFlag'
+          type: array
+          description: The flags for the initial dump.
+      description: Dump flags definition.
+      type: object
+    VmSelectionConfig:
+      type: object
+      id: VmSelectionConfig
+      description: VM selection configuration message
+      properties:
+        vmZone:
+          type: string
+          description: Required. The Google Cloud Platform zone the VM is located.
+    OracleConnectionProfile:
+      id: OracleConnectionProfile
+      type: object
+      description: >-
+        Specifies connection parameters required specifically for Oracle
+        databases.
+      properties:
+        forwardSshConnectivity:
+          description: Forward SSH tunnel connectivity.
+          $ref: '#/components/schemas/ForwardSshTunnelConnectivity'
+        host:
+          description: Required. The IP or hostname of the source Oracle database.
+          type: string
+        databaseService:
+          description: Required. Database service for the Oracle connection.
+          type: string
+        port:
+          type: integer
+          description: Required. The network port of the source Oracle database.
+          format: int32
+        ssl:
+          description: >-
+            SSL configuration for the connection to the source Oracle database.
+            * Only `SERVER_ONLY` configuration is supported for Oracle SSL. *
+            SSL is supported for Oracle versions 12 and above.
+          $ref: '#/components/schemas/SslConfig'
+        staticServiceIpConnectivity:
+          $ref: '#/components/schemas/StaticServiceIpConnectivity'
+          description: Static Service IP connectivity.
+        passwordSet:
+          type: boolean
+          readOnly: true
+          description: >-
+            Output only. Indicates whether a new password is included in the
+            request.
+        password:
+          type: string
+          description: >-
+            Required. Input only. The password for the user that Database
+            Migration Service will be using to connect to the database. This
+            field is not returned on request, and the value is encrypted when
+            stored in Database Migration Service.
+        privateConnectivity:
+          $ref: '#/components/schemas/PrivateConnectivity'
+          description: Private connectivity.
+        username:
+          description: >-
+            Required. The username that Database Migration Service will use to
+            connect to the database. The value is encrypted when stored in
+            Database Migration Service.
+          type: string
+    RulesFile:
+      properties:
+        rulesSourceFilename:
+          description: >-
+            The filename of the rules that needs to be converted. The filename
+            is used mainly so that future logs of the import rules job contain
+            it, and can therefore be searched by it.
+          type: string
+        rulesContent:
+          description: The text content of the rules that needs to be converted.
+          type: string
+      id: RulesFile
+      type: object
+      description: Details of a single rules file.
+    AuditLogConfig:
+      properties:
+        exemptedMembers:
+          description: >-
+            Specifies the identities that do not cause logging for this type of
+            permission. Follows the same format of Binding.members.
+          items:
+            type: string
+          type: array
+        logType:
+          enum:
+            - LOG_TYPE_UNSPECIFIED
+            - ADMIN_READ
+            - DATA_WRITE
+            - DATA_READ
+          description: The log type that this config enables.
+          enumDescriptions:
+            - Default case. Should never be this.
+            - 'Admin reads. Example: CloudIAM getIamPolicy'
+            - 'Data writes. Example: CloudSQL Users create'
+            - 'Data reads. Example: CloudSQL Users list'
+          type: string
+      description: >-
+        Provides the configuration for logging a type of permissions. Example: {
+        "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+        "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This
+        enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+        jose@example.com from DATA_READ logging.
+      id: AuditLogConfig
+      type: object
+    ListPrivateConnectionsResponse:
+      id: ListPrivateConnectionsResponse
+      description: Response message for 'ListPrivateConnections' request.
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+        privateConnections:
+          items:
+            $ref: '#/components/schemas/PrivateConnection'
+          description: List of private connections.
+          type: array
+        unreachable:
+          type: array
+          description: Locations that could not be reached.
+          items:
+            type: string
+    GenerateTcpProxyScriptRequest:
+      properties:
+        vmMachineType:
+          type: string
+          description: Required. The type of the Compute instance that will host the proxy.
+        vmSubnet:
+          type: string
+          description: >-
+            Required. The name of the subnet the Compute instance will use for
+            private connectivity. Must be supplied in the form of
+            projects/{project}/regions/{region}/subnetworks/{subnetwork}. Note:
+            the region for the subnet must match the Compute instance region.
+        vmName:
+          description: Required. The name of the Compute instance that will host the proxy.
+          type: string
+        vmZone:
+          type: string
+          description: >-
+            Optional. The Google Cloud Platform zone to create the VM in. The
+            fully qualified name of the zone must be specified, including the
+            region name, for example "us-central1-b". If not specified, uses the
+            "-b" zone of the destination Connection Profile's region.
+      id: GenerateTcpProxyScriptRequest
+      description: Request message for 'GenerateTcpProxyScript' request.
+      type: object
+    DatabaseEntity:
+      id: DatabaseEntity
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/ViewEntity'
+          description: View.
+        shortName:
+          type: string
+          description: The short name (e.g. table name) of the entity.
+        tree:
+          enum:
+            - TREE_TYPE_UNSPECIFIED
+            - SOURCE
+            - DRAFT
+            - DESTINATION
+          enumDescriptions:
+            - Tree type unspecified.
+            - Tree of entities loaded from a source database.
+            - >-
+              Tree of entities converted from the source tree using the mapping
+              rules.
+            - Tree of entities observed on the destination database.
+          type: string
+          description: The type of tree the entity belongs to.
+        parentEntity:
+          type: string
+          description: The full name of the parent entity (e.g. schema name).
+        schema:
+          $ref: '#/components/schemas/SchemaEntity'
+          description: Schema.
+        sequence:
+          $ref: '#/components/schemas/SequenceEntity'
+          description: Sequence.
+        databasePackage:
+          $ref: '#/components/schemas/PackageEntity'
+          description: Package.
+        storedProcedure:
+          $ref: '#/components/schemas/StoredProcedureEntity'
+          description: Stored procedure.
+        databaseFunction:
+          $ref: '#/components/schemas/FunctionEntity'
+          description: Function.
+        mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityMapping'
+          description: >-
+            Details about entity mappings. For source tree entities, this holds
+            the draft entities which were generated by the mapping rules. For
+            draft tree entities, this holds the source entities which were
+            converted to form the draft entity. Destination entities will have
+            no mapping details.
+        synonym:
+          $ref: '#/components/schemas/SynonymEntity'
+          description: Synonym.
+        entityType:
+          enum:
+            - DATABASE_ENTITY_TYPE_UNSPECIFIED
+            - DATABASE_ENTITY_TYPE_SCHEMA
+            - DATABASE_ENTITY_TYPE_TABLE
+            - DATABASE_ENTITY_TYPE_COLUMN
+            - DATABASE_ENTITY_TYPE_CONSTRAINT
+            - DATABASE_ENTITY_TYPE_INDEX
+            - DATABASE_ENTITY_TYPE_TRIGGER
+            - DATABASE_ENTITY_TYPE_VIEW
+            - DATABASE_ENTITY_TYPE_SEQUENCE
+            - DATABASE_ENTITY_TYPE_STORED_PROCEDURE
+            - DATABASE_ENTITY_TYPE_FUNCTION
+            - DATABASE_ENTITY_TYPE_SYNONYM
+            - DATABASE_ENTITY_TYPE_DATABASE_PACKAGE
+            - DATABASE_ENTITY_TYPE_UDT
+            - DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW
+            - DATABASE_ENTITY_TYPE_DATABASE
+          enumDescriptions:
+            - Unspecified database entity type.
+            - Schema.
+            - Table.
+            - Column.
+            - Constraint.
+            - Index.
+            - Trigger.
+            - View.
+            - Sequence.
+            - Stored Procedure.
+            - Function.
+            - Synonym.
+            - Package.
+            - UDT.
+            - Materialized View.
+            - Database.
+          description: The type of the database entity (table, view, index, ...).
+          type: string
+        table:
+          $ref: '#/components/schemas/TableEntity'
+          description: Table.
+      description: >-
+        The base entity type for all the database related entities. The message
+        contains the entity name, the name of its parent, the entity type, and
+        the specific details per entity type.
+    Binding:
+      type: object
+      properties:
+        condition:
+          description: >-
+            The condition that is associated with this binding. If the condition
+            evaluates to `true`, then this binding applies to the current
+            request. If the condition evaluates to `false`, then this binding
+            does not apply to the current request. However, a different role
+            binding might grant the same role to one or more of the principals
+            in this binding. To learn which resources support conditions in
+            their IAM policies, see the [IAM
+            documentation](https://cloud.google.com/iam/help/conditions/resource-policies).
+          $ref: '#/components/schemas/Expr'
+        role:
+          description: >-
+            Role that is assigned to the list of `members`, or principals. For
+            example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+          type: string
+        members:
+          description: >-
+            Specifies the principals requesting access for a Google Cloud
+            resource. `members` can have the following values: * `allUsers`: A
+            special identifier that represents anyone who is on the internet;
+            with or without a Google account. * `allAuthenticatedUsers`: A
+            special identifier that represents anyone who is authenticated with
+            a Google account or a service account. Does not include identities
+            that come from external identity providers (IdPs) through identity
+            federation. * `user:{emailid}`: An email address that represents a
+            specific Google account. For example, `alice@example.com` . *
+            `serviceAccount:{emailid}`: An email address that represents a
+            Google service account. For example,
+            `my-other-app@appspot.gserviceaccount.com`. *
+            `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+            An identifier for a [Kubernetes service
+            account](https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-service-accounts).
+            For example,
+            `my-project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
+            `group:{emailid}`: An email address that represents a Google group.
+            For example, `admins@example.com`. * `domain:{domain}`: The G Suite
+            domain (primary) that represents all the users of that domain. For
+            example, `google.com` or `example.com`. *
+            `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus
+            unique identifier) representing a user that has been recently
+            deleted. For example, `alice@example.com?uid=123456789012345678901`.
+            If the user is recovered, this value reverts to `user:{emailid}` and
+            the recovered user retains the role in the binding. *
+            `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+            (plus unique identifier) representing a service account that has
+            been recently deleted. For example,
+            `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.
+            If the service account is undeleted, this value reverts to
+            `serviceAccount:{emailid}` and the undeleted service account retains
+            the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`:
+            An email address (plus unique identifier) representing a Google
+            group that has been recently deleted. For example,
+            `admins@example.com?uid=123456789012345678901`. If the group is
+            recovered, this value reverts to `group:{emailid}` and the recovered
+            group retains the role in the binding.
+          type: array
+          items:
+            type: string
+      id: Binding
+      description: Associates `members`, or principals, with a `role`.
+    SeedJobDetails:
+      properties:
+        connectionProfile:
+          description: The connection profile which was used for the seed job.
+          type: string
+      description: Details regarding a Seed background job.
+      type: object
+      id: SeedJobDetails
+    RestartMigrationJobRequest:
+      description: Request message for 'RestartMigrationJob' request.
+      type: object
+      id: RestartMigrationJobRequest
+      properties: {}
+    ColumnEntity:
+      properties:
+        defaultValue:
+          type: string
+          description: Default value of the column.
+        collation:
+          description: Collation override - instead of table level collation.
+          type: string
+        udt:
+          description: Is the column a UDT.
+          type: boolean
+        scale:
+          description: Column scale - when relevant.
+          format: int32
+          type: integer
+        charset:
+          description: Charset override - instead of table level charset.
+          type: string
+        dataType:
+          type: string
+          description: Column data type.
+        setValues:
+          items:
+            type: string
+          description: >-
+            Specifies the list of values allowed in the column. Only used for
+            set data type.
+          type: array
+        arrayLength:
+          description: If the column is array, of which length.
+          type: integer
+          format: int32
+        nullable:
+          type: boolean
+          description: Is the column nullable.
+        length:
+          format: int64
+          type: string
+          description: Column length - e.g. varchar (50).
+        autoGenerated:
+          description: Is the column auto-generated/identity.
+          type: boolean
+        customFeatures:
+          type: object
+          description: Custom engine specific features.
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+        name:
+          type: string
+          description: Column name.
+        precision:
+          description: Column precision - when relevant.
+          type: integer
+          format: int32
+        array:
+          type: boolean
+          description: Is the column of array type.
+        fractionalSecondsPrecision:
+          description: >-
+            Column fractional second precision - used for timestamp based
+            datatypes.
+          type: integer
+          format: int32
+        ordinalPosition:
+          type: integer
+          description: Column order in the table.
+          format: int32
+        comment:
+          type: string
+          description: Comment associated with the column.
+      type: object
+      id: ColumnEntity
+      description: >-
+        Column is not used as an independent entity, it is retrieved as part of
+        a Table entity.
+    SetIamPolicyRequest:
+      id: SetIamPolicyRequest
+      type: object
+      description: Request message for `SetIamPolicy` method.
+      properties:
+        policy:
+          $ref: '#/components/schemas/Policy'
+          description: >-
+            REQUIRED: The complete policy to be applied to the `resource`. The
+            size of the policy is limited to a few 10s of KB. An empty policy is
+            a valid policy but certain Google Cloud services (such as Projects)
+            might reject them.
+        updateMask:
+          format: google-fieldmask
+          type: string
+          description: >-
+            OPTIONAL: A FieldMask specifying which fields of the policy to
+            modify. Only the fields in the mask will be modified. If no mask is
+            provided, the following default mask is used: `paths: "bindings,
+            etag"`
+    MachineConfig:
+      type: object
+      properties:
+        cpuCount:
+          description: The number of CPU's in the VM instance.
+          type: integer
+          format: int32
+      id: MachineConfig
+      description: MachineConfig describes the configuration of a machine.
+    MySqlConnectionProfile:
+      properties:
+        host:
+          type: string
+          description: Required. The IP or hostname of the source MySQL database.
+        cloudSqlId:
+          description: >-
+            If the source is a Cloud SQL database, use this field to provide the
+            Cloud SQL instance ID of the source.
+          type: string
+        username:
+          description: >-
+            Required. The username that Database Migration Service will use to
+            connect to the database. The value is encrypted when stored in
+            Database Migration Service.
+          type: string
+        password:
+          type: string
+          description: >-
+            Required. Input only. The password for the user that Database
+            Migration Service will be using to connect to the database. This
+            field is not returned on request, and the value is encrypted when
+            stored in Database Migration Service.
+        passwordSet:
+          readOnly: true
+          type: boolean
+          description: >-
+            Output only. Indicates If this connection profile password is
+            stored.
+        port:
+          format: int32
+          type: integer
+          description: Required. The network port of the source MySQL database.
+        ssl:
+          description: >-
+            SSL configuration for the destination to connect to the source
+            database.
+          $ref: '#/components/schemas/SslConfig'
+      description: >-
+        Specifies connection parameters required specifically for MySQL
+        databases.
+      type: object
+      id: MySqlConnectionProfile
+    VpcPeeringConfig:
+      type: object
+      id: VpcPeeringConfig
+      properties:
+        vpcName:
+          type: string
+          description: >-
+            Required. Fully qualified name of the VPC that Database Migration
+            Service will peer to.
+        subnet:
+          type: string
+          description: Required. A free subnet for peering. (CIDR of /29)
+      description: >-
+        The VPC peering configuration is used to create VPC peering with the
+        consumer's VPC.
+    DatabaseType:
+      description: A message defining the database engine and provider.
+      type: object
+      id: DatabaseType
+      properties:
+        provider:
+          description: The database provider.
+          enum:
+            - DATABASE_PROVIDER_UNSPECIFIED
+            - CLOUDSQL
+            - RDS
+            - AURORA
+            - ALLOYDB
+          enumDescriptions:
+            - The database provider is unknown.
+            - CloudSQL runs the database.
+            - RDS runs the database.
+            - Amazon Aurora.
+            - AlloyDB.
+          type: string
+        engine:
+          description: The database engine.
+          enumDescriptions:
+            - The source database engine of the migration job is unknown.
+            - The source engine is MySQL.
+            - The source engine is PostgreSQL.
+            - The source engine is Oracle.
+          enum:
+            - DATABASE_ENGINE_UNSPECIFIED
+            - MYSQL
+            - POSTGRESQL
+            - ORACLE
+          type: string
+    SshScript:
+      description: Response message for 'GenerateSshScript' request.
+      type: object
+      properties:
+        script:
+          description: The ssh configuration script.
+          type: string
+      id: SshScript
+    IndexEntity:
+      description: >-
+        Index is not used as an independent entity, it is retrieved as part of a
+        Table entity.
+      id: IndexEntity
+      type: object
+      properties:
+        tableColumns:
+          description: >-
+            Table columns used as part of the Index, for example B-TREE index
+            should list the columns which constitutes the index.
+          type: array
+          items:
+            type: string
+        customFeatures:
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          description: Custom engine specific features.
+          type: object
+        unique:
+          type: boolean
+          description: Boolean value indicating whether the index is unique.
+        name:
+          description: The name of the index.
+          type: string
+        type:
+          type: string
+          description: Type of index, for example B-TREE.
+    PostgreSqlConnectionProfile:
+      type: object
+      description: >-
+        Specifies connection parameters required specifically for PostgreSQL
+        databases.
+      properties:
+        passwordSet:
+          type: boolean
+          description: >-
+            Output only. Indicates If this connection profile password is
+            stored.
+          readOnly: true
+        networkArchitecture:
+          description: >-
+            Output only. If the source is a Cloud SQL database, this field
+            indicates the network architecture it's associated with.
+          enumDescriptions:
+            - ''
+            - Instance is in Cloud SQL's old producer network architecture.
+            - Instance is in Cloud SQL's new producer network architecture.
+          readOnly: true
+          enum:
+            - NETWORK_ARCHITECTURE_UNSPECIFIED
+            - NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER
+            - NETWORK_ARCHITECTURE_NEW_CSQL_PRODUCER
+          type: string
+        cloudSqlId:
+          description: >-
+            If the source is a Cloud SQL database, use this field to provide the
+            Cloud SQL instance ID of the source.
+          type: string
+        ssl:
+          $ref: '#/components/schemas/SslConfig'
+          description: >-
+            SSL configuration for the destination to connect to the source
+            database.
+        privateServiceConnectConnectivity:
+          description: Private service connect connectivity.
+          $ref: '#/components/schemas/PrivateServiceConnectConnectivity'
+        staticIpConnectivity:
+          $ref: '#/components/schemas/StaticIpConnectivity'
+          description: Static ip connectivity data (default, no additional details needed).
+        username:
+          description: >-
+            Required. The username that Database Migration Service will use to
+            connect to the database. The value is encrypted when stored in
+            Database Migration Service.
+          type: string
+        password:
+          type: string
+          description: >-
+            Required. Input only. The password for the user that Database
+            Migration Service will be using to connect to the database. This
+            field is not returned on request, and the value is encrypted when
+            stored in Database Migration Service.
+        port:
+          format: int32
+          description: Required. The network port of the source PostgreSQL database.
+          type: integer
+        host:
+          description: Required. The IP or hostname of the source PostgreSQL database.
+          type: string
+      id: PostgreSqlConnectionProfile
+    VmCreationConfig:
+      type: object
+      id: VmCreationConfig
+      description: VM creation configuration message
+      properties:
+        vmMachineType:
+          description: Required. VM instance machine type to create.
+          type: string
+        subnet:
+          type: string
+          description: The subnet name the vm needs to be created in.
+        vmZone:
+          description: The Google Cloud Platform zone to create the VM in.
+          type: string
+    GoogleCloudClouddmsV1OperationMetadata:
+      properties:
+        statusMessage:
+          type: string
+          readOnly: true
+          description: Output only. Human-readable status of the operation, if any.
+        target:
+          type: string
+          readOnly: true
+          description: >-
+            Output only. Server-defined resource path for the target of the
+            operation.
+        endTime:
+          type: string
+          format: google-datetime
+          description: Output only. The time the operation finished running.
+          readOnly: true
+        apiVersion:
+          readOnly: true
+          description: Output only. API version used to start the operation.
+          type: string
+        createTime:
+          readOnly: true
+          type: string
+          description: Output only. The time the operation was created.
+          format: google-datetime
+        requestedCancellation:
+          readOnly: true
+          type: boolean
+          description: >-
+            Output only. Identifies whether the user has requested cancellation
+            of the operation. Operations that have successfully been cancelled
+            have Operation.error value with a google.rpc.Status.code of 1,
+            corresponding to `Code.CANCELLED`.
+        verb:
+          type: string
+          description: Output only. Name of the verb executed by the operation.
+          readOnly: true
+      id: GoogleCloudClouddmsV1OperationMetadata
+      description: Represents the metadata of the long-running operation.
+      type: object
+    SeedConversionWorkspaceRequest:
+      type: object
+      description: Request message for 'SeedConversionWorkspace' request.
+      id: SeedConversionWorkspaceRequest
+      properties:
+        sourceConnectionProfile:
+          description: Fully qualified (Uri) name of the source connection profile.
+          type: string
+        autoCommit:
+          description: >-
+            Should the conversion workspace be committed automatically after the
+            seed operation.
+          type: boolean
+        destinationConnectionProfile:
+          description: Fully qualified (Uri) name of the destination connection profile.
+          type: string
+    PromoteMigrationJobRequest:
+      id: PromoteMigrationJobRequest
+      description: Request message for 'PromoteMigrationJob' request.
+      type: object
+      properties: {}
+    TcpProxyScript:
+      type: object
+      description: Response message for 'GenerateTcpProxyScript' request.
+      properties:
+        script:
+          type: string
+          description: The TCP Proxy configuration script.
+      id: TcpProxyScript
+    ViewEntity:
+      properties:
+        constraints:
+          type: array
+          description: View constraints.
+          items:
+            $ref: '#/components/schemas/ConstraintEntity'
+        customFeatures:
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          type: object
+          description: Custom engine specific features.
+        sqlCode:
+          description: The SQL code which creates the view.
+          type: string
+      description: View's parent is a schema.
+      type: object
+      id: ViewEntity
+    Location:
+      type: object
+      properties:
+        labels:
+          description: >-
+            Cross-service attributes for the location. For example
+            {"cloud.googleapis.com/region": "us-east1"}
+          type: object
+          additionalProperties:
+            type: string
+        name:
+          description: >-
+            Resource name for the location, which may vary between
+            implementations. For example:
+            `"projects/example-project/locations/us-east1"`
+          type: string
+        displayName:
+          type: string
+          description: >-
+            The friendly name for this location, typically a nearby city name.
+            For example, "Tokyo".
+        metadata:
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+          description: >-
+            Service-specific metadata. For example the available capacity at the
+            given location.
+          type: object
+        locationId:
+          type: string
+          description: 'The canonical id for this location. For example: `"us-east1"`.'
+      description: A resource that represents a Google Cloud location.
+      id: Location
+    TestIamPermissionsResponse:
+      description: Response message for `TestIamPermissions` method.
+      properties:
+        permissions:
+          items:
+            type: string
+          type: array
+          description: >-
+            A subset of `TestPermissionsRequest.permissions` that the caller is
+            allowed.
+      type: object
+      id: TestIamPermissionsResponse
+    ListConversionWorkspacesResponse:
+      description: Response message for 'ListConversionWorkspaces' request.
+      type: object
+      properties:
+        unreachable:
+          description: Locations that could not be reached.
+          type: array
+          items:
+            type: string
+        conversionWorkspaces:
+          type: array
+          description: The list of conversion workspace objects.
+          items:
+            $ref: '#/components/schemas/ConversionWorkspace'
+        nextPageToken:
+          description: >-
+            A token which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      id: ListConversionWorkspacesResponse
+    CancelOperationRequest:
+      description: The request message for Operations.CancelOperation.
+      properties: {}
+      type: object
+      id: CancelOperationRequest
+    SequenceEntity:
+      description: Sequence's parent is a schema.
+      id: SequenceEntity
+      properties:
+        cycle:
+          description: Indicates whether the sequence value should cycle through.
+          type: boolean
+        increment:
+          format: int64
+          type: string
+          description: Increment value for the sequence.
+        customFeatures:
+          additionalProperties:
+            description: Properties of the object.
+            type: any
+          description: Custom engine specific features.
+          type: object
+        cache:
+          type: string
+          description: Indicates number of entries to cache / precreate.
+          format: int64
+        startValue:
+          format: byte
+          type: string
+          description: >-
+            Start number for the sequence represented as bytes to accommodate
+            large. numbers
+        maxValue:
+          type: string
+          format: byte
+          description: >-
+            Maximum number for the sequence represented as bytes to accommodate
+            large. numbers
+        minValue:
+          description: >-
+            Minimum number for the sequence represented as bytes to accommodate
+            large. numbers
+          format: byte
+          type: string
+      type: object
+    ListMigrationJobsResponse:
+      type: object
+      id: ListMigrationJobsResponse
+      properties:
+        nextPageToken:
+          description: >-
+            A token which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+        migrationJobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MigrationJob'
+          description: The list of migration jobs objects.
+        unreachable:
+          type: array
+          items:
+            type: string
+          description: Locations that could not be reached.
+      description: Response message for 'ListMigrationJobs' request.
+    BackgroundJobLogEntry:
+      id: BackgroundJobLogEntry
+      description: Execution log of a background job.
+      properties:
+        completionComment:
+          type: string
+          description: >-
+            Job completion comment, such as how many entities were seeded, how
+            many warnings were found during conversion, and similar information.
+        finishTime:
+          type: string
+          description: The timestamp when the background job was finished.
+          format: google-datetime
+        id:
+          type: string
+          description: The background job log entry ID.
+        importRulesJobDetails:
+          $ref: '#/components/schemas/ImportRulesJobDetails'
+          description: Import rules job details.
+        applyJobDetails:
+          description: Apply job details.
+          $ref: '#/components/schemas/ApplyJobDetails'
+        jobType:
+          enum:
+            - BACKGROUND_JOB_TYPE_UNSPECIFIED
+            - BACKGROUND_JOB_TYPE_SOURCE_SEED
+            - BACKGROUND_JOB_TYPE_CONVERT
+            - BACKGROUND_JOB_TYPE_APPLY_DESTINATION
+            - BACKGROUND_JOB_TYPE_IMPORT_RULES_FILE
+          type: string
+          description: The type of job that was executed.
+          enumDescriptions:
+            - Unspecified background job type.
+            - Job to seed from the source database.
+            - >-
+              Job to convert the source database into a draft of the destination
+              database.
+            - Job to apply the draft tree onto the destination.
+            - >-
+              Job to import and convert mapping rules from an external source
+              such as an ora2pg config file.
+        requestAutocommit:
+          description: >-
+            Whether the client requested the conversion workspace to be
+            committed after a successful completion of the job.
+          type: boolean
+        convertJobDetails:
+          $ref: '#/components/schemas/ConvertJobDetails'
+          description: Convert job details.
+        startTime:
+          description: The timestamp when the background job was started.
+          format: google-datetime
+          type: string
+        completionState:
+          description: Job completion state, i.e. the final state after the job completed.
+          enumDescriptions:
+            - >-
+              The status is not specified. This state is used when job is not
+              yet finished.
+            - Success.
+            - Error.
+          enum:
+            - JOB_COMPLETION_STATE_UNSPECIFIED
+            - SUCCEEDED
+            - FAILED
+          type: string
+        seedJobDetails:
+          $ref: '#/components/schemas/SeedJobDetails'
+          description: Seed job details.
+      type: object
+    GenerateSshScriptRequest:
+      properties:
+        vmPort:
+          format: int32
+          description: The port that will be open on the bastion host.
+          type: integer
+        vmSelectionConfig:
+          description: The VM selection configuration
+          $ref: '#/components/schemas/VmSelectionConfig'
+        vm:
+          description: Required. Bastion VM Instance name to use or to create.
+          type: string
+        vmCreationConfig:
+          description: The VM creation configuration
+          $ref: '#/components/schemas/VmCreationConfig'
+      description: Request message for 'GenerateSshScript' request.
+      id: GenerateSshScriptRequest
+      type: object
+    PrivateConnectivity:
+      type: object
+      properties:
+        privateConnection:
+          description: Required. The resource name (URI) of the private connection.
+          type: string
+      description: Private Connectivity.
+      id: PrivateConnectivity
+    PrivateServiceConnectConnectivity:
+      description: >-
+        Private Service Connect connectivity
+        (https://cloud.google.com/vpc/docs/private-service-connect#service-attachments)
+      id: PrivateServiceConnectConnectivity
+      type: object
+      properties:
+        serviceAttachment:
+          type: string
+          description: >-
+            Required. A service attachment that exposes a database, and has the
+            following format:
+            projects/{project}/regions/{region}/serviceAttachments/{service_attachment_name}
+    FunctionEntity:
+      properties:
+        customFeatures:
+          additionalProperties:
+            description: Properties of the object.
+            type: any
+          description: Custom engine specific features.
+          type: object
+        sqlCode:
+          type: string
+          description: The SQL code which creates the function.
+      type: object
+      description: Function's parent is a schema.
+      id: FunctionEntity
+    SslConfig:
+      properties:
+        clientCertificate:
+          type: string
+          description: >-
+            Input only. The x509 PEM-encoded certificate that will be used by
+            the replica to authenticate against the source database server.If
+            this field is used then the 'client_key' field is mandatory.
+        caCertificate:
+          type: string
+          description: >-
+            Required. Input only. The x509 PEM-encoded certificate of the CA
+            that signed the source database server's certificate. The replica
+            will use this certificate to verify it's connecting to the right
+            host.
+        clientKey:
+          description: >-
+            Input only. The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key
+            associated with the Client Certificate. If this field is used then
+            the 'client_certificate' field is mandatory.
+          type: string
+        type:
+          readOnly: true
+          description: >-
+            Output only. The ssl config type according to 'client_key',
+            'client_certificate' and 'ca_certificate'.
+          enum:
+            - SSL_TYPE_UNSPECIFIED
+            - SERVER_ONLY
+            - SERVER_CLIENT
+          enumDescriptions:
+            - Unspecified.
+            - Only 'ca_certificate' specified.
+            - >-
+              Both server ('ca_certificate'), and client ('client_key',
+              'client_certificate') specified.
+          type: string
+      id: SslConfig
+      type: object
+      description: SSL configuration information.
+    StaticServiceIpConnectivity:
+      id: StaticServiceIpConnectivity
+      description: Static IP address connectivity configured on service project.
+      properties: {}
+      type: object
+    AlloyDbConnectionProfile:
+      description: >-
+        Specifies required connection parameters, and the parameters required to
+        create an AlloyDB destination cluster.
+      type: object
+      properties:
+        clusterId:
+          description: >-
+            Required. The AlloyDB cluster ID that this connection profile is
+            associated with.
+          type: string
+        settings:
+          $ref: '#/components/schemas/AlloyDbSettings'
+          description: Immutable. Metadata used to create the destination AlloyDB cluster.
+      id: AlloyDbConnectionProfile
+    ApplyJobDetails:
+      type: object
+      properties:
+        connectionProfile:
+          type: string
+          description: The connection profile which was used for the apply job.
+        filter:
+          description: AIP-160 based filter used to specify the entities to apply
+          type: string
+      id: ApplyJobDetails
+      description: Details regarding an Apply background job.
+    SynonymEntity:
+      type: object
+      id: SynonymEntity
+      properties:
+        sourceEntity:
+          description: >-
+            The name of the entity for which the synonym is being created (the
+            source).
+          type: string
+        customFeatures:
+          additionalProperties:
+            description: Properties of the object.
+            type: any
+          description: Custom engine specific features.
+          type: object
+        sourceType:
+          type: string
+          enumDescriptions:
+            - Unspecified database entity type.
+            - Schema.
+            - Table.
+            - Column.
+            - Constraint.
+            - Index.
+            - Trigger.
+            - View.
+            - Sequence.
+            - Stored Procedure.
+            - Function.
+            - Synonym.
+            - Package.
+            - UDT.
+            - Materialized View.
+            - Database.
+          enum:
+            - DATABASE_ENTITY_TYPE_UNSPECIFIED
+            - DATABASE_ENTITY_TYPE_SCHEMA
+            - DATABASE_ENTITY_TYPE_TABLE
+            - DATABASE_ENTITY_TYPE_COLUMN
+            - DATABASE_ENTITY_TYPE_CONSTRAINT
+            - DATABASE_ENTITY_TYPE_INDEX
+            - DATABASE_ENTITY_TYPE_TRIGGER
+            - DATABASE_ENTITY_TYPE_VIEW
+            - DATABASE_ENTITY_TYPE_SEQUENCE
+            - DATABASE_ENTITY_TYPE_STORED_PROCEDURE
+            - DATABASE_ENTITY_TYPE_FUNCTION
+            - DATABASE_ENTITY_TYPE_SYNONYM
+            - DATABASE_ENTITY_TYPE_DATABASE_PACKAGE
+            - DATABASE_ENTITY_TYPE_UDT
+            - DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW
+            - DATABASE_ENTITY_TYPE_DATABASE
+          description: >-
+            The type of the entity for which the synonym is being created
+            (usually a table or a sequence).
+      description: Synonym's parent is a schema.
+    TriggerEntity:
+      type: object
+      id: TriggerEntity
+      description: >-
+        Trigger is not used as an independent entity, it is retrieved as part of
+        a Table entity.
+      properties:
+        triggerType:
+          description: >-
+            Indicates when the trigger fires, for example BEFORE STATEMENT,
+            AFTER EACH ROW.
+          type: string
+        sqlCode:
+          type: string
+          description: The SQL code which creates the trigger.
+        triggeringEvents:
+          type: array
+          items:
+            type: string
+          description: >-
+            The DML, DDL, or database events that fire the trigger, for example
+            INSERT, UPDATE.
+        name:
+          description: The name of the trigger.
+          type: string
+        customFeatures:
+          description: Custom engine specific features.
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          type: object
+    Policy:
+      properties:
+        version:
+          format: int32
+          description: >-
+            Specifies the format of the policy. Valid values are `0`, `1`, and
+            `3`. Requests that specify an invalid value are rejected. Any
+            operation that affects conditional role bindings must specify
+            version `3`. This requirement applies to the following operations: *
+            Getting a policy that includes a conditional role binding * Adding a
+            conditional role binding to a policy * Changing a conditional role
+            binding in a policy * Removing any role binding, with or without a
+            condition, from a policy that includes conditions **Important:** If
+            you use IAM Conditions, you must include the `etag` field whenever
+            you call `setIamPolicy`. If you omit this field, then IAM allows you
+            to overwrite a version `3` policy with a version `1` policy, and all
+            of the conditions in the version `3` policy are lost. If a policy
+            does not include any conditions, operations on that policy may
+            specify any valid version or leave the field unset. To learn which
+            resources support conditions in their IAM policies, see the [IAM
+            documentation](https://cloud.google.com/iam/help/conditions/resource-policies).
+          type: integer
+        bindings:
+          items:
+            $ref: '#/components/schemas/Binding'
+          description: >-
+            Associates a list of `members`, or principals, with a `role`.
+            Optionally, may specify a `condition` that determines how and when
+            the `bindings` are applied. Each of the `bindings` must contain at
+            least one principal. The `bindings` in a `Policy` can refer to up to
+            1,500 principals; up to 250 of these principals can be Google
+            groups. Each occurrence of a principal counts towards these limits.
+            For example, if the `bindings` grant 50 different roles to
+            `user:alice@example.com`, and not to any other principal, then you
+            can add another 1,450 principals to the `bindings` in the `Policy`.
+          type: array
+        auditConfigs:
+          items:
+            $ref: '#/components/schemas/AuditConfig'
+          description: Specifies cloud audit logging configuration for this policy.
+          type: array
+        etag:
+          description: >-
+            `etag` is used for optimistic concurrency control as a way to help
+            prevent simultaneous updates of a policy from overwriting each
+            other. It is strongly suggested that systems make use of the `etag`
+            in the read-modify-write cycle to perform policy updates in order to
+            avoid race conditions: An `etag` is returned in the response to
+            `getIamPolicy`, and systems are expected to put that etag in the
+            request to `setIamPolicy` to ensure that their change will be
+            applied to the same version of the policy. **Important:** If you use
+            IAM Conditions, you must include the `etag` field whenever you call
+            `setIamPolicy`. If you omit this field, then IAM allows you to
+            overwrite a version `3` policy with a version `1` policy, and all of
+            the conditions in the version `3` policy are lost.
+          type: string
+          format: byte
+      description: >-
+        An Identity and Access Management (IAM) policy, which specifies access
+        controls for Google Cloud resources. A `Policy` is a collection of
+        `bindings`. A `binding` binds one or more `members`, or principals, to a
+        single `role`. Principals can be user accounts, service accounts, Google
+        groups, and domains (such as G Suite). A `role` is a named list of
+        permissions; each `role` can be an IAM predefined role or a user-created
+        custom role. For some types of Google Cloud resources, a `binding` can
+        also specify a `condition`, which is a logical expression that allows
+        access to a resource only if the expression evaluates to `true`. A
+        condition can add constraints based on attributes of the request, the
+        resource, or both. To learn which resources support conditions in their
+        IAM policies, see the [IAM
+        documentation](https://cloud.google.com/iam/help/conditions/resource-policies).
+        **JSON example:** { "bindings": [ { "role":
+        "roles/resourcemanager.organizationAdmin", "members": [
+        "user:mike@example.com", "group:admins@example.com",
+        "domain:google.com",
+        "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, {
+        "role": "roles/resourcemanager.organizationViewer", "members": [
+        "user:eve@example.com" ], "condition": { "title": "expirable access",
+        "description": "Does not grant access after Sep 2020", "expression":
+        "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+        "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+        user:mike@example.com - group:admins@example.com - domain:google.com -
+        serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+        roles/resourcemanager.organizationAdmin - members: -
+        user:eve@example.com role: roles/resourcemanager.organizationViewer
+        condition: title: expirable access description: Does not grant access
+        after Sep 2020 expression: request.time <
+        timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For
+        a description of IAM and its features, see the [IAM
+        documentation](https://cloud.google.com/iam/docs/).
+      type: object
+      id: Policy
+    EncryptionConfig:
+      id: EncryptionConfig
+      properties:
+        kmsKeyName:
+          type: string
+          description: >-
+            The fully-qualified resource name of the KMS key. Each Cloud KMS key
+            is regionalized and has the following format:
+            projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]
+      description: >-
+        EncryptionConfig describes the encryption config of a cluster that is
+        encrypted with a CMEK (customer-managed encryption key).
+      type: object
+    VerifyMigrationJobRequest:
+      description: Request message for 'VerifyMigrationJob' request.
+      type: object
+      properties: {}
+      id: VerifyMigrationJobRequest
+    PrimaryInstanceSettings:
+      type: object
+      id: PrimaryInstanceSettings
+      description: Settings for the cluster's primary instance
+      properties:
+        databaseFlags:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Database flags to pass to AlloyDB when DMS is creating the AlloyDB
+            cluster and instances. See the AlloyDB documentation for how these
+            can be used.
+        machineConfig:
+          $ref: '#/components/schemas/MachineConfig'
+          description: >-
+            Configuration for the machines that host the underlying database
+            engine.
+        privateIp:
+          readOnly: true
+          description: >-
+            Output only. The private IP address for the Instance. This is the
+            connection endpoint for an end-user application.
+          type: string
+        labels:
+          type: object
+          description: >-
+            Labels for the AlloyDB primary instance created by DMS. An object
+            containing a list of 'key', 'value' pairs.
+          additionalProperties:
+            type: string
+        id:
+          description: >-
+            Required. The ID of the AlloyDB primary instance. The ID must
+            satisfy the regex expression "[a-z0-9-]+".
+          type: string
+    TableEntity:
+      type: object
+      id: TableEntity
+      properties:
+        columns:
+          description: Table columns.
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnEntity'
+        customFeatures:
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          description: Custom engine specific features.
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstraintEntity'
+          description: Table constraints.
+        triggers:
+          description: Table triggers.
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggerEntity'
+        comment:
+          type: string
+          description: Comment associated with the table.
+        indices:
+          items:
+            $ref: '#/components/schemas/IndexEntity'
+          description: Table indices.
+          type: array
+      description: Table's parent is a schema.
+    EntityMappingLogEntry:
+      properties:
+        mappingComment:
+          type: string
+          description: Comment.
+        ruleRevisionId:
+          type: string
+          description: Rule revision ID.
+        ruleId:
+          type: string
+          description: Which rule caused this log entry.
+      description: A single record of a rule which was used for a mapping.
+      id: EntityMappingLogEntry
+      type: object
+    ConnectionProfile:
+      properties:
+        postgresql:
+          description: A PostgreSQL database connection profile.
+          $ref: '#/components/schemas/PostgreSqlConnectionProfile'
+        error:
+          readOnly: true
+          $ref: '#/components/schemas/Status'
+          description: Output only. The error details in case of state FAILED.
+        oracle:
+          description: An Oracle database connection profile.
+          $ref: '#/components/schemas/OracleConnectionProfile'
+        createTime:
+          description: >-
+            Output only. The timestamp when the resource was created. A
+            timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
+            Example: "2014-10-02T15:01:23.045123456Z".
+          format: google-datetime
+          readOnly: true
+          type: string
+        provider:
+          type: string
+          enumDescriptions:
+            - The database provider is unknown.
+            - CloudSQL runs the database.
+            - RDS runs the database.
+            - Amazon Aurora.
+            - AlloyDB.
+          enum:
+            - DATABASE_PROVIDER_UNSPECIFIED
+            - CLOUDSQL
+            - RDS
+            - AURORA
+            - ALLOYDB
+          description: The database provider.
+        mysql:
+          description: A MySQL database connection profile.
+          $ref: '#/components/schemas/MySqlConnectionProfile'
+        state:
+          type: string
+          enum:
+            - STATE_UNSPECIFIED
+            - DRAFT
+            - CREATING
+            - READY
+            - UPDATING
+            - DELETING
+            - DELETED
+            - FAILED
+          enumDescriptions:
+            - The state of the connection profile is unknown.
+            - The connection profile is in draft mode and fully editable.
+            - The connection profile is being created.
+            - The connection profile is ready.
+            - The connection profile is being updated.
+            - The connection profile is being deleted.
+            - The connection profile has been deleted.
+            - The last action on the connection profile failed.
+          description: The current connection profile state (e.g. DRAFT, READY, or FAILED).
+        cloudsql:
+          $ref: '#/components/schemas/CloudSqlConnectionProfile'
+          description: A CloudSQL database connection profile.
+        name:
+          type: string
+          description: >-
+            The name of this connection profile resource in the form of
+            projects/{project}/locations/{location}/connectionProfiles/{connectionProfile}.
+        alloydb:
+          $ref: '#/components/schemas/AlloyDbConnectionProfile'
+          description: An AlloyDB cluster connection profile.
+        updateTime:
+          readOnly: true
+          description: >-
+            Output only. The timestamp when the resource was last updated. A
+            timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
+            Example: "2014-10-02T15:01:23.045123456Z".
+          type: string
+          format: google-datetime
+        displayName:
+          description: The connection profile display name.
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            The resource labels for connection profile to use to annotate any
+            related underlying resources such as Compute Engine VMs. An object
+            containing a list of "key": "value" pairs. Example: `{ "name":
+            "wrench", "mass": "1.3kg", "count": "3" }`.
+      description: A connection profile definition.
+      type: object
+      id: ConnectionProfile
+    DescribeConversionWorkspaceRevisionsResponse:
+      type: object
+      properties:
+        revisions:
+          items:
+            $ref: '#/components/schemas/ConversionWorkspace'
+          type: array
+          description: The list of conversion workspace revisions.
+      id: DescribeConversionWorkspaceRevisionsResponse
+      description: Response message for 'DescribeConversionWorkspaceRevisions' request.
+    ListOperationsResponse:
+      id: ListOperationsResponse
+      type: object
+      description: The response message for Operations.ListOperations.
+      properties:
+        operations:
+          items:
+            $ref: '#/components/schemas/Operation'
+          type: array
+          description: >-
+            A list of operations that matches the specified filter in the
+            request.
+        nextPageToken:
+          description: The standard List next-page token.
+          type: string
+    ListLocationsResponse:
+      type: object
+      description: The response message for Locations.ListLocations.
+      properties:
+        locations:
+          type: array
+          description: >-
+            A list of locations that matches the specified filter in the
+            request.
+          items:
+            $ref: '#/components/schemas/Location'
+        nextPageToken:
+          description: The standard List next-page token.
+          type: string
+      id: ListLocationsResponse
+    MigrationJobVerificationError:
+      type: object
+      description: Error message of a verification Migration job.
+      properties:
+        errorDetailMessage:
+          readOnly: true
+          description: >-
+            Output only. A specific detailed error message, if supplied by the
+            engine.
+          type: string
+        errorCode:
+          description: >-
+            Output only. An instance of ErrorCode specifying the error that
+            occurred.
+          readOnly: true
+          type: string
+          enumDescriptions:
+            - An unknown error occurred
+            - We failed to connect to one of the connection profile.
+            - We failed to authenticate to one of the connection profile.
+            - >-
+              One of the involved connection profiles has an invalid
+              configuration.
+            - The versions of the source and the destination are incompatible.
+            - The types of the source and the destination are incompatible.
+            - >-
+              No pglogical extension installed on databases, applicable for
+              postgres.
+            - >-
+              pglogical node already exists on databases, applicable for
+              postgres.
+            - The value of parameter wal_level is not set to logical.
+            - >-
+              The value of parameter shared_preload_libraries does not include
+              pglogical.
+            - The value of parameter max_replication_slots is not sufficient.
+            - The value of parameter max_wal_senders is not sufficient.
+            - The value of parameter max_worker_processes is not sufficient.
+            - >-
+              Extensions installed are either not supported or having
+              unsupported versions.
+            - Unsupported migration type.
+            - Invalid RDS logical replication.
+            - The gtid_mode is not supported, applicable for MySQL.
+            - >-
+              The table definition is not support due to missing primary key or
+              replica identity.
+            - The definer is not supported.
+            - Migration is already running at the time of restart request.
+            - >-
+              The source has tables with limited support. E.g. PostgreSQL tables
+              without primary keys.
+            - The source uses an unsupported locale.
+            - The source uses an unsupported Foreign Data Wrapper configuration.
+            - There was an underlying RDBMS error.
+            - >-
+              The source DB size in Bytes exceeds a certain threshold. The
+              migration might require an increase of quota, or might not be
+              supported.
+          enum:
+            - ERROR_CODE_UNSPECIFIED
+            - CONNECTION_FAILURE
+            - AUTHENTICATION_FAILURE
+            - INVALID_CONNECTION_PROFILE_CONFIG
+            - VERSION_INCOMPATIBILITY
+            - CONNECTION_PROFILE_TYPES_INCOMPATIBILITY
+            - NO_PGLOGICAL_INSTALLED
+            - PGLOGICAL_NODE_ALREADY_EXISTS
+            - INVALID_WAL_LEVEL
+            - INVALID_SHARED_PRELOAD_LIBRARY
+            - INSUFFICIENT_MAX_REPLICATION_SLOTS
+            - INSUFFICIENT_MAX_WAL_SENDERS
+            - INSUFFICIENT_MAX_WORKER_PROCESSES
+            - UNSUPPORTED_EXTENSIONS
+            - UNSUPPORTED_MIGRATION_TYPE
+            - INVALID_RDS_LOGICAL_REPLICATION
+            - UNSUPPORTED_GTID_MODE
+            - UNSUPPORTED_TABLE_DEFINITION
+            - UNSUPPORTED_DEFINER
+            - CANT_RESTART_RUNNING_MIGRATION
+            - TABLES_WITH_LIMITED_SUPPORT
+            - UNSUPPORTED_DATABASE_LOCALE
+            - UNSUPPORTED_DATABASE_FDW_CONFIG
+            - ERROR_RDBMS
+            - SOURCE_SIZE_EXCEEDS_THRESHOLD
+        errorMessage:
+          type: string
+          description: >-
+            Output only. A formatted message with further details about the
+            error and a CTA.
+          readOnly: true
+      id: MigrationJobVerificationError
+    UserPassword:
+      description: >-
+        The username/password for a database user. Used for specifying initial
+        users at cluster creation time.
+      id: UserPassword
+      type: object
+      properties:
+        passwordSet:
+          readOnly: true
+          description: >-
+            Output only. Indicates if the initial_user.password field has been
+            set.
+          type: boolean
+        user:
+          description: The database username.
+          type: string
+        password:
+          description: The initial password for the user.
+          type: string
+    ConversionWorkspace:
+      type: object
+      description: The main conversion workspace resource entity.
+      id: ConversionWorkspace
+      properties:
+        destination:
+          description: Required. The destination engine details.
+          $ref: '#/components/schemas/DatabaseEngineInfo'
+        latestCommitTime:
+          type: string
+          format: google-datetime
+          readOnly: true
+          description: Output only. The timestamp when the workspace was committed.
+        source:
+          $ref: '#/components/schemas/DatabaseEngineInfo'
+          description: Required. The source engine details.
+        displayName:
+          type: string
+          description: The display name for the workspace.
+        globalSettings:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            A generic list of settings for the workspace. The settings are
+            database pair dependant and can indicate default behavior for the
+            mapping rules engine or turn on or off specific features. Such
+            examples can be: convert_foreign_key_to_interleave=true,
+            skip_triggers=false, ignore_non_table_synonyms=true
+        createTime:
+          format: google-datetime
+          readOnly: true
+          description: Output only. The timestamp when the workspace resource was created.
+          type: string
+        latestCommitId:
+          readOnly: true
+          type: string
+          description: Output only. The latest commit ID.
+        name:
+          description: >-
+            Full name of the workspace resource, in the form of:
+            projects/{project}/locations/{location}/conversionWorkspaces/{conversion_workspace}.
+          type: string
+        updateTime:
+          description: >-
+            Output only. The timestamp when the workspace resource was last
+            updated.
+          readOnly: true
+          type: string
+          format: google-datetime
+        hasUncommittedChanges:
+          description: >-
+            Output only. Whether the workspace has uncommitted changes (changes
+            which were made after the workspace was committed).
+          type: boolean
+          readOnly: true
+    SchemaEntity:
+      properties:
+        customFeatures:
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          description: Custom engine specific features.
+      type: object
+      description: >-
+        Schema typically has no parent entity, but can have a parent entity
+        DatabaseInstance (for database engines which support it). For some
+        database engines, the terms schema and user can be used interchangeably
+        when they refer to a namespace or a collection of other database
+        entities. Can store additional information which is schema specific.
+      id: SchemaEntity
+    PackageEntity:
+      description: Package's parent is a schema.
+      id: PackageEntity
+      properties:
+        packageSqlCode:
+          type: string
+          description: The SQL code which creates the package.
+        packageBody:
+          description: >-
+            The SQL code which creates the package body. If the package
+            specification has cursors or subprograms, then the package body is
+            mandatory.
+          type: string
+        customFeatures:
+          description: Custom engine specific features.
+          type: object
+          additionalProperties:
+            description: Properties of the object.
+            type: any
+      type: object
+    ConversionWorkspaceInfo:
+      properties:
+        name:
+          description: The resource name (URI) of the conversion workspace.
+          type: string
+        commitId:
+          type: string
+          description: The commit ID of the conversion workspace.
+      type: object
+      id: ConversionWorkspaceInfo
+      description: A conversion workspace's version.
+    FetchStaticIpsResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token that can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+        staticIps:
+          type: array
+          items:
+            type: string
+          description: List of static IPs.
+      type: object
+      id: FetchStaticIpsResponse
+      description: Response message for a 'FetchStaticIps' request.
+    ReverseSshConnectivity:
+      properties:
+        vpc:
+          type: string
+          description: The name of the VPC to peer with the Cloud SQL private network.
+        vm:
+          type: string
+          description: >-
+            The name of the virtual machine (Compute Engine) used as the bastion
+            server for the SSH tunnel.
+        vmIp:
+          type: string
+          description: >-
+            Required. The IP of the virtual machine (Compute Engine) used as the
+            bastion server for the SSH tunnel.
+        vmPort:
+          format: int32
+          description: >-
+            Required. The forwarding port of the virtual machine (Compute
+            Engine) used as the bastion server for the SSH tunnel.
+          type: integer
+      id: ReverseSshConnectivity
+      type: object
+      description: >-
+        The details needed to configure a reverse SSH tunnel between the source
+        and destination databases. These details will be used when calling the
+        generateSshScript method (see
+        https://cloud.google.com/database-migration/docs/reference/rest/v1/projects.locations.migrationJobs/generateSshScript)
+        to produce the script that will help set up the reverse SSH tunnel, and
+        to set up the VPC peering between the Cloud SQL private network and the
+        VPC.
+    EntityMapping:
+      properties:
+        sourceType:
+          description: Type of source entity.
+          enum:
+            - DATABASE_ENTITY_TYPE_UNSPECIFIED
+            - DATABASE_ENTITY_TYPE_SCHEMA
+            - DATABASE_ENTITY_TYPE_TABLE
+            - DATABASE_ENTITY_TYPE_COLUMN
+            - DATABASE_ENTITY_TYPE_CONSTRAINT
+            - DATABASE_ENTITY_TYPE_INDEX
+            - DATABASE_ENTITY_TYPE_TRIGGER
+            - DATABASE_ENTITY_TYPE_VIEW
+            - DATABASE_ENTITY_TYPE_SEQUENCE
+            - DATABASE_ENTITY_TYPE_STORED_PROCEDURE
+            - DATABASE_ENTITY_TYPE_FUNCTION
+            - DATABASE_ENTITY_TYPE_SYNONYM
+            - DATABASE_ENTITY_TYPE_DATABASE_PACKAGE
+            - DATABASE_ENTITY_TYPE_UDT
+            - DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW
+            - DATABASE_ENTITY_TYPE_DATABASE
+          enumDescriptions:
+            - Unspecified database entity type.
+            - Schema.
+            - Table.
+            - Column.
+            - Constraint.
+            - Index.
+            - Trigger.
+            - View.
+            - Sequence.
+            - Stored Procedure.
+            - Function.
+            - Synonym.
+            - Package.
+            - UDT.
+            - Materialized View.
+            - Database.
+          type: string
+        mappingLog:
+          description: >-
+            Entity mapping log entries. Multiple rules can be effective and
+            contribute changes to a converted entity, such as a rule can handle
+            the entity name, another rule can handle an entity type. In
+            addition, rules which did not change the entity are also logged
+            along with the reason preventing them to do so.
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityMappingLogEntry'
+        sourceEntity:
+          type: string
+          description: >-
+            Source entity full name. The source entity can also be a column,
+            index or constraint using the same naming notation
+            schema.table.column.
+        draftType:
+          type: string
+          enum:
+            - DATABASE_ENTITY_TYPE_UNSPECIFIED
+            - DATABASE_ENTITY_TYPE_SCHEMA
+            - DATABASE_ENTITY_TYPE_TABLE
+            - DATABASE_ENTITY_TYPE_COLUMN
+            - DATABASE_ENTITY_TYPE_CONSTRAINT
+            - DATABASE_ENTITY_TYPE_INDEX
+            - DATABASE_ENTITY_TYPE_TRIGGER
+            - DATABASE_ENTITY_TYPE_VIEW
+            - DATABASE_ENTITY_TYPE_SEQUENCE
+            - DATABASE_ENTITY_TYPE_STORED_PROCEDURE
+            - DATABASE_ENTITY_TYPE_FUNCTION
+            - DATABASE_ENTITY_TYPE_SYNONYM
+            - DATABASE_ENTITY_TYPE_DATABASE_PACKAGE
+            - DATABASE_ENTITY_TYPE_UDT
+            - DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW
+            - DATABASE_ENTITY_TYPE_DATABASE
+          enumDescriptions:
+            - Unspecified database entity type.
+            - Schema.
+            - Table.
+            - Column.
+            - Constraint.
+            - Index.
+            - Trigger.
+            - View.
+            - Sequence.
+            - Stored Procedure.
+            - Function.
+            - Synonym.
+            - Package.
+            - UDT.
+            - Materialized View.
+            - Database.
+          description: Type of draft entity.
+        draftEntity:
+          description: >-
+            Target entity full name. The draft entity can also include a column,
+            index or constraint using the same naming notation
+            schema.table.column.
+          type: string
+      type: object
+      id: EntityMapping
+      description: Details of the mappings of a database entity.
+    DescribeDatabaseEntitiesResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+        databaseEntities:
+          description: The list of database entities for the conversion workspace.
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseEntity'
+      description: Response message for 'DescribeDatabaseEntities' request.
+      type: object
+      id: DescribeDatabaseEntitiesResponse
+    ListConnectionProfilesResponse:
+      id: ListConnectionProfilesResponse
+      properties:
+        nextPageToken:
+          description: >-
+            A token which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+        connectionProfiles:
+          items:
+            $ref: '#/components/schemas/ConnectionProfile'
+          description: The response list of connection profiles.
+          type: array
+        unreachable:
+          description: Locations that could not be reached.
+          items:
+            type: string
+          type: array
+      description: Response message for 'ListConnectionProfiles' request.
+      type: object
+    VpcPeeringConnectivity:
+      properties:
+        vpc:
+          description: >-
+            The name of the VPC network to peer with the Cloud SQL private
+            network.
+          type: string
+      type: object
+      description: >-
+        The details of the VPC where the source database is located in Google
+        Cloud. We will use this information to set up the VPC peering connection
+        between Cloud SQL and this VPC.
+      id: VpcPeeringConnectivity
+    StoredProcedureEntity:
+      id: StoredProcedureEntity
+      properties:
+        sqlCode:
+          type: string
+          description: The SQL code which creates the stored procedure.
+        customFeatures:
+          additionalProperties:
+            type: any
+            description: Properties of the object.
+          type: object
+          description: Custom engine specific features.
+      type: object
+      description: Stored procedure's parent is a schema.
+    SqlAclEntry:
+      id: SqlAclEntry
+      type: object
+      description: An entry for an Access Control list.
+      properties:
+        value:
+          description: The allowlisted value for the access control list.
+          type: string
+        ttl:
+          format: google-duration
+          description: Input only. The time-to-leave of this access control entry.
+          type: string
+        expireTime:
+          description: >-
+            The time when this access control entry expires in [RFC
+            3339](https://tools.ietf.org/html/rfc3339) format, for example:
+            `2012-11-15T16:19:00.094Z`.
+          format: google-datetime
+          type: string
+        label:
+          description: A label to identify this entry.
+          type: string
+    Expr:
+      description: >-
+        Represents a textual expression in the Common Expression Language (CEL)
+        syntax. CEL is a C-like expression language. The syntax and semantics of
+        CEL are documented at https://github.com/google/cel-spec. Example
+        (Comparison): title: "Summary size limit" description: "Determines if a
+        summary is less than 100 chars" expression: "document.summary.size() <
+        100" Example (Equality): title: "Requestor is owner" description:
+        "Determines if requestor is the document owner" expression:
+        "document.owner == request.auth.claims.email" Example (Logic): title:
+        "Public documents" description: "Determine whether the document should
+        be publicly visible" expression: "document.type != 'private' &&
+        document.type != 'internal'" Example (Data Manipulation): title:
+        "Notification string" description: "Create a notification string with a
+        timestamp." expression: "'New message received at ' +
+        string(document.create_time)" The exact variables and functions that may
+        be referenced within an expression are determined by the service that
+        evaluates it. See the service documentation for additional information.
+      id: Expr
+      type: object
+      properties:
+        expression:
+          description: >-
+            Textual representation of an expression in Common Expression
+            Language syntax.
+          type: string
+        description:
+          description: >-
+            Optional. Description of the expression. This is a longer text which
+            describes the expression, e.g. when hovered over it in a UI.
+          type: string
+        title:
+          type: string
+          description: >-
+            Optional. Title for the expression, i.e. a short string describing
+            its purpose. This can be used e.g. in UIs which allow to enter the
+            expression.
+        location:
+          description: >-
+            Optional. String indicating the location of the expression for error
+            reporting, e.g. a file name and a position in the file.
+          type: string
+    SqlIpConfig:
+      type: object
+      description: IP Management configuration.
+      id: SqlIpConfig
+      properties:
+        enableIpv4:
+          description: Whether the instance should be assigned an IPv4 address or not.
+          type: boolean
+        allocatedIpRange:
+          type: string
+          description: >-
+            Optional. The name of the allocated IP address range for the private
+            IP Cloud SQL instance. This name refers to an already allocated IP
+            range address. If set, the instance IP address will be created in
+            the allocated range. Note that this IP address range can't be
+            modified after the instance is created. If you change the VPC when
+            configuring connectivity settings for the migration job, this field
+            is not relevant.
+        privateNetwork:
+          type: string
+          description: >-
+            The resource link for the VPC network from which the Cloud SQL
+            instance is accessible for private IP. For example,
+            `projects/myProject/global/networks/default`. This setting can be
+            updated, but it cannot be removed after it is set.
+        requireSsl:
+          type: boolean
+          description: Whether SSL connections over IP should be enforced or not.
+        authorizedNetworks:
+          items:
+            $ref: '#/components/schemas/SqlAclEntry'
+          description: >-
+            The list of external networks that are allowed to connect to the
+            instance using the IP. See
+            https://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also
+            known as 'slash' notation (e.g. `192.168.100.0/24`).
+          type: array
+    DumpFlag:
+      type: object
+      description: Dump flag definition.
+      properties:
+        value:
+          type: string
+          description: The value of the flag.
+        name:
+          type: string
+          description: The name of the flag
+      id: DumpFlag
+    PrivateConnection:
+      description: >-
+        The PrivateConnection resource is used to establish private connectivity
+        with the customer's network.
+      type: object
+      properties:
+        updateTime:
+          readOnly: true
+          type: string
+          description: Output only. The last update time of the resource.
+          format: google-datetime
+        error:
+          readOnly: true
+          description: Output only. The error details in case of state FAILED.
+          $ref: '#/components/schemas/Status'
+        createTime:
+          type: string
+          description: Output only. The create time of the resource.
+          format: google-datetime
+          readOnly: true
+        vpcPeeringConfig:
+          $ref: '#/components/schemas/VpcPeeringConfig'
+          description: VPC peering configuration.
+        state:
+          enum:
+            - STATE_UNSPECIFIED
+            - CREATING
+            - CREATED
+            - FAILED
+            - DELETING
+            - FAILED_TO_DELETE
+            - DELETED
+          type: string
+          description: Output only. The state of the private connection.
+          readOnly: true
+          enumDescriptions:
+            - ''
+            - The private connection is in creation state - creating resources.
+            - The private connection has been created with all of its resources.
+            - The private connection creation has failed.
+            - The private connection is being deleted.
+            - Delete request has failed, resource is in invalid state.
+            - The private connection has been deleted.
+        displayName:
+          type: string
+          description: The private connection display name.
+        labels:
+          type: object
+          description: >-
+            The resource labels for private connections to use to annotate any
+            related underlying resources such as Compute Engine VMs. An object
+            containing a list of "key": "value" pairs. Example: `{ "name":
+            "wrench", "mass": "1.3kg", "count": "3" }`.
+          additionalProperties:
+            type: string
+        name:
+          type: string
+          description: The name of the resource.
+      id: PrivateConnection
+  parameters:
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/key'
+    delete:
+      description: Deletes a single Database Migration Service private connection.
+      operationId: datamigration.projects.locations.privateConnections.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: privateConnectionsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: private_connections
+      x-stackQL-verb: delete
+    get:
+      description: Gets details of a single private connection.
+      operationId: datamigration.projects.locations.privateConnections.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateConnection'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: privateConnectionsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: private_connections
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}:setIamPolicy:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the access control policy on the specified resource. Replaces any
+        existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and
+        `PERMISSION_DENIED` errors.
+      operationId: datamigration.projects.locations.privateConnections.setIamPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIamPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: privateConnectionsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: private_connections_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}:testIamPermissions:
+    parameters: *ref_1
+    post:
+      description: >-
+        Returns permissions that a caller has on the specified resource. If the
+        resource does not exist, this will return an empty set of permissions,
+        not a `NOT_FOUND` error. Note: This operation is designed to be used for
+        building permission-aware UIs and command-line tools, not for
+        authorization checking. This operation may "fail open" without warning.
+      operationId: datamigration.projects.locations.privateConnections.testIamPermissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestIamPermissionsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestIamPermissionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: privateConnectionsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: private_connections_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/privateConnections:
+    parameters: *ref_1
+    post:
+      description: Creates a new private connection in a given project and location.
+      operationId: datamigration.projects.locations.privateConnections.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivateConnection'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: skipValidation
+          schema:
+            type: boolean
+        - in: query
+          name: privateConnectionId
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: private_connections
+      x-stackQL-verb: insert
+    get:
+      description: Retrieves a list of private connections in a given project and location.
+      operationId: datamigration.projects.locations.privateConnections.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPrivateConnectionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+      x-stackQL-resource: private_connections
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}:getIamPolicy:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the access control policy for a resource. Returns an empty policy
+        if the resource exists and does not have a policy set.
+      operationId: datamigration.projects.locations.privateConnections.getIamPolicy
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: privateConnectionsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: options.requestedPolicyVersion
+          schema:
+            type: integer
+      x-stackQL-resource: private_connections_iam_policies
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}:getIamPolicy:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the access control policy for a resource. Returns an empty policy
+        if the resource exists and does not have a policy set.
+      operationId: datamigration.projects.locations.connectionProfiles.getIamPolicy
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: options.requestedPolicyVersion
+          schema:
+            type: integer
+      x-stackQL-resource: connection_profiles_iam_policies
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}:testIamPermissions:
+    parameters: *ref_1
+    post:
+      description: >-
+        Returns permissions that a caller has on the specified resource. If the
+        resource does not exist, this will return an empty set of permissions,
+        not a `NOT_FOUND` error. Note: This operation is designed to be used for
+        building permission-aware UIs and command-line tools, not for
+        authorization checking. This operation may "fail open" without warning.
+      operationId: datamigration.projects.locations.connectionProfiles.testIamPermissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestIamPermissionsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestIamPermissionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: connection_profiles_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/connectionProfiles:
+    parameters: *ref_1
+    post:
+      description: Creates a new connection profile in a given project and location.
+      operationId: datamigration.projects.locations.connectionProfiles.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionProfile'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: connectionProfileId
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: skipValidation
+          schema:
+            type: boolean
+        - in: query
+          name: validateOnly
+          schema:
+            type: boolean
+      x-stackQL-resource: connection_profiles
+      x-stackQL-verb: insert
+    get:
+      description: >-
+        Retrieves a list of all connection profiles in a given project and
+        location.
+      operationId: datamigration.projects.locations.connectionProfiles.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectionProfilesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: connection_profiles
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}:
+    parameters: *ref_1
+    get:
+      description: Gets details of a single connection profile.
+      operationId: datamigration.projects.locations.connectionProfiles.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionProfile'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: connection_profiles
+      x-stackQL-verb: select
+    patch:
+      description: Update the configuration of a single connection profile.
+      operationId: datamigration.projects.locations.connectionProfiles.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionProfile'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: skipValidation
+          schema:
+            type: boolean
+        - in: query
+          name: validateOnly
+          schema:
+            type: boolean
+      x-stackQL-resource: connection_profiles
+      x-stackQL-verb: exec
+    delete:
+      description: >-
+        Deletes a single Database Migration Service connection profile. A
+        connection profile can only be deleted if it is not in use by any active
+        migration jobs.
+      operationId: datamigration.projects.locations.connectionProfiles.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: force
+          schema:
+            type: boolean
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: connection_profiles
+      x-stackQL-verb: delete
+  /v1/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}:setIamPolicy:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the access control policy on the specified resource. Replaces any
+        existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and
+        `PERMISSION_DENIED` errors.
+      operationId: datamigration.projects.locations.connectionProfiles.setIamPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIamPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: connectionProfilesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: connection_profiles_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:
+    parameters: *ref_1
+    delete:
+      description: Deletes a single conversion workspace.
+      operationId: datamigration.projects.locations.conversionWorkspaces.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: force
+          schema:
+            type: boolean
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: delete
+    get:
+      description: Gets details of a single conversion workspace.
+      operationId: datamigration.projects.locations.conversionWorkspaces.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversionWorkspace'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: select
+    patch:
+      description: Updates the parameters of a single conversion workspace.
+      operationId: datamigration.projects.locations.conversionWorkspaces.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversionWorkspace'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:getIamPolicy:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the access control policy for a resource. Returns an empty policy
+        if the resource exists and does not have a policy set.
+      operationId: datamigration.projects.locations.conversionWorkspaces.getIamPolicy
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: options.requestedPolicyVersion
+          schema:
+            type: integer
+      x-stackQL-resource: conversion_workspaces_iam_policies
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:testIamPermissions:
+    parameters: *ref_1
+    post:
+      description: >-
+        Returns permissions that a caller has on the specified resource. If the
+        resource does not exist, this will return an empty set of permissions,
+        not a `NOT_FOUND` error. Note: This operation is designed to be used for
+        building permission-aware UIs and command-line tools, not for
+        authorization checking. This operation may "fail open" without warning.
+      operationId: datamigration.projects.locations.conversionWorkspaces.testIamPermissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestIamPermissionsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestIamPermissionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces:
+    parameters: *ref_1
+    post:
+      description: Creates a new conversion workspace in a given project and location.
+      operationId: datamigration.projects.locations.conversionWorkspaces.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversionWorkspace'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: conversionWorkspaceId
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: insert
+    get:
+      description: Lists conversion workspaces in a given project and location.
+      operationId: datamigration.projects.locations.conversionWorkspaces.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConversionWorkspacesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:searchBackgroundJobs:
+    parameters: *ref_1
+    get:
+      description: >-
+        Searches/lists the background jobs for a specific conversion workspace.
+        The background jobs are not resources like conversion workspaces or
+        mapping rules, and they can't be created, updated or deleted. Instead,
+        they are a way to expose the data plane jobs log.
+      operationId: >-
+        datamigration.projects.locations.conversionWorkspaces.searchBackgroundJobs
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchBackgroundJobsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: returnMostRecentPerJobType
+          schema:
+            type: boolean
+        - in: query
+          name: maxSize
+          schema:
+            type: integer
+        - in: query
+          name: completedUntilTime
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:describeDatabaseEntities:
+    parameters: *ref_1
+    get:
+      description: >-
+        Describes the database entities tree for a specific conversion workspace
+        and a specific tree type. Database entities are not resources like
+        conversion workspaces or mapping rules, and they can't be created,
+        updated or deleted. Instead, they are simple data objects describing the
+        structure of the client database.
+      operationId: >-
+        datamigration.projects.locations.conversionWorkspaces.describeDatabaseEntities
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeDatabaseEntitiesResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: uncommitted
+          schema:
+            type: boolean
+        - in: query
+          name: commitId
+          schema:
+            type: string
+        - in: query
+          name: tree
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:convert:
+    parameters: *ref_1
+    post:
+      description: Creates a draft tree schema for the destination database.
+      operationId: datamigration.projects.locations.conversionWorkspaces.convert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvertConversionWorkspaceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:rollback:
+    parameters: *ref_1
+    post:
+      description: Rolls back a conversion workspace to the last committed snapshot.
+      operationId: datamigration.projects.locations.conversionWorkspaces.rollback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackConversionWorkspaceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:seed:
+    parameters: *ref_1
+    post:
+      description: Imports a snapshot of the source database into the conversion workspace.
+      operationId: datamigration.projects.locations.conversionWorkspaces.seed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeedConversionWorkspaceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:describeConversionWorkspaceRevisions:
+    parameters: *ref_1
+    get:
+      description: >-
+        Retrieves a list of committed revisions of a specific conversion
+        workspace.
+      operationId: >-
+        datamigration.projects.locations.conversionWorkspaces.describeConversionWorkspaceRevisions
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/DescribeConversionWorkspaceRevisionsResponse
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: commitId
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:commit:
+    parameters: *ref_1
+    post:
+      description: Marks all the data in the conversion workspace as committed.
+      operationId: datamigration.projects.locations.conversionWorkspaces.commit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitConversionWorkspaceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:setIamPolicy:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the access control policy on the specified resource. Replaces any
+        existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and
+        `PERMISSION_DENIED` errors.
+      operationId: datamigration.projects.locations.conversionWorkspaces.setIamPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIamPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:apply:
+    parameters: *ref_1
+    post:
+      description: Applies draft tree onto a specific destination database.
+      operationId: datamigration.projects.locations.conversionWorkspaces.apply
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyConversionWorkspaceRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: conversion_workspaces
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}/mappingRules:import:
+    parameters: *ref_1
+    post:
+      description: >-
+        Imports the mapping rules for a given conversion workspace. Supports
+        various formats of external rules files.
+      operationId: >-
+        datamigration.projects.locations.conversionWorkspaces.mappingRules.import
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportMappingRulesRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: conversionWorkspacesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: mapping_rules
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/operations:
+    parameters: *ref_1
+    get:
+      description: >-
+        Lists operations that match the specified filter in the request. If the
+        server doesn't support this method, it returns `UNIMPLEMENTED`.
+      operationId: datamigration.projects.locations.operations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOperationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the latest state of a long-running operation. Clients can use this
+        method to poll the operation result at intervals as recommended by the
+        API service.
+      operationId: datamigration.projects.locations.operations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select
+    delete:
+      description: >-
+        Deletes a long-running operation. This method indicates that the client
+        is no longer interested in the operation result. It does not cancel the
+        operation. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`.
+      operationId: datamigration.projects.locations.operations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: delete
+  /v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel:
+    parameters: *ref_1
+    post:
+      description: >-
+        Starts asynchronous cancellation on a long-running operation. The server
+        makes a best effort to cancel the operation, but success is not
+        guaranteed. If the server doesn't support this method, it returns
+        `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation
+        or other methods to check whether the cancellation succeeded or whether
+        the operation completed despite cancellation. On successful
+        cancellation, the operation is not deleted; instead, it becomes an
+        operation with an Operation.error value with a google.rpc.Status.code of
+        1, corresponding to `Code.CANCELLED`.
+      operationId: datamigration.projects.locations.operations.cancel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOperationRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:resume:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resume a migration job that is currently stopped and is resumable (was
+        stopped during CDC phase).
+      operationId: datamigration.projects.locations.migrationJobs.resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:stop:
+    parameters: *ref_1
+    post:
+      description: Stops a running migration job.
+      operationId: datamigration.projects.locations.migrationJobs.stop
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs:
+    parameters: *ref_1
+    post:
+      description: Creates a new migration job in a given project and location.
+      operationId: datamigration.projects.locations.migrationJobs.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationJob'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: migrationJobId
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: insert
+    get:
+      description: Lists migration jobs in a given project and location.
+      operationId: datamigration.projects.locations.migrationJobs.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMigrationJobsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:verify:
+    parameters: *ref_1
+    post:
+      description: >-
+        Verify a migration job, making sure the destination can reach the source
+        and that all configuration and prerequisites are met.
+      operationId: datamigration.projects.locations.migrationJobs.verify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:
+    parameters: *ref_1
+    patch:
+      description: Updates the parameters of a single migration job.
+      operationId: datamigration.projects.locations.migrationJobs.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationJob'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+    delete:
+      description: Deletes a single migration job.
+      operationId: datamigration.projects.locations.migrationJobs.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: requestId
+          schema:
+            type: string
+        - in: query
+          name: force
+          schema:
+            type: boolean
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: delete
+    get:
+      description: Gets details of a single migration job.
+      operationId: datamigration.projects.locations.migrationJobs.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationJob'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:setIamPolicy:
+    parameters: *ref_1
+    post:
+      description: >-
+        Sets the access control policy on the specified resource. Replaces any
+        existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and
+        `PERMISSION_DENIED` errors.
+      operationId: datamigration.projects.locations.migrationJobs.setIamPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIamPolicyRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:testIamPermissions:
+    parameters: *ref_1
+    post:
+      description: >-
+        Returns permissions that a caller has on the specified resource. If the
+        resource does not exist, this will return an empty set of permissions,
+        not a `NOT_FOUND` error. Note: This operation is designed to be used for
+        building permission-aware UIs and command-line tools, not for
+        authorization checking. This operation may "fail open" without warning.
+      operationId: datamigration.projects.locations.migrationJobs.testIamPermissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestIamPermissionsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestIamPermissionsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs_iam_policies
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:generateSshScript:
+    parameters: *ref_1
+    post:
+      description: >-
+        Generate a SSH configuration script to configure the reverse SSH
+        connectivity.
+      operationId: datamigration.projects.locations.migrationJobs.generateSshScript
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateSshScriptRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SshScript'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:restart:
+    parameters: *ref_1
+    post:
+      description: >-
+        Restart a stopped or failed migration job, resetting the destination
+        instance to its original state and starting the migration process from
+        scratch.
+      operationId: datamigration.projects.locations.migrationJobs.restart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestartMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:generateTcpProxyScript:
+    parameters: *ref_1
+    post:
+      description: >-
+        Generate a TCP Proxy configuration script to configure a cloud-hosted VM
+        running a TCP Proxy.
+      operationId: datamigration.projects.locations.migrationJobs.generateTcpProxyScript
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateTcpProxyScriptRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TcpProxyScript'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:getIamPolicy:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the access control policy for a resource. Returns an empty policy
+        if the resource exists and does not have a policy set.
+      operationId: datamigration.projects.locations.migrationJobs.getIamPolicy
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: options.requestedPolicyVersion
+          schema:
+            type: integer
+      x-stackQL-resource: migration_jobs_iam_policies
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:start:
+    parameters: *ref_1
+    post:
+      description: Start an already created migration job.
+      operationId: datamigration.projects.locations.migrationJobs.start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:promote:
+    parameters: *ref_1
+    post:
+      description: >-
+        Promote a migration job, stopping replication to the destination and
+        promoting the destination to be a standalone database.
+      operationId: datamigration.projects.locations.migrationJobs.promote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoteMigrationJobRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: migrationJobsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: migration_jobs
+      x-stackQL-verb: exec
+  /v1/projects/{projectsId}/locations/{locationsId}:
+    parameters: *ref_1
+    get:
+      description: Gets information about a location.
+      operationId: datamigration.projects.locations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations:
+    parameters: *ref_1
+    get:
+      description: Lists information about the supported locations for this service.
+      operationId: datamigration.projects.locations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLocationsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: locations
+      x-stackQL-verb: select
+  /v1/projects/{projectsId}/locations/{locationsId}:fetchStaticIps:
+    parameters: *ref_1
+    get:
+      description: >-
+        Fetches a set of static IP addresses that need to be allowlisted by the
+        customer when using the static-IP connectivity method.
+      operationId: datamigration.projects.locations.fetchStaticIps
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchStaticIpsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: locations__static_ips
+      x-stackQL-verb: select

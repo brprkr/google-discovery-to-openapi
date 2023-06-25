@@ -1,0 +1,671 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Google Play Game Services Publishing API
+  description: >-
+    The Google Play Game Services Publishing API allows developers to configure
+    their games in Game Services.
+  version: v1configuration
+  x-discovery-doc-revision: '20230621'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/games/
+servers:
+  - url: https://gamesconfiguration.googleapis.com
+components:
+  schemas:
+    GamesNumberFormatConfiguration:
+      properties:
+        currencyCode:
+          type: string
+          description: The curreny code string. Only used for CURRENCY format type.
+        numDecimalPlaces:
+          format: int32
+          description: >-
+            The number of decimal places for number. Only used for NUMERIC
+            format type.
+          type: integer
+        suffix:
+          $ref: '#/components/schemas/GamesNumberAffixConfiguration'
+          description: >-
+            An optional suffix for the NUMERIC format type. These strings follow
+            the same plural rules as all Android string resources.
+        numberFormatType:
+          enum:
+            - NUMBER_FORMAT_TYPE_UNSPECIFIED
+            - NUMERIC
+            - TIME_DURATION
+            - CURRENCY
+          description: The formatting for the number.
+          type: string
+          enumDescriptions:
+            - Default value. This value is unused.
+            - >-
+              Numbers are formatted to have no digits or fixed number of digits
+              after the decimal point according to locale. An optional custom
+              unit can be added.
+            - Numbers are formatted to hours, minutes and seconds.
+            - Numbers are formatted to currency according to locale.
+      id: GamesNumberFormatConfiguration
+      description: A number format resource.
+      type: object
+    LocalizedString:
+      description: A localized string resource.
+      type: object
+      id: LocalizedString
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#localizedString`.
+        value:
+          description: The string value.
+          type: string
+        locale:
+          type: string
+          description: The locale string.
+    AchievementConfigurationListResponse:
+      type: object
+      id: AchievementConfigurationListResponse
+      description: A ListConfigurations response.
+      properties:
+        nextPageToken:
+          description: The pagination token for the next page of results.
+          type: string
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string
+            `gamesConfiguration#achievementConfigurationListResponse`.
+        items:
+          description: The achievement configurations.
+          items:
+            $ref: '#/components/schemas/AchievementConfiguration'
+          type: array
+    LeaderboardConfigurationListResponse:
+      type: object
+      id: LeaderboardConfigurationListResponse
+      description: A ListConfigurations response.
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string
+            `gamesConfiguration#leaderboardConfigurationListResponse`.
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/LeaderboardConfiguration'
+          type: array
+          description: The leaderboard configurations.
+        nextPageToken:
+          type: string
+          description: The pagination token for the next page of results.
+    LeaderboardConfigurationDetail:
+      description: A leaderboard configuration detail.
+      properties:
+        scoreFormat:
+          $ref: '#/components/schemas/GamesNumberFormatConfiguration'
+          description: The score formatting for the leaderboard.
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#leaderboardConfigurationDetail`.
+        name:
+          description: Localized strings for the leaderboard name.
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        sortRank:
+          format: int32
+          type: integer
+          description: The sort rank of this leaderboard. Writes to this field are ignored.
+        iconUrl:
+          description: The icon url of this leaderboard. Writes to this field are ignored.
+          type: string
+      type: object
+      id: LeaderboardConfigurationDetail
+    AchievementConfigurationDetail:
+      type: object
+      id: AchievementConfigurationDetail
+      description: An achievement configuration detail.
+      properties:
+        description:
+          description: Localized strings for the achievement description.
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#achievementConfigurationDetail`.
+        sortRank:
+          description: The sort rank of this achievement. Writes to this field are ignored.
+          type: integer
+          format: int32
+        iconUrl:
+          type: string
+          description: The icon url of this achievement. Writes to this field are ignored.
+        name:
+          description: Localized strings for the achievement name.
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        pointValue:
+          description: Point value for the achievement.
+          format: int32
+          type: integer
+    LeaderboardConfiguration:
+      type: object
+      id: LeaderboardConfiguration
+      description: An leaderboard configuration resource.
+      properties:
+        scoreMin:
+          description: Minimum score that can be posted to this leaderboard.
+          type: string
+          format: int64
+        draft:
+          $ref: '#/components/schemas/LeaderboardConfigurationDetail'
+          description: The draft data of the leaderboard.
+        id:
+          type: string
+          description: The ID of the leaderboard.
+        scoreMax:
+          format: int64
+          type: string
+          description: Maximum score that can be posted to this leaderboard.
+        scoreOrder:
+          enum:
+            - SCORE_ORDER_UNSPECIFIED
+            - LARGER_IS_BETTER
+            - SMALLER_IS_BETTER
+          enumDescriptions:
+            - Default value. This value is unused.
+            - Larger scores posted are ranked higher.
+            - Smaller scores posted are ranked higher.
+          type: string
+        published:
+          description: The read-only published data of the leaderboard.
+          $ref: '#/components/schemas/LeaderboardConfigurationDetail'
+        token:
+          description: The token for this resource.
+          type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#leaderboardConfiguration`.
+          type: string
+    GamesNumberAffixConfiguration:
+      type: object
+      description: A number affix resource.
+      properties:
+        zero:
+          $ref: '#/components/schemas/LocalizedStringBundle'
+          description: >-
+            When the language requires special treatment of the number 0 (as in
+            Arabic).
+        few:
+          description: >-
+            When the language requires special treatment of "small" numbers (as
+            with 2, 3, and 4 in Czech; or numbers ending 2, 3, or 4 but not 12,
+            13, or 14 in Polish).
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        other:
+          $ref: '#/components/schemas/LocalizedStringBundle'
+          description: >-
+            When the language does not require special treatment of the given
+            quantity (as with all numbers in Chinese, or 42 in English).
+        one:
+          description: >-
+            When the language requires special treatment of numbers like one (as
+            with the number 1 in English and most other languages; in Russian,
+            any number ending in 1 but not ending in 11 is in this class).
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        two:
+          description: >-
+            When the language requires special treatment of numbers like two (as
+            with 2 in Welsh, or 102 in Slovenian).
+          $ref: '#/components/schemas/LocalizedStringBundle'
+        many:
+          $ref: '#/components/schemas/LocalizedStringBundle'
+          description: >-
+            When the language requires special treatment of "large" numbers (as
+            with numbers ending 11-99 in Maltese).
+      id: GamesNumberAffixConfiguration
+    LocalizedStringBundle:
+      properties:
+        translations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedString'
+          description: The locale strings.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#localizedStringBundle`.
+          type: string
+      id: LocalizedStringBundle
+      type: object
+      description: A localized string bundle resource.
+    AchievementConfiguration:
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesConfiguration#achievementConfiguration`.
+        initialState:
+          description: The initial state of the achievement.
+          type: string
+          enumDescriptions:
+            - Default value. This value is unused.
+            - Achievement is hidden.
+            - Achievement is revealed.
+          enum:
+            - INITIAL_STATE_UNSPECIFIED
+            - HIDDEN
+            - REVEALED
+        stepsToUnlock:
+          format: int32
+          type: integer
+          description: Steps to unlock. Only applicable to incremental achievements.
+        published:
+          description: The read-only published data of the achievement.
+          $ref: '#/components/schemas/AchievementConfigurationDetail'
+        achievementType:
+          enumDescriptions:
+            - Default value. This value is unused.
+            - Achievement is either locked or unlocked.
+            - Achievement is incremental.
+          enum:
+            - ACHIEVEMENT_TYPE_UNSPECIFIED
+            - STANDARD
+            - INCREMENTAL
+          type: string
+          description: The type of the achievement.
+        draft:
+          description: The draft data of the achievement.
+          $ref: '#/components/schemas/AchievementConfigurationDetail'
+        token:
+          type: string
+          description: The token for this resource.
+        id:
+          type: string
+          description: The ID of the achievement.
+      description: An achievement configuration resource.
+      type: object
+      id: AchievementConfiguration
+  parameters:
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/androidpublisher: View and manage your Google Play Developer account
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /games/v1configuration/leaderboards/{leaderboardId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/access_token'
+    put:
+      description: Update the metadata of the leaderboard configuration with the given ID.
+      operationId: gamesConfiguration.leaderboardConfigurations.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderboardConfiguration'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardConfiguration'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: leaderboard_configurations
+      x-stackQL-verb: exec
+    get:
+      description: >-
+        Retrieves the metadata of the leaderboard configuration with the given
+        ID.
+      operationId: gamesConfiguration.leaderboardConfigurations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardConfiguration'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: leaderboard_configurations
+      x-stackQL-verb: select
+    delete:
+      description: Delete the leaderboard configuration with the given ID.
+      operationId: gamesConfiguration.leaderboardConfigurations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: leaderboard_configurations
+      x-stackQL-verb: delete
+  /games/v1configuration/applications/{applicationId}/leaderboards:
+    parameters: *ref_1
+    get:
+      description: Returns a list of the leaderboard configurations in this application.
+      operationId: gamesConfiguration.leaderboardConfigurations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardConfigurationListResponse'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+      x-stackQL-resource: leaderboard_configurations
+      x-stackQL-verb: select
+    post:
+      description: Insert a new leaderboard configuration in this application.
+      operationId: gamesConfiguration.leaderboardConfigurations.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderboardConfiguration'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardConfiguration'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: leaderboard_configurations
+      x-stackQL-verb: insert
+  /games/v1configuration/achievements/{achievementId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Retrieves the metadata of the achievement configuration with the given
+        ID.
+      operationId: gamesConfiguration.achievementConfigurations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementConfiguration'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievement_configurations
+      x-stackQL-verb: select
+    delete:
+      description: Delete the achievement configuration with the given ID.
+      operationId: gamesConfiguration.achievementConfigurations.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievement_configurations
+      x-stackQL-verb: delete
+    put:
+      description: Update the metadata of the achievement configuration with the given ID.
+      operationId: gamesConfiguration.achievementConfigurations.update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementConfiguration'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementConfiguration'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievement_configurations
+      x-stackQL-verb: exec
+  /games/v1configuration/applications/{applicationId}/achievements:
+    parameters: *ref_1
+    post:
+      description: Insert a new achievement configuration in this application.
+      operationId: gamesConfiguration.achievementConfigurations.insert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementConfiguration'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementConfiguration'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievement_configurations
+      x-stackQL-verb: insert
+    get:
+      description: Returns a list of the achievement configurations in this application.
+      operationId: gamesConfiguration.achievementConfigurations.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/androidpublisher
+          Oauth2c:
+            - https://www.googleapis.com/auth/androidpublisher
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementConfigurationListResponse'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: achievement_configurations
+      x-stackQL-verb: select

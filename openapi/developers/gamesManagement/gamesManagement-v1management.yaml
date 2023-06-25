@@ -1,0 +1,793 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Google Play Game Management
+  description: >-
+    The Google Play Game Management API allows developers to manage resources
+    from the Google Play Game service.
+  version: v1management
+  x-discovery-doc-revision: '20230621'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://developers.google.com/games/
+servers:
+  - url: https://gamesmanagement.googleapis.com
+components:
+  schemas:
+    ScoresResetMultipleForAllRequest:
+      properties:
+        leaderboard_ids:
+          description: The IDs of leaderboards to reset.
+          items:
+            type: string
+          type: array
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#scoresResetMultipleForAllRequest`.
+          type: string
+      type: object
+      id: ScoresResetMultipleForAllRequest
+    PlayerScoreResetAllResponse:
+      type: object
+      description: A list of leaderboard reset resources.
+      id: PlayerScoreResetAllResponse
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/PlayerScoreResetResponse'
+          type: array
+          description: The leaderboard reset results.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#playerScoreResetAllResponse`.
+          type: string
+    AchievementResetResponse:
+      properties:
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#achievementResetResponse`.
+          type: string
+        definitionId:
+          description: The ID of an achievement for which player state has been updated.
+          type: string
+        updateOccurred:
+          type: boolean
+          description: Flag to indicate if the requested update actually occurred.
+        currentState:
+          type: string
+          description: >-
+            The current state of the achievement. This is the same as the
+            initial state of the achievement. Possible values are: - "`HIDDEN`"-
+            Achievement is hidden. - "`REVEALED`" - Achievement is revealed. -
+            "`UNLOCKED`" - Achievement is unlocked. 
+      type: object
+      id: AchievementResetResponse
+      description: An achievement reset response.
+    Player:
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#player`.
+        experienceInfo:
+          $ref: '#/components/schemas/GamesPlayerExperienceInfoResource'
+          description: >-
+            An object to represent Play Game experience information for the
+            player.
+        name:
+          type: object
+          properties:
+            familyName:
+              type: string
+              description: >-
+                The family name of this player. In some places, this is known as
+                the last name.
+            givenName:
+              type: string
+              description: >-
+                The given name of this player. In some places, this is known as
+                the first name.
+          description: >-
+            An object representation of the individual components of the
+            player's name. For some players, these fields may not be present.
+        displayName:
+          type: string
+          description: The name to display for the player.
+        profileSettings:
+          $ref: '#/components/schemas/ProfileSettings'
+          description: >-
+            The player's profile settings. Controls whether or not the player's
+            profile is visible to other players.
+        title:
+          type: string
+          description: The player's title rewarded for their game activities.
+        bannerUrlLandscape:
+          type: string
+          description: The url to the landscape mode player banner image.
+        bannerUrlPortrait:
+          description: The url to the portrait mode player banner image.
+          type: string
+        playerId:
+          description: The ID of the player.
+          type: string
+        originalPlayerId:
+          type: string
+          description: >-
+            The player ID that was used for this player the first time they
+            signed into the game in question. This is only populated for calls
+            to player.get for the requesting player, only if the player ID has
+            subsequently changed, and only to clients that support remapping
+            player IDs.
+        avatarImageUrl:
+          type: string
+          description: The base URL for the image that represents the player.
+      type: object
+      id: Player
+      description: A Player resource.
+    GamesPlayerLevelResource:
+      type: object
+      properties:
+        minExperiencePoints:
+          type: string
+          description: The minimum experience points for this level.
+          format: int64
+        level:
+          description: The level for the user.
+          type: integer
+          format: int32
+        maxExperiencePoints:
+          type: string
+          description: The maximum experience points for this level.
+          format: int64
+      id: GamesPlayerLevelResource
+      description: 1P/3P metadata about a user's level.
+    HiddenPlayer:
+      type: object
+      id: HiddenPlayer
+      properties:
+        hiddenTimeMillis:
+          description: Output only. The time this player was hidden.
+          readOnly: true
+          type: string
+          format: int64
+        player:
+          $ref: '#/components/schemas/Player'
+          readOnly: true
+          description: Output only. The player information.
+        kind:
+          description: >-
+            Output only. Uniquely identifies the type of this resource. Value is
+            always the fixed string `gamesManagement#hiddenPlayer`.
+          type: string
+          readOnly: true
+      description: The HiddenPlayer resource.
+    ProfileSettings:
+      description: Profile settings
+      type: object
+      properties:
+        profileVisible:
+          type: boolean
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#profileSettings`.
+      id: ProfileSettings
+    PlayerScoreResetResponse:
+      description: A list of reset leaderboard entry resources.
+      type: object
+      properties:
+        resetScoreTimeSpans:
+          type: array
+          description: >-
+            The time spans of the updated score. Possible values are: -
+            "`ALL_TIME`" - The score is an all-time score. - "`WEEKLY`" - The
+            score is a weekly score. - "`DAILY`" - The score is a daily score. 
+          items:
+            type: string
+        definitionId:
+          type: string
+          description: The ID of an leaderboard for which player state has been updated.
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#playerScoreResetResponse`.
+          type: string
+      id: PlayerScoreResetResponse
+    EventsResetMultipleForAllRequest:
+      type: object
+      properties:
+        event_ids:
+          description: The IDs of events to reset.
+          type: array
+          items:
+            type: string
+        kind:
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#eventsResetMultipleForAllRequest`.
+          type: string
+      description: Multiple events reset all request.
+      id: EventsResetMultipleForAllRequest
+    HiddenPlayerList:
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#hiddenPlayerList`.
+        items:
+          description: The players.
+          type: array
+          items:
+            $ref: '#/components/schemas/HiddenPlayer'
+        nextPageToken:
+          description: The pagination token for the next page of results.
+          type: string
+      description: A list of hidden players.
+      type: object
+      id: HiddenPlayerList
+    AchievementResetAllResponse:
+      type: object
+      description: Achievement reset all response.
+      id: AchievementResetAllResponse
+      properties:
+        results:
+          type: array
+          description: The achievement reset results.
+          items:
+            $ref: '#/components/schemas/AchievementResetResponse'
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string `gamesManagement#achievementResetAllResponse`.
+    GamesPlayerExperienceInfoResource:
+      properties:
+        lastLevelUpTimestampMillis:
+          description: >-
+            The timestamp when the player was leveled up, in millis since Unix
+            epoch UTC.
+          format: int64
+          type: string
+        currentExperiencePoints:
+          description: The current number of experience points for the player.
+          type: string
+          format: int64
+        currentLevel:
+          description: The current level of the player.
+          $ref: '#/components/schemas/GamesPlayerLevelResource'
+        nextLevel:
+          description: >-
+            The next level of the player. If the current level is the maximum
+            level, this should be same as the current level.
+          $ref: '#/components/schemas/GamesPlayerLevelResource'
+      id: GamesPlayerExperienceInfoResource
+      type: object
+      description: 1P/3P metadata about the player's experience.
+    AchievementResetMultipleForAllRequest:
+      id: AchievementResetMultipleForAllRequest
+      type: object
+      properties:
+        kind:
+          type: string
+          description: >-
+            Uniquely identifies the type of this resource. Value is always the
+            fixed string
+            `gamesManagement#achievementResetMultipleForAllRequest`.
+        achievement_ids:
+          type: array
+          items:
+            type: string
+          description: The IDs of achievements to reset.
+  parameters:
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/games: Create, edit, and delete your Google Play Games activity
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /games/v1management/achievements/{achievementId}/reset:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/quotaUser'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/uploadType'
+    post:
+      description: >-
+        Resets the achievement with the given ID for the currently authenticated
+        player. This method is only accessible to whitelisted tester accounts
+        for your application.
+      operationId: gamesManagement.achievements.reset
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementResetResponse'
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1management/achievements/resetMultipleForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets achievements with the given IDs for all players. This method is
+        only available to user accounts for your developer console. Only draft
+        achievements may be reset.
+      operationId: gamesManagement.achievements.resetMultipleForAllPlayers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementResetMultipleForAllRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1management/achievements/{achievementId}/resetForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets the achievement with the given ID for all players. This method is
+        only available to user accounts for your developer console. Only draft
+        achievements can be reset.
+      operationId: gamesManagement.achievements.resetForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: achievementId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1management/achievements/reset:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all achievements for the currently authenticated player for your
+        application. This method is only accessible to whitelisted tester
+        accounts for your application.
+      operationId: gamesManagement.achievements.resetAll
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementResetAllResponse'
+      parameters: []
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1management/achievements/resetAllForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all draft achievements for all players. This method is only
+        available to user accounts for your developer console.
+      operationId: gamesManagement.achievements.resetAllForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: achievements
+      x-stackQL-verb: exec
+  /games/v1management/scores/resetMultipleForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets scores for the leaderboards with the given IDs for all players.
+        This method is only available to user accounts for your developer
+        console. Only draft leaderboards may be reset.
+      operationId: gamesManagement.scores.resetMultipleForAllPlayers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoresResetMultipleForAllRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1management/scores/resetAllForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets scores for all draft leaderboards for all players. This method is
+        only available to user accounts for your developer console.
+      operationId: gamesManagement.scores.resetAllForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1management/leaderboards/{leaderboardId}/scores/resetForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets scores for the leaderboard with the given ID for all players.
+        This method is only available to user accounts for your developer
+        console. Only draft leaderboards can be reset.
+      operationId: gamesManagement.scores.resetForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1management/scores/reset:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all scores for all leaderboards for the currently authenticated
+        players. This method is only accessible to whitelisted tester accounts
+        for your application.
+      operationId: gamesManagement.scores.resetAll
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerScoreResetAllResponse'
+      parameters: []
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1management/leaderboards/{leaderboardId}/scores/reset:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets scores for the leaderboard with the given ID for the currently
+        authenticated player. This method is only accessible to whitelisted
+        tester accounts for your application.
+      operationId: gamesManagement.scores.reset
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerScoreResetResponse'
+      parameters:
+        - in: path
+          name: leaderboardId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: scores
+      x-stackQL-verb: exec
+  /games/v1management/applications/{applicationId}/players/hidden/{playerId}:
+    parameters: *ref_1
+    delete:
+      description: >-
+        Unhide the given player's leaderboard scores from the given application.
+        This method is only available to user accounts for your developer
+        console.
+      operationId: gamesManagement.players.unhide
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: players
+      x-stackQL-verb: exec
+    post:
+      description: >-
+        Hide the given player's leaderboard scores from the given application.
+        This method is only available to user accounts for your developer
+        console.
+      operationId: gamesManagement.players.hide
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: players
+      x-stackQL-verb: exec
+  /games/v1management/events/resetMultipleForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets events with the given IDs for all players. This method is only
+        available to user accounts for your developer console. Only draft events
+        may be reset.
+      operationId: gamesManagement.events.resetMultipleForAllPlayers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsResetMultipleForAllRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /games/v1management/events/reset:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all player progress on all events for the currently authenticated
+        player. This method is only accessible to whitelisted tester accounts
+        for your application.
+      operationId: gamesManagement.events.resetAll
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /games/v1management/events/resetAllForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all draft events for all players. This method is only available
+        to user accounts for your developer console.
+      operationId: gamesManagement.events.resetAllForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters: []
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /games/v1management/events/{eventId}/resetForAllPlayers:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets the event with the given ID for all players. This method is only
+        available to user accounts for your developer console. Only draft events
+        can be reset.
+      operationId: gamesManagement.events.resetForAllPlayers
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /games/v1management/events/{eventId}/reset:
+    parameters: *ref_1
+    post:
+      description: >-
+        Resets all player progress on the event with the given ID for the
+        currently authenticated player. This method is only accessible to
+        whitelisted tester accounts for your application.
+      operationId: gamesManagement.events.reset
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: events
+      x-stackQL-verb: exec
+  /games/v1management/applications/{applicationId}/players/hidden:
+    parameters: *ref_1
+    get:
+      description: >-
+        Get the list of players hidden from the given application. This method
+        is only available to user accounts for your developer console.
+      operationId: gamesManagement.applications.listHidden
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/games
+          Oauth2c:
+            - https://www.googleapis.com/auth/games
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HiddenPlayerList'
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: maxResults
+          schema:
+            type: integer
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: applications__hidden
+      x-stackQL-verb: select

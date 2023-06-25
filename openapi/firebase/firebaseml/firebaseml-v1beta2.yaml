@@ -1,0 +1,618 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Firebase ML API
+  description: Access custom machine learning models hosted via Firebase ML.
+  version: v1beta2
+  x-discovery-doc-revision: '20230621'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://firebase.google.com
+servers:
+  - url: https://firebaseml.googleapis.com
+components:
+  schemas:
+    Model:
+      description: An ML model hosted in Firebase ML
+      properties:
+        etag:
+          readOnly: true
+          type: string
+          description: >-
+            Output only. See RFC7232
+            https://tools.ietf.org/html/rfc7232#section-2.3
+        createTime:
+          format: google-datetime
+          readOnly: true
+          description: Output only. Timestamp when this model was created in Firebase ML.
+          type: string
+        name:
+          type: string
+          description: >-
+            The resource name of the Model. Model names have the form
+            `projects/{project_id}/models/{model_id}` The name is ignored when
+            creating a model.
+        updateTime:
+          readOnly: true
+          description: Output only. Timestamp when this model was updated in Firebase ML.
+          type: string
+          format: google-datetime
+        tfliteModel:
+          $ref: '#/components/schemas/TfLiteModel'
+          description: A TFLite Model
+        state:
+          description: >-
+            State common to all model types. Includes publishing and validation
+            information.
+          $ref: '#/components/schemas/ModelState'
+        displayName:
+          description: >-
+            Required. The name of the model to create. The name can be up to 32
+            characters long and can consist only of ASCII Latin letters A-Z and
+            a-z, underscores(_) and ASCII digits 0-9. It must start with a
+            letter.
+          type: string
+        activeOperations:
+          type: array
+          description: >-
+            Output only. Lists operation ids associated with this model whose
+            status is NOT done.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Operation'
+        modelHash:
+          type: string
+          description: >-
+            Output only. The model_hash will change if a new file is available
+            for download.
+          readOnly: true
+        tags:
+          description: >-
+            User defined tags which can be used to group/filter models during
+            listing
+          type: array
+          items:
+            type: string
+      type: object
+      id: Model
+    Operation:
+      properties:
+        done:
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+          type: boolean
+        error:
+          $ref: '#/components/schemas/Status'
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+        name:
+          type: string
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+        metadata:
+          type: object
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+        response:
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+          type: object
+      type: object
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+      id: Operation
+    TfLiteModel:
+      properties:
+        sizeBytes:
+          type: string
+          readOnly: true
+          description: Output only. The size of the TFLite model
+        automlModel:
+          description: >-
+            The AutoML model id referencing a model you created with the AutoML
+            API. The name should have format 'projects//locations//models/'
+            (This is the model resource name returned from the AutoML API)
+          type: string
+        gcsTfliteUri:
+          description: >-
+            The TfLite file containing the model. (Stored in Google Cloud). The
+            gcs_tflite_uri should have form: gs://some-bucket/some-model.tflite
+            Note: If you update the file in the original location, it is
+            necessary to call UpdateModel for ML to pick up and validate the
+            updated file.
+          type: string
+      type: object
+      description: Information that is specific to TfLite models.
+      id: TfLiteModel
+    ModelOperationMetadata:
+      id: ModelOperationMetadata
+      type: object
+      description: This is returned in the longrunning operations for create/update.
+      properties:
+        basicOperationStatus:
+          enumDescriptions:
+            - The status is unspecified
+            - The model file is being uploaded
+            - The model file is being verified
+          enum:
+            - BASIC_OPERATION_STATUS_UNSPECIFIED
+            - BASIC_OPERATION_STATUS_UPLOADING
+            - BASIC_OPERATION_STATUS_VERIFYING
+          type: string
+        name:
+          type: string
+          description: >-
+            The name of the model we are creating/updating The name must have
+            the form `projects/{project_id}/models/{model_id}`
+    DownloadModelResponse:
+      id: DownloadModelResponse
+      type: object
+      properties:
+        modelFormat:
+          enum:
+            - MODEL_FORMAT_UNSPECIFIED
+            - TFLITE
+          description: Output only. The format of the model being downloaded.
+          readOnly: true
+          type: string
+          enumDescriptions:
+            - Unknown format
+            - TFLite model
+        downloadUri:
+          type: string
+          description: Output only. A download URI for the model/zip file.
+          readOnly: true
+        sizeBytes:
+          type: string
+          format: int64
+          description: >-
+            Output only. The size of the file(s), if this information is
+            available.
+          readOnly: true
+        expireTime:
+          format: google-datetime
+          type: string
+          readOnly: true
+          description: >-
+            Output only. The time that the download URI link expires. If the
+            link has expired, the REST call must be repeated.
+      description: The response for downloading a model to device.
+    ModelState:
+      properties:
+        published:
+          description: Indicates if this model has been published.
+          type: boolean
+        validationError:
+          $ref: '#/components/schemas/Status'
+          readOnly: true
+          description: >-
+            Output only. Indicates the latest validation error on the model if
+            any. A model may have validation errors if there were problems
+            during the model creation/update. e.g. in the case of a TfLiteModel,
+            if a tflite model file was missing or in the wrong format. This
+            field will be empty for valid models.
+      type: object
+      description: >-
+        State common to all model types. Includes publishing and validation
+        information.
+      id: ModelState
+    Empty:
+      type: object
+      id: Empty
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      properties: {}
+    Status:
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      id: Status
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: The status code, which should be an enum value of google.rpc.Code.
+        details:
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          items:
+            type: object
+            additionalProperties:
+              description: Properties of the object. Contains field @type with type URL.
+              type: any
+          type: array
+        message:
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+          type: string
+    ListModelsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          description: >-
+            Token to retrieve the next page of results, or empty if there are no
+            more results in the list.
+          type: string
+        models:
+          items:
+            $ref: '#/components/schemas/Model'
+          type: array
+          description: The list of models
+      id: ListModelsResponse
+      description: The response for list models
+  parameters:
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1beta2/projects/{projectsId}/models/{modelsId}:download:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/quotaUser'
+    get:
+      description: >-
+        Gets Download information for a model. This is meant for downloading
+        model resources onto devices. It gives very limited information about
+        the model.
+      operationId: firebaseml.projects.models.download
+      security: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadModelResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: modelsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: models
+      x-stackQL-verb: exec
+  /v1beta2/projects/{projectsId}/models/{modelsId}:
+    parameters: *ref_1
+    get:
+      description: Gets a model resource.
+      operationId: firebaseml.projects.models.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: modelsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: models
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a model
+      operationId: firebaseml.projects.models.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: modelsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: models
+      x-stackQL-verb: delete
+    patch:
+      description: >-
+        Updates a model. The longrunning operation will eventually return a
+        Model.
+      operationId: firebaseml.projects.models.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: modelsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+      x-stackQL-resource: models
+      x-stackQL-verb: exec
+  /v1beta2/projects/{projectsId}/models:
+    parameters: *ref_1
+    post:
+      description: >-
+        Creates a model in Firebase ML. The longrunning operation will
+        eventually return a Model
+      operationId: firebaseml.projects.models.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: models
+      x-stackQL-verb: insert
+    get:
+      description: Lists the models
+      operationId: firebaseml.projects.models.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListModelsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      x-stackQL-resource: models
+      x-stackQL-verb: select
+  /v1beta2/projects/{projectsId}/operations/{operationsId}:
+    parameters: *ref_1
+    get:
+      description: >-
+        Gets the latest state of a long-running operation. Clients can use this
+        method to poll the operation result at intervals as recommended by the
+        API service.
+      operationId: firebaseml.projects.operations.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: operations
+      x-stackQL-verb: select

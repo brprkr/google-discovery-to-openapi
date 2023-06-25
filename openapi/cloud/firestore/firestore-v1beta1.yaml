@@ -1,0 +1,3190 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: StackQL Studios
+    url: https://github.com/stackql/google-discovery-to-openapi
+    email: info@stackql.io
+  title: Cloud Firestore API
+  description: >-
+    Accesses the NoSQL document database built for automatic scaling, high
+    performance, and ease of application development. 
+  version: v1beta1
+  x-discovery-doc-revision: '20230611'
+  x-generated-date: '2023-06-25'
+externalDocs:
+  url: https://cloud.google.com/firestore
+servers:
+  - url: https://firestore.googleapis.com
+components:
+  schemas:
+    ListCollectionIdsRequest:
+      type: object
+      id: ListCollectionIdsRequest
+      properties:
+        pageToken:
+          type: string
+          description: A page token. Must be a value from ListCollectionIdsResponse.
+        pageSize:
+          format: int32
+          type: integer
+          description: The maximum number of results to return.
+        readTime:
+          format: google-datetime
+          description: >-
+            Reads documents as they were at the given time. This may not be
+            older than 270 seconds.
+          type: string
+      description: The request for Firestore.ListCollectionIds.
+    CommitResponse:
+      properties:
+        writeResults:
+          type: array
+          description: >-
+            The result of applying the writes. This i-th write result
+            corresponds to the i-th write in the request.
+          items:
+            $ref: '#/components/schemas/WriteResult'
+        commitTime:
+          description: >-
+            The time at which the commit occurred. Any read with an equal or
+            greater `read_time` is guaranteed to see the effects of the commit.
+          format: google-datetime
+          type: string
+      id: CommitResponse
+      type: object
+      description: The response for Firestore.Commit.
+    GoogleFirestoreAdminV1beta1ImportDocumentsRequest:
+      properties:
+        inputUriPrefix:
+          type: string
+          description: >-
+            Location of the exported files. This must match the
+            output_uri_prefix of an ExportDocumentsResponse from an export that
+            has completed successfully. See:
+            google.firestore.admin.v1beta1.ExportDocumentsResponse.output_uri_prefix.
+        collectionIds:
+          type: array
+          description: >-
+            Which collection ids to import. Unspecified means all collections
+            included in the import.
+          items:
+            type: string
+      id: GoogleFirestoreAdminV1beta1ImportDocumentsRequest
+      description: The request for FirestoreAdmin.ImportDocuments.
+      type: object
+    Aggregation:
+      id: Aggregation
+      description: Defines an aggregation that produces a single result.
+      type: object
+      properties:
+        count:
+          $ref: '#/components/schemas/Count'
+          description: Count aggregator.
+        alias:
+          description: >-
+            Optional. Optional name of the field to store the result of the
+            aggregation into. If not provided, Firestore will pick a default
+            name following the format `field_`. For example: ``` AGGREGATE
+            COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2), COUNT_UP_TO(3) AS
+            count_up_to_3, COUNT(*) OVER ( ... ); ``` becomes: ``` AGGREGATE
+            COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2) AS field_1,
+            COUNT_UP_TO(3) AS count_up_to_3, COUNT(*) AS field_2 OVER ( ... );
+            ``` Requires: * Must be unique across all aggregation aliases. *
+            Conform to document field name limitations.
+          type: string
+    Projection:
+      id: Projection
+      properties:
+        fields:
+          description: >-
+            The fields to return. If empty, all fields are returned. To only
+            return the name of the document, use `['__name__']`.
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldReference'
+      type: object
+      description: The projection of document's fields to return.
+    ListCollectionIdsResponse:
+      description: The response from Firestore.ListCollectionIds.
+      properties:
+        nextPageToken:
+          type: string
+          description: A page token that may be used to continue the list.
+        collectionIds:
+          items:
+            type: string
+          description: The collection ids.
+          type: array
+      type: object
+      id: ListCollectionIdsResponse
+    GoogleFirestoreAdminV1UpdateDatabaseMetadata:
+      properties: {}
+      type: object
+      description: Metadata related to the update database operation.
+      id: GoogleFirestoreAdminV1UpdateDatabaseMetadata
+    UnaryFilter:
+      description: A filter with a single operand.
+      id: UnaryFilter
+      properties:
+        op:
+          description: The unary operator to apply.
+          enum:
+            - OPERATOR_UNSPECIFIED
+            - IS_NAN
+            - IS_NULL
+            - IS_NOT_NAN
+            - IS_NOT_NULL
+          type: string
+          enumDescriptions:
+            - Unspecified. This value must not be used.
+            - The given `field` is equal to `NaN`.
+            - The given `field` is equal to `NULL`.
+            - >-
+              The given `field` is not equal to `NaN`. Requires: * No other
+              `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That
+              `field` comes first in the `order_by`.
+            - >-
+              The given `field` is not equal to `NULL`. Requires: * A single
+              `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That
+              `field` comes first in the `order_by`.
+        field:
+          $ref: '#/components/schemas/FieldReference'
+          description: The field to which to apply the operator.
+      type: object
+    Cursor:
+      type: object
+      description: A position in a query result set.
+      id: Cursor
+      properties:
+        values:
+          description: >-
+            The values that represent a position, in the order they appear in
+            the order by clause of a query. Can contain fewer values than
+            specified in the order by clause.
+          type: array
+          items:
+            $ref: '#/components/schemas/Value'
+        before:
+          description: >-
+            If the position is just before or just after the given values,
+            relative to the sort order defined by the query.
+          type: boolean
+    AggregationResult:
+      properties:
+        aggregateFields:
+          description: >-
+            The result of the aggregation functions, ex: `COUNT(*) AS
+            total_docs`. The key is the alias assigned to the aggregation
+            function on input and the size of this map equals the number of
+            aggregation functions in the query.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+      type: object
+      id: AggregationResult
+      description: >-
+        The result of a single bucket from a Firestore aggregation query. The
+        keys of `aggregate_fields` are the same for all results in an
+        aggregation query, unlike document queries which can have different
+        fields present for each result.
+    CollectionSelector:
+      id: CollectionSelector
+      description: A selection of a collection, such as `messages as m1`.
+      type: object
+      properties:
+        allDescendants:
+          description: >-
+            When false, selects only collections that are immediate children of
+            the `parent` specified in the containing `RunQueryRequest`. When
+            true, selects all descendant collections.
+          type: boolean
+        collectionId:
+          type: string
+          description: The collection ID. When set, selects only collections with this ID.
+    DocumentTransform:
+      properties:
+        document:
+          type: string
+          description: The name of the document to transform.
+        fieldTransforms:
+          description: >-
+            The list of transformations to apply to the fields of the document,
+            in order. This must not be empty.
+          items:
+            $ref: '#/components/schemas/FieldTransform'
+          type: array
+      id: DocumentTransform
+      description: A transformation of a document.
+      type: object
+    GoogleFirestoreAdminV1beta1IndexField:
+      type: object
+      id: GoogleFirestoreAdminV1beta1IndexField
+      description: A field of an index.
+      properties:
+        fieldPath:
+          description: >-
+            The path of the field. Must match the field path specification
+            described by google.firestore.v1beta1.Document.fields. Special field
+            path `__name__` may be used by itself or at the end of a path.
+            `__type__` may be used only at the end of path.
+          type: string
+        mode:
+          type: string
+          enum:
+            - MODE_UNSPECIFIED
+            - ASCENDING
+            - DESCENDING
+            - ARRAY_CONTAINS
+          enumDescriptions:
+            - The mode is unspecified.
+            - >-
+              The field's values are indexed so as to support sequencing in
+              ascending order and also query by <, >, <=, >=, and =.
+            - >-
+              The field's values are indexed so as to support sequencing in
+              descending order and also query by <, >, <=, >=, and =.
+            - >-
+              The field's array values are indexed so as to support membership
+              using ARRAY_CONTAINS queries.
+          description: The field's mode.
+    GoogleFirestoreAdminV1beta1ListIndexesResponse:
+      properties:
+        nextPageToken:
+          type: string
+          description: The standard List next-page token.
+        indexes:
+          description: The indexes.
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Index'
+      type: object
+      id: GoogleFirestoreAdminV1beta1ListIndexesResponse
+      description: The response for FirestoreAdmin.ListIndexes.
+    CommitRequest:
+      properties:
+        transaction:
+          type: string
+          description: If set, applies all writes in this transaction, and commits it.
+          format: byte
+        writes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Write'
+          description: The writes to apply. Always executed atomically and in order.
+      type: object
+      id: CommitRequest
+      description: The request for Firestore.Commit.
+    StructuredQuery:
+      id: StructuredQuery
+      description: A Firestore query.
+      properties:
+        endAt:
+          $ref: '#/components/schemas/Cursor'
+          description: >-
+            A potential prefix of a position in the result set to end the query
+            at. This is similar to `START_AT` but with it controlling the end
+            position rather than the start position. Requires: * The number of
+            values cannot be greater than the number of fields specified in the
+            `ORDER BY` clause.
+        orderBy:
+          description: >-
+            The order to apply to the query results. Firestore allows callers to
+            provide a full ordering, a partial ordering, or no ordering at all.
+            In all cases, Firestore guarantees a stable ordering through the
+            following rules: * The `order_by` is required to reference all
+            fields used with an inequality filter. * All fields that are
+            required to be in the `order_by` but are not already present are
+            appended in lexicographical ordering of the field name. * If an
+            order on `__name__` is not specified, it is appended by default.
+            Fields are appended with the same sort direction as the last order
+            specified, or 'ASCENDING' if no order was specified. For example: *
+            `ORDER BY a` becomes `ORDER BY a ASC, __name__ ASC` * `ORDER BY a
+            DESC` becomes `ORDER BY a DESC, __name__ DESC` * `WHERE a > 1`
+            becomes `WHERE a > 1 ORDER BY a ASC, __name__ ASC` * `WHERE __name__
+            > ... AND a > 1` becomes `WHERE __name__ > ... AND a > 1 ORDER BY a
+            ASC, __name__ ASC`
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        limit:
+          description: >-
+            The maximum number of results to return. Applies after all other
+            constraints. Requires: * The value must be greater than or equal to
+            zero if specified.
+          type: integer
+          format: int32
+        from:
+          items:
+            $ref: '#/components/schemas/CollectionSelector'
+          description: The collections to query.
+          type: array
+        startAt:
+          $ref: '#/components/schemas/Cursor'
+          description: >-
+            A potential prefix of a position in the result set to start the
+            query at. The ordering of the result set is based on the `ORDER BY`
+            clause of the original query. ``` SELECT * FROM k WHERE a = 1 AND b
+            > 2 ORDER BY b ASC, __name__ ASC; ``` This query's results are
+            ordered by `(b ASC, __name__ ASC)`. Cursors can reference either the
+            full ordering or a prefix of the location, though it cannot
+            reference more fields than what are in the provided `ORDER BY`.
+            Continuing off the example above, attaching the following start
+            cursors will have varying impact: - `START BEFORE (2, /k/123)`:
+            start the query right before `a = 1 AND b > 2 AND __name__ >
+            /k/123`. - `START AFTER (10)`: start the query right after `a = 1
+            AND b > 10`. Unlike `OFFSET` which requires scanning over the first
+            N results to skip, a start cursor allows the query to begin at a
+            logical position. This position is not required to match an actual
+            result, it will scan forward from this position to find the next
+            document. Requires: * The number of values cannot be greater than
+            the number of fields specified in the `ORDER BY` clause.
+        offset:
+          description: >-
+            The number of documents to skip before returning the first result.
+            This applies after the constraints specified by the `WHERE`, `START
+            AT`, & `END AT` but before the `LIMIT` clause. Requires: * The value
+            must be greater than or equal to zero if specified.
+          type: integer
+          format: int32
+        where:
+          $ref: '#/components/schemas/Filter'
+          description: The filter to apply.
+        select:
+          description: >-
+            Optional sub-set of the fields to return. This acts as a
+            DocumentMask over the documents returned from a query. When not set,
+            assumes that the caller wants all fields returned.
+          $ref: '#/components/schemas/Projection'
+      type: object
+    WriteResponse:
+      description: The response for Firestore.Write.
+      id: WriteResponse
+      properties:
+        streamId:
+          type: string
+          description: >-
+            The ID of the stream. Only set on the first message, when a new
+            stream was created.
+        streamToken:
+          format: byte
+          description: >-
+            A token that represents the position of this response in the stream.
+            This can be used by a client to resume the stream at this point.
+            This field is always set.
+          type: string
+        commitTime:
+          format: google-datetime
+          type: string
+          description: >-
+            The time at which the commit occurred. Any read with an equal or
+            greater `read_time` is guaranteed to see the effects of the write.
+        writeResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/WriteResult'
+          description: >-
+            The result of applying the writes. This i-th write result
+            corresponds to the i-th write in the request.
+      type: object
+    GoogleFirestoreAdminV1beta1Progress:
+      properties:
+        workCompleted:
+          description: >-
+            An estimate of how much work has been completed. Note that this may
+            be greater than `work_estimated`.
+          format: int64
+          type: string
+        workEstimated:
+          description: >-
+            An estimate of how much work needs to be performed. Zero if the work
+            estimate is unavailable. May change as work progresses.
+          type: string
+          format: int64
+      description: Measures the progress of a particular metric.
+      id: GoogleFirestoreAdminV1beta1Progress
+      type: object
+    ArrayValue:
+      id: ArrayValue
+      properties:
+        values:
+          description: Values in the array.
+          type: array
+          items:
+            $ref: '#/components/schemas/Value'
+      description: An array value.
+      type: object
+    Value:
+      description: A message that can hold any of the supported value types.
+      properties:
+        integerValue:
+          description: An integer value.
+          format: int64
+          type: string
+        bytesValue:
+          description: >-
+            A bytes value. Must not exceed 1 MiB - 89 bytes. Only the first
+            1,500 bytes are considered by queries.
+          format: byte
+          type: string
+        stringValue:
+          description: >-
+            A string value. The string, represented as UTF-8, must not exceed 1
+            MiB - 89 bytes. Only the first 1,500 bytes of the UTF-8
+            representation are considered by queries.
+          type: string
+        nullValue:
+          enum:
+            - NULL_VALUE
+          enumDescriptions:
+            - Null value.
+          type: string
+          description: A null value.
+        doubleValue:
+          description: A double value.
+          type: number
+          format: double
+        mapValue:
+          $ref: '#/components/schemas/MapValue'
+          description: A map value.
+        timestampValue:
+          format: google-datetime
+          type: string
+          description: >-
+            A timestamp value. Precise only to microseconds. When stored, any
+            additional precision is rounded down.
+        geoPointValue:
+          $ref: '#/components/schemas/LatLng'
+          description: A geo point value representing a point on the surface of Earth.
+        referenceValue:
+          description: >-
+            A reference to a document. For example:
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+          type: string
+        booleanValue:
+          description: A boolean value.
+          type: boolean
+        arrayValue:
+          description: >-
+            An array value. Cannot directly contain another array value, though
+            can contain an map which contains another array.
+          $ref: '#/components/schemas/ArrayValue'
+      type: object
+      id: Value
+    GoogleFirestoreAdminV1beta1IndexOperationMetadata:
+      id: GoogleFirestoreAdminV1beta1IndexOperationMetadata
+      description: >-
+        Metadata for index operations. This metadata populates the metadata
+        field of google.longrunning.Operation.
+      properties:
+        documentProgress:
+          $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Progress'
+          description: Progress of the existing operation, measured in number of documents.
+        operationType:
+          enum:
+            - OPERATION_TYPE_UNSPECIFIED
+            - CREATING_INDEX
+          description: The type of index operation.
+          enumDescriptions:
+            - Unspecified. Never set by server.
+            - >-
+              The operation is creating the index. Initiated by a `CreateIndex`
+              call.
+          type: string
+        endTime:
+          description: >-
+            The time the operation ended, either successfully or otherwise.
+            Unset if the operation is still active.
+          format: google-datetime
+          type: string
+        startTime:
+          format: google-datetime
+          type: string
+          description: The time that work began on the operation.
+        index:
+          type: string
+          description: >-
+            The index resource that this operation is acting on. For example:
+            `projects/{project_id}/databases/{database_id}/indexes/{index_id}`
+        cancelled:
+          description: >-
+            True if the [google.longrunning.Operation] was cancelled. If the
+            cancellation is in progress, cancelled will be true but
+            google.longrunning.Operation.done will be false.
+          type: boolean
+      type: object
+    ReadOnly:
+      id: ReadOnly
+      properties:
+        readTime:
+          type: string
+          format: google-datetime
+          description: >-
+            Reads documents at the given time. This may not be older than 60
+            seconds.
+      description: Options for a transaction that can only be used to read documents.
+      type: object
+    GoogleFirestoreAdminV1beta1ImportDocumentsMetadata:
+      type: object
+      description: Metadata for ImportDocuments operations.
+      properties:
+        operationState:
+          enum:
+            - STATE_UNSPECIFIED
+            - INITIALIZING
+            - PROCESSING
+            - CANCELLING
+            - FINALIZING
+            - SUCCESSFUL
+            - FAILED
+            - CANCELLED
+          enumDescriptions:
+            - Unspecified.
+            - Request is being prepared for processing.
+            - Request is actively being processed.
+            - >-
+              Request is in the process of being cancelled after user called
+              google.longrunning.Operations.CancelOperation on the operation.
+            - Request has been processed and is in its finalization stage.
+            - Request has completed successfully.
+            - Request has finished being processed, but encountered an error.
+            - >-
+              Request has finished being cancelled after user called
+              google.longrunning.Operations.CancelOperation.
+          description: The state of the import operation.
+          type: string
+        collectionIds:
+          type: array
+          description: Which collection ids are being imported.
+          items:
+            type: string
+        progressBytes:
+          description: An estimate of the number of bytes processed.
+          $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Progress'
+        progressDocuments:
+          description: An estimate of the number of documents processed.
+          $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Progress'
+        inputUriPrefix:
+          description: The location of the documents being imported.
+          type: string
+        endTime:
+          type: string
+          description: >-
+            The time the operation ended, either successfully or otherwise.
+            Unset if the operation is still active.
+          format: google-datetime
+        startTime:
+          type: string
+          format: google-datetime
+          description: The time that work began on the operation.
+      id: GoogleFirestoreAdminV1beta1ImportDocumentsMetadata
+    ReadWrite:
+      type: object
+      id: ReadWrite
+      properties:
+        retryTransaction:
+          description: An optional transaction to retry.
+          format: byte
+          type: string
+      description: Options for a transaction that can be used to read and write documents.
+    DocumentChange:
+      properties:
+        removedTargetIds:
+          items:
+            format: int32
+            type: integer
+          description: A set of target IDs for targets that no longer match this document.
+          type: array
+        document:
+          description: >-
+            The new state of the Document. If `mask` is set, contains only
+            fields that were updated or added.
+          $ref: '#/components/schemas/Document'
+        targetIds:
+          items:
+            type: integer
+            format: int32
+          description: A set of target IDs of targets that match this document.
+          type: array
+      id: DocumentChange
+      description: >-
+        A Document has changed. May be the result of multiple writes, including
+        deletes, that ultimately resulted in a new value for the Document.
+        Multiple DocumentChange messages may be returned for the same logical
+        change, if multiple targets are affected.
+      type: object
+    BloomFilter:
+      id: BloomFilter
+      type: object
+      properties:
+        bits:
+          $ref: '#/components/schemas/BitSequence'
+          description: The bloom filter data.
+        hashCount:
+          format: int32
+          type: integer
+          description: The number of hashes used by the algorithm.
+      description: >-
+        A bloom filter (https://en.wikipedia.org/wiki/Bloom_filter). The bloom
+        filter hashes the entries with MD5 and treats the resulting 128-bit hash
+        as 2 distinct 64-bit hash values, interpreted as unsigned integers using
+        2's complement encoding. These two hash values, named `h1` and `h2`, are
+        then used to compute the `hash_count` hash values using the formula,
+        starting at `i=0`: h(i) = h1 + (i * h2) These resulting values are then
+        taken modulo the number of bits in the bloom filter to get the bits of
+        the bloom filter to test for the given entry.
+    RunQueryRequest:
+      properties:
+        structuredQuery:
+          description: A structured query.
+          $ref: '#/components/schemas/StructuredQuery'
+        newTransaction:
+          $ref: '#/components/schemas/TransactionOptions'
+          description: >-
+            Starts a new transaction and reads the documents. Defaults to a
+            read-only transaction. The new transaction ID will be returned as
+            the first response in the stream.
+        transaction:
+          type: string
+          description: >-
+            Run the query within an already active transaction. The value here
+            is the opaque transaction ID to execute the query in.
+          format: byte
+        readTime:
+          format: google-datetime
+          description: >-
+            Reads documents as they were at the given time. This may not be
+            older than 270 seconds.
+          type: string
+      type: object
+      id: RunQueryRequest
+      description: The request for Firestore.RunQuery.
+    FieldReference:
+      properties:
+        fieldPath:
+          description: >-
+            The relative path of the document being referenced. Requires: *
+            Conform to document field name limitations.
+          type: string
+      id: FieldReference
+      description: 'A reference to a field in a document, ex: `stats.operations`.'
+      type: object
+    QueryTarget:
+      id: QueryTarget
+      type: object
+      description: A target specified by a query.
+      properties:
+        structuredQuery:
+          $ref: '#/components/schemas/StructuredQuery'
+          description: A structured query.
+        parent:
+          description: >-
+            The parent resource name. In the format:
+            `projects/{project_id}/databases/{database_id}/documents` or
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+            For example: `projects/my-project/databases/my-database/documents`
+            or
+            `projects/my-project/databases/my-database/documents/chatrooms/my-chatroom`
+          type: string
+    Status:
+      id: Status
+      description: >-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It
+        is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error
+        details. You can find out more about this error model and how to work
+        with it in the [API Design
+        Guide](https://cloud.google.com/apis/design/errors).
+      type: object
+      properties:
+        details:
+          items:
+            additionalProperties:
+              type: any
+              description: Properties of the object. Contains field @type with type URL.
+            type: object
+          description: >-
+            A list of messages that carry the error details. There is a common
+            set of message types for APIs to use.
+          type: array
+        code:
+          type: integer
+          description: The status code, which should be an enum value of google.rpc.Code.
+          format: int32
+        message:
+          type: string
+          description: >-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            google.rpc.Status.details field, or localized by the client.
+    Precondition:
+      description: A precondition on a document, used for conditional operations.
+      properties:
+        exists:
+          description: >-
+            When set to `true`, the target document must exist. When set to
+            `false`, the target document must not exist.
+          type: boolean
+        updateTime:
+          type: string
+          description: >-
+            When set, the target document must exist and have been last updated
+            at that time. Timestamp must be microsecond aligned.
+          format: google-datetime
+      id: Precondition
+      type: object
+    WriteResult:
+      properties:
+        transformResults:
+          description: >-
+            The results of applying each DocumentTransform.FieldTransform, in
+            the same order.
+          type: array
+          items:
+            $ref: '#/components/schemas/Value'
+        updateTime:
+          type: string
+          format: google-datetime
+          description: >-
+            The last update time of the document after applying the write. Not
+            set after a `delete`. If the write did not actually change the
+            document, this will be the previous update_time.
+      type: object
+      description: The result of applying a write.
+      id: WriteResult
+    BatchWriteRequest:
+      type: object
+      id: BatchWriteRequest
+      properties:
+        labels:
+          type: object
+          description: Labels associated with this batch write.
+          additionalProperties:
+            type: string
+        writes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Write'
+          description: >-
+            The writes to apply. Method does not apply writes atomically and
+            does not guarantee ordering. Each write succeeds or fails
+            independently. You cannot write to the same document more than once
+            per request.
+      description: The request for Firestore.BatchWrite.
+    DocumentRemove:
+      id: DocumentRemove
+      description: >-
+        A Document has been removed from the view of the targets. Sent if the
+        document is no longer relevant to a target and is out of view. Can be
+        sent instead of a DocumentDelete or a DocumentChange if the server can
+        not send the new value of the document. Multiple DocumentRemove messages
+        may be returned for the same logical write or delete, if multiple
+        targets are affected.
+      properties:
+        document:
+          type: string
+          description: The resource name of the Document that has gone out of view.
+        readTime:
+          format: google-datetime
+          type: string
+          description: >-
+            The read timestamp at which the remove was observed. Greater or
+            equal to the `commit_time` of the change/delete/remove.
+        removedTargetIds:
+          description: >-
+            A set of target IDs for targets that previously matched this
+            document.
+          type: array
+          items:
+            type: integer
+            format: int32
+      type: object
+    Document:
+      description: A Firestore document. Must not exceed 1 MiB - 4 bytes.
+      properties:
+        updateTime:
+          description: >-
+            Output only. The time at which the document was last changed. This
+            value is initially set to the `create_time` then increases
+            monotonically with each change to the document. It can also be
+            compared to values from other documents and the `read_time` of a
+            query.
+          format: google-datetime
+          type: string
+        name:
+          type: string
+          description: >-
+            The resource name of the document, for example
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+          description: >-
+            The document's fields. The map keys represent field names. A simple
+            field name contains only characters `a` to `z`, `A` to `Z`, `0` to
+            `9`, or `_`, and must not start with `0` to `9`. For example,
+            `foo_bar_17`. Field names matching the regular expression `__.*__`
+            are reserved. Reserved field names are forbidden except in certain
+            documented contexts. The map keys, represented as UTF-8, must not
+            exceed 1,500 bytes and cannot be empty. Field paths may be used in
+            other contexts to refer to structured fields defined here. For
+            `map_value`, the field path is represented by the simple or quoted
+            field names of the containing fields, delimited by `.`. For example,
+            the structured field `"foo" : { map_value: { "x&y" : { string_value:
+            "hello" }}}` would be represented by the field path `foo.x&y`.
+            Within a field path, a quoted field name starts and ends with `` `
+            `` and may contain any character. Some characters, including `` `
+            ``, must be escaped using a `\`. For example, `` `x&y` `` represents
+            `x&y` and `` `bak\`tik` `` represents `` bak`tik ``.
+        createTime:
+          description: >-
+            Output only. The time at which the document was created. This value
+            increases monotonically when a document is deleted then recreated.
+            It can also be compared to values from other documents and the
+            `read_time` of a query.
+          format: google-datetime
+          type: string
+      type: object
+      id: Document
+    BeginTransactionResponse:
+      properties:
+        transaction:
+          type: string
+          format: byte
+          description: The transaction that was started.
+      type: object
+      description: The response for Firestore.BeginTransaction.
+      id: BeginTransactionResponse
+    TransactionOptions:
+      type: object
+      properties:
+        readWrite:
+          description: The transaction can be used for both read and write operations.
+          $ref: '#/components/schemas/ReadWrite'
+        readOnly:
+          description: The transaction can only be used for read operations.
+          $ref: '#/components/schemas/ReadOnly'
+      description: Options for creating a new transaction.
+      id: TransactionOptions
+    DocumentDelete:
+      description: >-
+        A Document has been deleted. May be the result of multiple writes,
+        including updates, the last of which deleted the Document. Multiple
+        DocumentDelete messages may be returned for the same logical delete, if
+        multiple targets are affected.
+      properties:
+        readTime:
+          format: google-datetime
+          type: string
+          description: >-
+            The read timestamp at which the delete was observed. Greater or
+            equal to the `commit_time` of the delete.
+        document:
+          type: string
+          description: The resource name of the Document that was deleted.
+        removedTargetIds:
+          type: array
+          items:
+            format: int32
+            type: integer
+          description: A set of target IDs for targets that previously matched this entity.
+      type: object
+      id: DocumentDelete
+    GoogleFirestoreAdminV1beta1LocationMetadata:
+      type: object
+      properties: {}
+      id: GoogleFirestoreAdminV1beta1LocationMetadata
+      description: The metadata message for google.cloud.location.Location.metadata.
+    FieldTransform:
+      id: FieldTransform
+      properties:
+        appendMissingElements:
+          description: >-
+            Append the given elements in order if they are not already present
+            in the current field value. If the field is not an array, or if the
+            field does not yet exist, it is first set to the empty array.
+            Equivalent numbers of different types (e.g. 3L and 3.0) are
+            considered equal when checking if a value is missing. NaN is equal
+            to NaN, and Null is equal to Null. If the input contains multiple
+            equivalent values, only the first will be considered. The
+            corresponding transform_result will be the null value.
+          $ref: '#/components/schemas/ArrayValue'
+        minimum:
+          description: >-
+            Sets the field to the minimum of its current value and the given
+            value. This must be an integer or a double value. If the field is
+            not an integer or double, or if the field does not yet exist, the
+            transformation will set the field to the input value. If a minimum
+            operation is applied where the field and the input value are of
+            mixed types (that is - one is an integer and one is a double) the
+            field takes on the type of the smaller operand. If the operands are
+            equivalent (e.g. 3 and 3.0), the field does not change. 0, 0.0, and
+            -0.0 are all zero. The minimum of a zero stored value and zero input
+            value is always the stored value. The minimum of any numeric value x
+            and NaN is NaN.
+          $ref: '#/components/schemas/Value'
+        setToServerValue:
+          description: Sets the field to the given server value.
+          type: string
+          enum:
+            - SERVER_VALUE_UNSPECIFIED
+            - REQUEST_TIME
+          enumDescriptions:
+            - Unspecified. This value must not be used.
+            - >-
+              The time at which the server processed the request, with
+              millisecond precision. If used on multiple fields (same or
+              different documents) in a transaction, all the fields will get the
+              same server timestamp.
+        fieldPath:
+          type: string
+          description: >-
+            The path of the field. See Document.fields for the field path syntax
+            reference.
+        increment:
+          $ref: '#/components/schemas/Value'
+          description: >-
+            Adds the given value to the field's current value. This must be an
+            integer or a double value. If the field is not an integer or double,
+            or if the field does not yet exist, the transformation will set the
+            field to the given value. If either of the given value or the
+            current field value are doubles, both values will be interpreted as
+            doubles. Double arithmetic and representation of double values
+            follow IEEE 754 semantics. If there is positive/negative integer
+            overflow, the field is resolved to the largest magnitude
+            positive/negative integer.
+        maximum:
+          description: >-
+            Sets the field to the maximum of its current value and the given
+            value. This must be an integer or a double value. If the field is
+            not an integer or double, or if the field does not yet exist, the
+            transformation will set the field to the given value. If a maximum
+            operation is applied where the field and the input value are of
+            mixed types (that is - one is an integer and one is a double) the
+            field takes on the type of the larger operand. If the operands are
+            equivalent (e.g. 3 and 3.0), the field does not change. 0, 0.0, and
+            -0.0 are all zero. The maximum of a zero stored value and zero input
+            value is always the stored value. The maximum of any numeric value x
+            and NaN is NaN.
+          $ref: '#/components/schemas/Value'
+        removeAllFromArray:
+          $ref: '#/components/schemas/ArrayValue'
+          description: >-
+            Remove all of the given elements from the array in the field. If the
+            field is not an array, or if the field does not yet exist, it is set
+            to the empty array. Equivalent numbers of the different types (e.g.
+            3L and 3.0) are considered equal when deciding whether an element
+            should be removed. NaN is equal to NaN, and Null is equal to Null.
+            This will remove all equivalent values if there are duplicates. The
+            corresponding transform_result will be the null value.
+      type: object
+      description: A transformation of a field of the document.
+    WriteRequest:
+      properties:
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+          description: Labels associated with this write request.
+        streamId:
+          description: >-
+            The ID of the write stream to resume. This may only be set in the
+            first message. When left empty, a new write stream will be created.
+          type: string
+        streamToken:
+          description: >-
+            A stream token that was previously sent by the server. The client
+            should set this field to the token from the most recent
+            WriteResponse it has received. This acknowledges that the client has
+            received responses up to this token. After sending this token,
+            earlier tokens may not be used anymore. The server may close the
+            stream if there are too many unacknowledged responses. Leave this
+            field unset when creating a new stream. To resume a stream at a
+            specific point, set this field and the `stream_id` field. Leave this
+            field unset when creating a new stream.
+          format: byte
+          type: string
+        writes:
+          description: >-
+            The writes to apply. Always executed atomically and in order. This
+            must be empty on the first request. This may be empty on the last
+            request. This must not be empty on all other requests.
+          items:
+            $ref: '#/components/schemas/Write'
+          type: array
+      type: object
+      description: >-
+        The request for Firestore.Write. The first request creates a stream, or
+        resumes an existing one from a token. When creating a new stream, the
+        server replies with a response containing only an ID and a token, to use
+        in the next request. When resuming a stream, the server first streams
+        any responses later than the given token, then a response containing
+        only an up-to-date token, to use in the next request.
+      id: WriteRequest
+    Target:
+      type: object
+      properties:
+        resumeToken:
+          format: byte
+          type: string
+          description: >-
+            A resume token from a prior TargetChange for an identical target.
+            Using a resume token with a different target is unsupported and may
+            fail.
+        expectedCount:
+          format: int32
+          type: integer
+          description: >-
+            The number of documents that last matched the query at the resume
+            token or read time. This value is only relevant when a `resume_type`
+            is provided. This value being present and greater than zero signals
+            that the client wants `ExistenceFilter.unchanged_names` to be
+            included in the response.
+        once:
+          type: boolean
+          description: If the target should be removed once it is current and consistent.
+        readTime:
+          type: string
+          description: >-
+            Start listening after a specific `read_time`. The client must know
+            the state of matching documents at this time.
+          format: google-datetime
+        documents:
+          $ref: '#/components/schemas/DocumentsTarget'
+          description: A target specified by a set of document names.
+        targetId:
+          format: int32
+          type: integer
+          description: >-
+            The target ID that identifies the target on the stream. Must be a
+            positive number and non-zero.
+        query:
+          $ref: '#/components/schemas/QueryTarget'
+          description: A target specified by a query.
+      description: A specification of a set of documents to listen to.
+      id: Target
+    Order:
+      id: Order
+      description: An order on a field.
+      type: object
+      properties:
+        direction:
+          enumDescriptions:
+            - Unspecified.
+            - Ascending.
+            - Descending.
+          enum:
+            - DIRECTION_UNSPECIFIED
+            - ASCENDING
+            - DESCENDING
+          type: string
+          description: The direction to order by. Defaults to `ASCENDING`.
+        field:
+          $ref: '#/components/schemas/FieldReference'
+          description: The field to order by.
+    RunQueryResponse:
+      description: The response for Firestore.RunQuery.
+      properties:
+        document:
+          description: A query result, not set when reporting partial progress.
+          $ref: '#/components/schemas/Document'
+        transaction:
+          format: byte
+          type: string
+          description: >-
+            The transaction that was started as part of this request. Can only
+            be set in the first response, and only if
+            RunQueryRequest.new_transaction was set in the request. If set, no
+            other fields will be set in this response.
+        skippedResults:
+          description: >-
+            The number of results that have been skipped due to an offset
+            between the last response and the current response.
+          type: integer
+          format: int32
+        done:
+          type: boolean
+          description: >-
+            If present, Firestore has completely finished the request and no
+            more documents will be returned.
+        readTime:
+          format: google-datetime
+          description: >-
+            The time at which the document was read. This may be monotonically
+            increasing; in this case, the previous documents in the result
+            stream are guaranteed not to have changed between their `read_time`
+            and this one. If the query returns no results, a response with
+            `read_time` and no `document` will be sent, and this represents the
+            time at which the query was run.
+          type: string
+      id: RunQueryResponse
+      type: object
+    ListDocumentsResponse:
+      type: object
+      id: ListDocumentsResponse
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A token to retrieve the next page of documents. If this field is
+            omitted, there are no subsequent pages.
+        documents:
+          items:
+            $ref: '#/components/schemas/Document'
+          type: array
+          description: The Documents found.
+      description: The response for Firestore.ListDocuments.
+    GoogleFirestoreAdminV1beta1ExportDocumentsResponse:
+      properties:
+        outputUriPrefix:
+          description: >-
+            Location of the output files. This can be used to begin an import
+            into Cloud Firestore (this project or another project) after the
+            operation completes successfully.
+          type: string
+      type: object
+      description: Returned in the google.longrunning.Operation response field.
+      id: GoogleFirestoreAdminV1beta1ExportDocumentsResponse
+    BatchGetDocumentsRequest:
+      properties:
+        readTime:
+          type: string
+          format: google-datetime
+          description: >-
+            Reads documents as they were at the given time. This may not be
+            older than 270 seconds.
+        transaction:
+          type: string
+          description: Reads documents in a transaction.
+          format: byte
+        newTransaction:
+          $ref: '#/components/schemas/TransactionOptions'
+          description: >-
+            Starts a new transaction and reads the documents. Defaults to a
+            read-only transaction. The new transaction ID will be returned as
+            the first response in the stream.
+        documents:
+          items:
+            type: string
+          type: array
+          description: >-
+            The names of the documents to retrieve. In the format:
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+            The request will fail if any of the document is not a child resource
+            of the given `database`. Duplicate names will be elided.
+        mask:
+          description: >-
+            The fields to return. If not set, returns all fields. If a document
+            has a field that is not present in this mask, that field will not be
+            returned in the response.
+          $ref: '#/components/schemas/DocumentMask'
+      type: object
+      id: BatchGetDocumentsRequest
+      description: The request for Firestore.BatchGetDocuments.
+    GoogleFirestoreAdminV1beta1ExportDocumentsMetadata:
+      type: object
+      id: GoogleFirestoreAdminV1beta1ExportDocumentsMetadata
+      description: Metadata for ExportDocuments operations.
+      properties:
+        endTime:
+          format: google-datetime
+          type: string
+          description: >-
+            The time the operation ended, either successfully or otherwise.
+            Unset if the operation is still active.
+        progressBytes:
+          $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Progress'
+          description: An estimate of the number of bytes processed.
+        operationState:
+          type: string
+          enum:
+            - STATE_UNSPECIFIED
+            - INITIALIZING
+            - PROCESSING
+            - CANCELLING
+            - FINALIZING
+            - SUCCESSFUL
+            - FAILED
+            - CANCELLED
+          description: The state of the export operation.
+          enumDescriptions:
+            - Unspecified.
+            - Request is being prepared for processing.
+            - Request is actively being processed.
+            - >-
+              Request is in the process of being cancelled after user called
+              google.longrunning.Operations.CancelOperation on the operation.
+            - Request has been processed and is in its finalization stage.
+            - Request has completed successfully.
+            - Request has finished being processed, but encountered an error.
+            - >-
+              Request has finished being cancelled after user called
+              google.longrunning.Operations.CancelOperation.
+        startTime:
+          format: google-datetime
+          type: string
+          description: The time that work began on the operation.
+        collectionIds:
+          type: array
+          description: Which collection ids are being exported.
+          items:
+            type: string
+        outputUriPrefix:
+          description: Where the entities are being exported to.
+          type: string
+        progressDocuments:
+          $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Progress'
+          description: An estimate of the number of documents processed.
+    Count:
+      properties:
+        upTo:
+          type: string
+          format: int64
+          description: >-
+            Optional. Optional constraint on the maximum number of documents to
+            count. This provides a way to set an upper bound on the number of
+            documents to scan, limiting latency, and cost. Unspecified is
+            interpreted as no bound. High-Level Example: ``` AGGREGATE
+            COUNT_UP_TO(1000) OVER ( SELECT * FROM k ); ``` Requires: * Must be
+            greater than zero when present.
+      type: object
+      description: >-
+        Count of documents that match the query. The `COUNT(*)` aggregation
+        function operates on the entire document so it does not require a field
+        reference.
+      id: Count
+    LatLng:
+      type: object
+      properties:
+        longitude:
+          type: number
+          description: The longitude in degrees. It must be in the range [-180.0, +180.0].
+          format: double
+        latitude:
+          format: double
+          description: The latitude in degrees. It must be in the range [-90.0, +90.0].
+          type: number
+      id: LatLng
+      description: >-
+        An object that represents a latitude/longitude pair. This is expressed
+        as a pair of doubles to represent degrees latitude and degrees
+        longitude. Unless specified otherwise, this object must conform to the
+        WGS84 standard. Values must be within normalized ranges.
+    DocumentMask:
+      id: DocumentMask
+      description: >-
+        A set of field paths on a document. Used to restrict a get or update
+        operation on a document to a subset of its fields. This is different
+        from standard field masks, as this is always scoped to a Document, and
+        takes in account the dynamic nature of Value.
+      type: object
+      properties:
+        fieldPaths:
+          description: >-
+            The list of field paths in the mask. See Document.fields for a field
+            path syntax reference.
+          items:
+            type: string
+          type: array
+    GoogleFirestoreAdminV1beta1Index:
+      description: An index definition.
+      properties:
+        name:
+          description: The resource name of the index. Output only.
+          type: string
+        fields:
+          items:
+            $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1IndexField'
+          description: The fields to index.
+          type: array
+        collectionId:
+          description: The collection ID to which this index applies. Required.
+          type: string
+        state:
+          enum:
+            - STATE_UNSPECIFIED
+            - CREATING
+            - READY
+            - ERROR
+          description: The state of the index. Output only.
+          type: string
+          enumDescriptions:
+            - The state is unspecified.
+            - >-
+              The index is being created. There is an active long-running
+              operation for the index. The index is updated when writing a
+              document. Some index data may exist.
+            - >-
+              The index is ready to be used. The index is updated when writing a
+              document. The index is fully populated from all stored documents
+              it applies to.
+            - >-
+              The index was being created, but something went wrong. There is no
+              active long-running operation for the index, and the most recently
+              finished long-running operation failed. The index is not updated
+              when writing a document. Some index data may exist.
+      type: object
+      id: GoogleFirestoreAdminV1beta1Index
+    ExistenceFilter:
+      id: ExistenceFilter
+      description: A digest of all the documents that match a given target.
+      type: object
+      properties:
+        unchangedNames:
+          description: >-
+            A bloom filter that contains the UTF-8 byte encodings of the
+            resource names of the documents that match target_id, in the form
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`
+            that have NOT changed since the query results indicated by the
+            resume token or timestamp given in `Target.resume_type`. This bloom
+            filter may be omitted at the server's discretion, such as if it is
+            deemed that the client will not make use of it or if it is too
+            computationally expensive to calculate or transmit. Clients must
+            gracefully handle this field being absent by falling back to the
+            logic used before this field existed; that is, re-add the target
+            without a resume token to figure out which documents in the client's
+            cache are out of sync.
+          $ref: '#/components/schemas/BloomFilter'
+        targetId:
+          description: The target ID to which this filter applies.
+          type: integer
+          format: int32
+        count:
+          description: >-
+            The total count of documents that match target_id. If different from
+            the count of documents in the client that match, the client must
+            manually determine which documents no longer match the target. The
+            client can use the `unchanged_names` bloom filter to assist with
+            this determination.
+          type: integer
+          format: int32
+    RunAggregationQueryResponse:
+      type: object
+      properties:
+        transaction:
+          type: string
+          format: byte
+          description: >-
+            The transaction that was started as part of this request. Only
+            present on the first response when the request requested to start a
+            new transaction.
+        result:
+          description: >-
+            A single aggregation result. Not present when reporting partial
+            progress.
+          $ref: '#/components/schemas/AggregationResult'
+        readTime:
+          description: >-
+            The time at which the aggregate result was computed. This is always
+            monotonically increasing; in this case, the previous
+            AggregationResult in the result stream are guaranteed not to have
+            changed between their `read_time` and this one. If the query returns
+            no results, a response with `read_time` and no `result` will be
+            sent, and this represents the time at which the query was run.
+          type: string
+          format: google-datetime
+      description: The response for Firestore.RunAggregationQuery.
+      id: RunAggregationQueryResponse
+    BatchGetDocumentsResponse:
+      type: object
+      properties:
+        transaction:
+          description: >-
+            The transaction that was started as part of this request. Will only
+            be set in the first response, and only if
+            BatchGetDocumentsRequest.new_transaction was set in the request.
+          type: string
+          format: byte
+        missing:
+          type: string
+          description: >-
+            A document name that was requested but does not exist. In the
+            format:
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+        readTime:
+          type: string
+          format: google-datetime
+          description: >-
+            The time at which the document was read. This may be monotically
+            increasing, in this case the previous documents in the result stream
+            are guaranteed not to have changed between their read_time and this
+            one.
+        found:
+          $ref: '#/components/schemas/Document'
+          description: A document that was requested.
+      id: BatchGetDocumentsResponse
+      description: The streamed response for Firestore.BatchGetDocuments.
+    GoogleFirestoreAdminV1beta1ExportDocumentsRequest:
+      type: object
+      id: GoogleFirestoreAdminV1beta1ExportDocumentsRequest
+      properties:
+        outputUriPrefix:
+          type: string
+          description: >-
+            The output URI. Currently only supports Google Cloud Storage URIs of
+            the form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME`
+            is the name of the Google Cloud Storage bucket and `NAMESPACE_PATH`
+            is an optional Google Cloud Storage namespace path. When choosing a
+            name, be sure to consider Google Cloud Storage naming guidelines:
+            https://cloud.google.com/storage/docs/naming. If the URI is a bucket
+            (without a namespace path), a prefix will be generated based on the
+            start time.
+        collectionIds:
+          description: Which collection ids to export. Unspecified means all collections.
+          items:
+            type: string
+          type: array
+      description: The request for FirestoreAdmin.ExportDocuments.
+    CompositeFilter:
+      id: CompositeFilter
+      description: A filter that merges multiple other filters using the given operator.
+      type: object
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+          description: >-
+            The list of filters to combine. Requires: * At least one filter is
+            present.
+        op:
+          enum:
+            - OPERATOR_UNSPECIFIED
+            - AND
+            - OR
+          enumDescriptions:
+            - Unspecified. This value must not be used.
+            - Documents are required to satisfy all of the combined filters.
+            - >-
+              Documents are required to satisfy at least one of the combined
+              filters.
+          description: The operator for combining multiple filters.
+          type: string
+    ListenRequest:
+      type: object
+      properties:
+        removeTarget:
+          type: integer
+          format: int32
+          description: The ID of a target to remove from this stream.
+        labels:
+          description: Labels associated with this target change.
+          additionalProperties:
+            type: string
+          type: object
+        addTarget:
+          description: A target to add to this stream.
+          $ref: '#/components/schemas/Target'
+      description: A request for Firestore.Listen
+      id: ListenRequest
+    MapValue:
+      description: A map value.
+      properties:
+        fields:
+          description: >-
+            The map's fields. The map keys represent field names. Field names
+            matching the regular expression `__.*__` are reserved. Reserved
+            field names are forbidden except in certain documented contexts. The
+            map keys, represented as UTF-8, must not exceed 1,500 bytes and
+            cannot be empty.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+      id: MapValue
+      type: object
+    PartitionQueryResponse:
+      description: The response for Firestore.PartitionQuery.
+      type: object
+      id: PartitionQueryResponse
+      properties:
+        nextPageToken:
+          type: string
+          description: >-
+            A page token that may be used to request an additional set of
+            results, up to the number specified by `partition_count` in the
+            PartitionQuery request. If blank, there are no more results.
+        partitions:
+          description: >-
+            Partition results. Each partition is a split point that can be used
+            by RunQuery as a starting or end point for the query results. The
+            RunQuery requests must be made with the same query supplied to this
+            PartitionQuery request. The partition cursors will be ordered
+            according to same ordering as the results of the query supplied to
+            PartitionQuery. For example, if a PartitionQuery request returns
+            partition cursors A and B, running the following three queries will
+            return the entire result set of the original query: * query, end_at
+            A * query, start_at A, end_at B * query, start_at B An empty result
+            may indicate that the query has too few results to be partitioned.
+          items:
+            $ref: '#/components/schemas/Cursor'
+          type: array
+    RollbackRequest:
+      id: RollbackRequest
+      properties:
+        transaction:
+          format: byte
+          description: Required. The transaction to roll back.
+          type: string
+      description: The request for Firestore.Rollback.
+      type: object
+    PartitionQueryRequest:
+      id: PartitionQueryRequest
+      properties:
+        pageToken:
+          description: >-
+            The `next_page_token` value returned from a previous call to
+            PartitionQuery that may be used to get an additional set of results.
+            There are no ordering guarantees between sets of results. Thus,
+            using multiple sets of results will require merging the different
+            result sets. For example, two subsequent calls using a page_token
+            may return: * cursor B, cursor M, cursor Q * cursor A, cursor U,
+            cursor W To obtain a complete result set ordered with respect to the
+            results of the query supplied to PartitionQuery, the results sets
+            should be merged: cursor A, cursor B, cursor M, cursor Q, cursor U,
+            cursor W
+          type: string
+        readTime:
+          type: string
+          description: >-
+            Reads documents as they were at the given time. This may not be
+            older than 270 seconds.
+          format: google-datetime
+        pageSize:
+          type: integer
+          format: int32
+          description: >-
+            The maximum number of partitions to return in this call, subject to
+            `partition_count`. For example, if `partition_count` = 10 and
+            `page_size` = 8, the first call to PartitionQuery will return up to
+            8 partitions and a `next_page_token` if more results exist. A second
+            call to PartitionQuery will return up to 2 partitions, to complete
+            the total of 10 specified in `partition_count`.
+        partitionCount:
+          type: string
+          description: >-
+            The desired maximum number of partition points. The partitions may
+            be returned across multiple pages of results. The number must be
+            positive. The actual number of partitions returned may be fewer. For
+            example, this may be set to one fewer than the number of parallel
+            queries to be run, or in running a data pipeline job, one fewer than
+            the number of workers or compute instances available.
+          format: int64
+        structuredQuery:
+          description: >-
+            A structured query. Query must specify collection with all
+            descendants and be ordered by name ascending. Other filters, order
+            bys, limits, offsets, and start/end cursors are not supported.
+          $ref: '#/components/schemas/StructuredQuery'
+      type: object
+      description: The request for Firestore.PartitionQuery.
+    Empty:
+      id: Empty
+      type: object
+      description: >-
+        A generic empty message that you can re-use to avoid defining duplicated
+        empty messages in your APIs. A typical example is to use it as the
+        request or the response type of an API method. For instance: service Foo
+        { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+      properties: {}
+    BeginTransactionRequest:
+      type: object
+      properties:
+        options:
+          description: >-
+            The options for the transaction. Defaults to a read-write
+            transaction.
+          $ref: '#/components/schemas/TransactionOptions'
+      description: The request for Firestore.BeginTransaction.
+      id: BeginTransactionRequest
+    Write:
+      description: A write on a document.
+      id: Write
+      type: object
+      properties:
+        delete:
+          description: >-
+            A document name to delete. In the format:
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+          type: string
+        currentDocument:
+          $ref: '#/components/schemas/Precondition'
+          description: >-
+            An optional precondition on the document. The write will fail if
+            this is set and not met by the target document.
+        transform:
+          $ref: '#/components/schemas/DocumentTransform'
+          description: Applies a transformation to a document.
+        update:
+          $ref: '#/components/schemas/Document'
+          description: A document to write.
+        updateMask:
+          description: >-
+            The fields to update in this write. This field can be set only when
+            the operation is `update`. If the mask is not set for an `update`
+            and the document exists, any existing data will be overwritten. If
+            the mask is set and the document on the server has fields not
+            covered by the mask, they are left unchanged. Fields referenced in
+            the mask, but not present in the input document, are deleted from
+            the document on the server. The field paths in this mask must not
+            contain a reserved field name.
+          $ref: '#/components/schemas/DocumentMask'
+        updateTransforms:
+          items:
+            $ref: '#/components/schemas/FieldTransform'
+          type: array
+          description: >-
+            The transforms to perform after update. This field can be set only
+            when the operation is `update`. If present, this write is equivalent
+            to performing `update` and `transform` to the same document
+            atomically and in order.
+    BatchWriteResponse:
+      properties:
+        status:
+          items:
+            $ref: '#/components/schemas/Status'
+          description: >-
+            The status of applying the writes. This i-th write status
+            corresponds to the i-th write in the request.
+          type: array
+        writeResults:
+          description: >-
+            The result of applying the writes. This i-th write result
+            corresponds to the i-th write in the request.
+          items:
+            $ref: '#/components/schemas/WriteResult'
+          type: array
+      id: BatchWriteResponse
+      description: The response from Firestore.BatchWrite.
+      type: object
+    ListenResponse:
+      type: object
+      properties:
+        documentRemove:
+          $ref: '#/components/schemas/DocumentRemove'
+          description: >-
+            A Document has been removed from a target (because it is no longer
+            relevant to that target).
+        filter:
+          description: >-
+            A filter to apply to the set of documents previously returned for
+            the given target. Returned when documents may have been removed from
+            the given target, but the exact documents are unknown.
+          $ref: '#/components/schemas/ExistenceFilter'
+        targetChange:
+          description: Targets have changed.
+          $ref: '#/components/schemas/TargetChange'
+        documentDelete:
+          description: A Document has been deleted.
+          $ref: '#/components/schemas/DocumentDelete'
+        documentChange:
+          description: A Document has changed.
+          $ref: '#/components/schemas/DocumentChange'
+      description: The response for Firestore.Listen.
+      id: ListenResponse
+    FieldFilter:
+      description: A filter on a specific field.
+      type: object
+      id: FieldFilter
+      properties:
+        value:
+          $ref: '#/components/schemas/Value'
+          description: The value to compare to.
+        field:
+          description: The field to filter by.
+          $ref: '#/components/schemas/FieldReference'
+        op:
+          enumDescriptions:
+            - Unspecified. This value must not be used.
+            - >-
+              The given `field` is less than the given `value`. Requires: * That
+              `field` come first in `order_by`.
+            - >-
+              The given `field` is less than or equal to the given `value`.
+              Requires: * That `field` come first in `order_by`.
+            - >-
+              The given `field` is greater than the given `value`. Requires: *
+              That `field` come first in `order_by`.
+            - >-
+              The given `field` is greater than or equal to the given `value`.
+              Requires: * That `field` come first in `order_by`.
+            - The given `field` is equal to the given `value`.
+            - >-
+              The given `field` is not equal to the given `value`. Requires: *
+              No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. *
+              That `field` comes first in the `order_by`.
+            - The given `field` is an array that contains the given `value`.
+            - >-
+              The given `field` is equal to at least one value in the given
+              array. Requires: * That `value` is a non-empty `ArrayValue`,
+              subject to disjunction limits. * No `NOT_IN` filters in the same
+              query.
+            - >-
+              The given `field` is an array that contains any of the values in
+              the given array. Requires: * That `value` is a non-empty
+              `ArrayValue`, subject to disjunction limits. * No other
+              `ARRAY_CONTAINS_ANY` filters within the same disjunction. * No
+              `NOT_IN` filters in the same query.
+            - >-
+              The value of the `field` is not in the given array. Requires: *
+              That `value` is a non-empty `ArrayValue` with at most 10 values. *
+              No other `OR`, `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
+              `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the
+              `order_by`.
+          type: string
+          description: The operator to filter by.
+          enum:
+            - OPERATOR_UNSPECIFIED
+            - LESS_THAN
+            - LESS_THAN_OR_EQUAL
+            - GREATER_THAN
+            - GREATER_THAN_OR_EQUAL
+            - EQUAL
+            - NOT_EQUAL
+            - ARRAY_CONTAINS
+            - IN
+            - ARRAY_CONTAINS_ANY
+            - NOT_IN
+    Filter:
+      properties:
+        fieldFilter:
+          description: A filter on a document field.
+          $ref: '#/components/schemas/FieldFilter'
+        unaryFilter:
+          description: A filter that takes exactly one argument.
+          $ref: '#/components/schemas/UnaryFilter'
+        compositeFilter:
+          description: A composite filter.
+          $ref: '#/components/schemas/CompositeFilter'
+      description: A filter.
+      type: object
+      id: Filter
+    RunAggregationQueryRequest:
+      properties:
+        readTime:
+          format: google-datetime
+          type: string
+          description: >-
+            Executes the query at the given timestamp. Requires: * Cannot be
+            more than 270 seconds in the past.
+        structuredAggregationQuery:
+          description: An aggregation query.
+          $ref: '#/components/schemas/StructuredAggregationQuery'
+        transaction:
+          type: string
+          format: byte
+          description: >-
+            Run the aggregation within an already active transaction. The value
+            here is the opaque transaction ID to execute the query in.
+        newTransaction:
+          $ref: '#/components/schemas/TransactionOptions'
+          description: >-
+            Starts a new transaction as part of the query, defaulting to
+            read-only. The new transaction ID will be returned as the first
+            response in the stream.
+      description: The request for Firestore.RunAggregationQuery.
+      id: RunAggregationQueryRequest
+      type: object
+    StructuredAggregationQuery:
+      id: StructuredAggregationQuery
+      properties:
+        aggregations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aggregation'
+          description: >-
+            Optional. Series of aggregations to apply over the results of the
+            `structured_query`. Requires: * A minimum of one and maximum of five
+            aggregations per query.
+        structuredQuery:
+          $ref: '#/components/schemas/StructuredQuery'
+          description: Nested structured query.
+      description: Firestore query for running an aggregation over a StructuredQuery.
+      type: object
+    DocumentsTarget:
+      id: DocumentsTarget
+      type: object
+      properties:
+        documents:
+          description: >-
+            The names of the documents to retrieve. In the format:
+            `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
+            The request will fail if any of the document is not a child resource
+            of the given `database`. Duplicate names will be elided.
+          type: array
+          items:
+            type: string
+      description: A target specified by a set of documents names.
+    BitSequence:
+      id: BitSequence
+      type: object
+      description: >-
+        A sequence of bits, encoded in a byte array. Each byte in the `bitmap`
+        byte array stores 8 bits of the sequence. The only exception is the last
+        byte, which may store 8 _or fewer_ bits. The `padding` defines the
+        number of bits of the last byte to be ignored as "padding". The values
+        of these "padding" bits are unspecified and must be ignored. To retrieve
+        the first bit, bit 0, calculate: `(bitmap[0] & 0x01) != 0`. To retrieve
+        the second bit, bit 1, calculate: `(bitmap[0] & 0x02) != 0`. To retrieve
+        the third bit, bit 2, calculate: `(bitmap[0] & 0x04) != 0`. To retrieve
+        the fourth bit, bit 3, calculate: `(bitmap[0] & 0x08) != 0`. To retrieve
+        bit n, calculate: `(bitmap[n / 8] & (0x01 << (n % 8))) != 0`. The "size"
+        of a `BitSequence` (the number of bits it contains) is calculated by
+        this formula: `(bitmap.length * 8) - padding`.
+      properties:
+        bitmap:
+          description: The bytes that encode the bit sequence. May have a length of zero.
+          type: string
+          format: byte
+        padding:
+          format: int32
+          description: >-
+            The number of bits of the last byte in `bitmap` to ignore as
+            "padding". If the length of `bitmap` is zero, then this value must
+            be `0`. Otherwise, this value must be between 0 and 7, inclusive.
+          type: integer
+    GoogleLongrunningOperation:
+      type: object
+      id: GoogleLongrunningOperation
+      description: >-
+        This resource represents a long-running operation that is the result of
+        a network API call.
+      properties:
+        name:
+          type: string
+          description: >-
+            The server-assigned name, which is only unique within the same
+            service that originally returns it. If you use the default HTTP
+            mapping, the `name` should be a resource name ending with
+            `operations/{unique_id}`.
+        done:
+          description: >-
+            If the value is `false`, it means the operation is still in
+            progress. If `true`, the operation is completed, and either `error`
+            or `response` is available.
+          type: boolean
+        response:
+          type: object
+          additionalProperties:
+            type: any
+            description: Properties of the object. Contains field @type with type URL.
+          description: >-
+            The normal response of the operation in case of success. If the
+            original method returns no data on success, such as `Delete`, the
+            response is `google.protobuf.Empty`. If the original method is
+            standard `Get`/`Create`/`Update`, the response should be the
+            resource. For other methods, the response should have the type
+            `XxxResponse`, where `Xxx` is the original method name. For example,
+            if the original method name is `TakeSnapshot()`, the inferred
+            response type is `TakeSnapshotResponse`.
+        metadata:
+          description: >-
+            Service-specific metadata associated with the operation. It
+            typically contains progress information and common metadata such as
+            create time. Some services might not provide such metadata. Any
+            method that returns a long-running operation should document the
+            metadata type, if any.
+          type: object
+          additionalProperties:
+            description: Properties of the object. Contains field @type with type URL.
+            type: any
+        error:
+          $ref: '#/components/schemas/Status'
+          description: >-
+            The error result of the operation in case of failure or
+            cancellation.
+    TargetChange:
+      type: object
+      id: TargetChange
+      description: Targets being watched have changed.
+      properties:
+        cause:
+          $ref: '#/components/schemas/Status'
+          description: The error that resulted in this change, if applicable.
+        resumeToken:
+          type: string
+          format: byte
+          description: >-
+            A token that can be used to resume the stream for the given
+            `target_ids`, or all targets if `target_ids` is empty. Not set on
+            every target change.
+        targetIds:
+          type: array
+          items:
+            format: int32
+            type: integer
+          description: >-
+            The target IDs of targets that have changed. If empty, the change
+            applies to all targets. The order of the target IDs is not defined.
+        targetChangeType:
+          type: string
+          enum:
+            - NO_CHANGE
+            - ADD
+            - REMOVE
+            - CURRENT
+            - RESET
+          description: The type of change that occurred.
+          enumDescriptions:
+            - >-
+              No change has occurred. Used only to send an updated
+              `resume_token`.
+            - The targets have been added.
+            - The targets have been removed.
+            - >-
+              The targets reflect all changes committed before the targets were
+              added to the stream. This will be sent after or with a `read_time`
+              that is greater than or equal to the time at which the targets
+              were added. Listeners can wait for this change if read-after-write
+              semantics are desired.
+            - >-
+              The targets have been reset, and a new initial state for the
+              targets will be returned in subsequent changes. After the initial
+              state is complete, `CURRENT` will be returned even if the target
+              was previously indicated to be `CURRENT`.
+        readTime:
+          description: >-
+            The consistent `read_time` for the given `target_ids` (omitted when
+            the target_ids are not at a consistent snapshot). The stream is
+            guaranteed to send a `read_time` with `target_ids` empty whenever
+            the entire stream reaches a new consistent snapshot. ADD, CURRENT,
+            and RESET messages are guaranteed to (eventually) result in a new
+            consistent snapshot (while NO_CHANGE and REMOVE messages are not).
+            For a given stream, `read_time` is guaranteed to be monotonically
+            increasing.
+          format: google-datetime
+          type: string
+  parameters:
+    oauth_token:
+      description: OAuth 2.0 token for the current user.
+      in: query
+      name: oauth_token
+      schema:
+        type: string
+    prettyPrint:
+      description: Returns response with indentations and line breaks.
+      in: query
+      name: prettyPrint
+      schema:
+        type: boolean
+    uploadType:
+      description: Legacy upload protocol for media (e.g. "media", "multipart").
+      in: query
+      name: uploadType
+      schema:
+        type: string
+    callback:
+      description: JSONP
+      in: query
+      name: callback
+      schema:
+        type: string
+    alt:
+      description: Data format for response.
+      in: query
+      name: alt
+      schema:
+        type: string
+        enum:
+          - json
+          - media
+          - proto
+    _.xgafv:
+      description: V1 error format.
+      in: query
+      name: _.xgafv
+      schema:
+        type: string
+        enum:
+          - '1'
+          - '2'
+    key:
+      description: >-
+        API key. Your API key identifies your project and provides you with API
+        access, quota, and reports. Required unless you provide an OAuth 2.0
+        token.
+      in: query
+      name: key
+      schema:
+        type: string
+    upload_protocol:
+      description: Upload protocol for media (e.g. "raw", "multipart").
+      in: query
+      name: upload_protocol
+      schema:
+        type: string
+    fields:
+      description: Selector specifying which fields to include in a partial response.
+      in: query
+      name: fields
+      schema:
+        type: string
+    access_token:
+      description: OAuth access token.
+      in: query
+      name: access_token
+      schema:
+        type: string
+    quotaUser:
+      description: >-
+        Available to use for quota purposes for server-side applications. Can be
+        any arbitrary string assigned to a user, but should not exceed 40
+        characters.
+      in: query
+      name: quotaUser
+      schema:
+        type: string
+  securitySchemes:
+    Oauth2:
+      type: oauth2
+      description: Oauth 2.0 implicit authentication
+      flows:
+        implicit:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          scopes: &ref_0
+            https://www.googleapis.com/auth/cloud-platform: >-
+              See, edit, configure, and delete your Google Cloud data and see
+              the email address for your Google Account.
+            https://www.googleapis.com/auth/datastore: View and manage your Google Cloud Datastore data
+    Oauth2c:
+      type: oauth2
+      description: Oauth 2.0 authorization code authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/auth
+          tokenUrl: https://accounts.google.com/o/oauth2/token
+          scopes: *ref_0
+paths:
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/indexes/{indexesId}:
+    parameters: &ref_1
+      - $ref: '#/components/parameters/oauth_token'
+      - $ref: '#/components/parameters/prettyPrint'
+      - $ref: '#/components/parameters/uploadType'
+      - $ref: '#/components/parameters/callback'
+      - $ref: '#/components/parameters/alt'
+      - $ref: '#/components/parameters/_.xgafv'
+      - $ref: '#/components/parameters/key'
+      - $ref: '#/components/parameters/upload_protocol'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/access_token'
+      - $ref: '#/components/parameters/quotaUser'
+    delete:
+      description: Deletes an index.
+      operationId: firestore.projects.databases.indexes.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: indexesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: indexes
+      x-stackQL-verb: delete
+    get:
+      description: Gets an index.
+      operationId: firestore.projects.databases.indexes.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Index'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: indexesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: indexes
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/indexes:
+    parameters: *ref_1
+    get:
+      description: Lists the indexes that match the specified filters.
+      operationId: firestore.projects.databases.indexes.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/GoogleFirestoreAdminV1beta1ListIndexesResponse
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+      x-stackQL-resource: indexes
+      x-stackQL-verb: select
+    post:
+      description: >-
+        Creates the specified index. A newly created index's initial state is
+        `CREATING`. On completion of the returned google.longrunning.Operation,
+        the state will be `READY`. If the index already exists, the call will
+        return an `ALREADY_EXISTS` status. During creation, the process could
+        result in an error, in which case the index will move to the `ERROR`
+        state. The process can be recovered by fixing the data that caused the
+        error, removing the index with delete, then re-creating the index with
+        create. Indexes with a single field cannot be created.
+      operationId: firestore.projects.databases.indexes.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleFirestoreAdminV1beta1Index'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleLongrunningOperation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: indexes
+      x-stackQL-verb: insert
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{collectionId}:
+    parameters: *ref_1
+    get:
+      description: Lists documents.
+      operationId: firestore.projects.databases.documents.listDocuments
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDocumentsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collectionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: mask.fieldPaths
+          schema:
+            type: string
+        - in: query
+          name: transaction
+          schema:
+            type: string
+        - in: query
+          name: readTime
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: showMissing
+          schema:
+            type: boolean
+      x-stackQL-resource: documents__documents
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{collectionId}:
+    parameters: *ref_1
+    post:
+      description: Creates a new document.
+      operationId: firestore.projects.databases.documents.createDocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collectionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: documentId
+          schema:
+            type: string
+        - in: query
+          name: mask.fieldPaths
+          schema:
+            type: string
+      x-stackQL-resource: documents__document
+      x-stackQL-verb: insert
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:listen:
+    parameters: *ref_1
+    post:
+      description: >-
+        Listens to changes. This method is only available via gRPC or WebChannel
+        (not REST).
+      operationId: firestore.projects.databases.documents.listen
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListenRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListenResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents_en
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:
+    parameters: *ref_1
+    get:
+      description: Gets a single document.
+      operationId: firestore.projects.databases.documents.get
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: transaction
+          schema:
+            type: string
+        - in: query
+          name: readTime
+          schema:
+            type: string
+        - in: query
+          name: mask.fieldPaths
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: select
+    delete:
+      description: Deletes a document.
+      operationId: firestore.projects.databases.documents.delete
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: currentDocument.exists
+          schema:
+            type: boolean
+        - in: query
+          name: currentDocument.updateTime
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: delete
+    patch:
+      description: Updates or inserts a document.
+      operationId: firestore.projects.databases.documents.patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask.fieldPaths
+          schema:
+            type: string
+        - in: query
+          name: mask.fieldPaths
+          schema:
+            type: string
+        - in: query
+          name: currentDocument.updateTime
+          schema:
+            type: string
+        - in: query
+          name: currentDocument.exists
+          schema:
+            type: boolean
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:write:
+    parameters: *ref_1
+    post:
+      description: >-
+        Streams batches of document updates and deletes, in order. This method
+        is only available via gRPC or WebChannel (not REST).
+      operationId: firestore.projects.databases.documents.write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WriteResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:batchGet:
+    parameters: *ref_1
+    post:
+      description: >-
+        Gets multiple documents. Documents returned by this method are not
+        guaranteed to be returned in the same order that they were requested.
+      operationId: firestore.projects.databases.documents.batchGet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchGetDocumentsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetDocumentsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:batchWrite:
+    parameters: *ref_1
+    post:
+      description: >-
+        Applies a batch of write operations. The BatchWrite method does not
+        apply the write operations atomically and can apply them out of order.
+        Method does not allow more than one write per document. Each write
+        succeeds or fails independently. See the BatchWriteResponse for the
+        success status of each write. If you require an atomically applied set
+        of writes, use Commit instead.
+      operationId: firestore.projects.databases.documents.batchWrite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchWriteRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchWriteResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}/{collectionId}:
+    parameters: *ref_1
+    get:
+      description: Lists documents.
+      operationId: firestore.projects.databases.documents.list
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDocumentsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: collectionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+        - in: query
+          name: readTime
+          schema:
+            type: string
+        - in: query
+          name: showMissing
+          schema:
+            type: boolean
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: mask.fieldPaths
+          schema:
+            type: string
+        - in: query
+          name: transaction
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runQuery:
+    parameters: *ref_1
+    post:
+      description: Runs a query.
+      operationId: firestore.projects.databases.documents.runQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunQueryRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunQueryResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:beginTransaction:
+    parameters: *ref_1
+    post:
+      description: Starts a new transaction.
+      operationId: firestore.projects.databases.documents.beginTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeginTransactionRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeginTransactionResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:partitionQuery:
+    parameters: *ref_1
+    post:
+      description: >-
+        Partitions a query by returning partition cursors that can be used to
+        run the query in parallel. The returned partition cursors are split
+        points that can be used by RunQuery as starting/end points for the query
+        results.
+      operationId: firestore.projects.databases.documents.partitionQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartitionQueryRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartitionQueryResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runAggregationQuery:
+    parameters: *ref_1
+    post:
+      description: >-
+        Runs an aggregation query. Rather than producing Document results like
+        Firestore.RunQuery, this API allows running an aggregation to produce a
+        series of AggregationResult server-side. High-Level Example: ``` --
+        Return the number of documents in table given a filter. SELECT COUNT(*)
+        FROM ( SELECT * FROM k where a = true ); ```
+      operationId: firestore.projects.databases.documents.runAggregationQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunAggregationQueryRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunAggregationQueryResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:listCollectionIds:
+    parameters: *ref_1
+    post:
+      description: Lists all the collection IDs underneath a document.
+      operationId: firestore.projects.databases.documents.listCollectionIds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListCollectionIdsRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCollectionIdsResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentsId1
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents__collection_ids
+      x-stackQL-verb: select
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:commit:
+    parameters: *ref_1
+    post:
+      description: Commits a transaction, while optionally updating documents.
+      operationId: firestore.projects.databases.documents.commit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitResponse'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}/documents:rollback:
+    parameters: *ref_1
+    post:
+      description: Rolls back a transaction.
+      operationId: firestore.projects.databases.documents.rollback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: documents
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}:exportDocuments:
+    parameters: *ref_1
+    post:
+      description: >-
+        Exports a copy of all or a subset of documents from Google Cloud
+        Firestore to another storage system, such as Google Cloud Storage.
+        Recent updates to documents may not be reflected in the export. The
+        export occurs in the background and its progress can be monitored and
+        managed via the Operation resource that is created. The output of an
+        export may only be used once the associated operation is done. If an
+        export operation is cancelled before completion it may leave partial
+        data behind in Google Cloud Storage.
+      operationId: firestore.projects.databases.exportDocuments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/GoogleFirestoreAdminV1beta1ExportDocumentsRequest
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleLongrunningOperation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: databases
+      x-stackQL-verb: exec
+  /v1beta1/projects/{projectsId}/databases/{databasesId}:importDocuments:
+    parameters: *ref_1
+    post:
+      description: >-
+        Imports documents into Google Cloud Firestore. Existing documents with
+        the same name are overwritten. The import occurs in the background and
+        its progress can be monitored and managed via the Operation resource
+        that is created. If an ImportDocuments operation is cancelled, it is
+        possible that a subset of the data has already been imported to Cloud
+        Firestore.
+      operationId: firestore.projects.databases.importDocuments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/GoogleFirestoreAdminV1beta1ImportDocumentsRequest
+      security:
+        - Oauth2:
+            - https://www.googleapis.com/auth/cloud-platform
+          Oauth2c:
+            - https://www.googleapis.com/auth/cloud-platform
+        - Oauth2:
+            - https://www.googleapis.com/auth/datastore
+          Oauth2c:
+            - https://www.googleapis.com/auth/datastore
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleLongrunningOperation'
+      parameters:
+        - in: path
+          name: projectsId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: databasesId
+          required: true
+          schema:
+            type: string
+      x-stackQL-resource: databases
+      x-stackQL-verb: exec
