@@ -37,7 +37,7 @@ const baseOpenApiDoc = {
 *  service processing function
 */
 
-async function processService(serviceName, serviceCategory, serviceData, outputDir, debug){
+async function processService(serviceName, serviceCategory, serviceVersion, serviceData, outputDir, debug){
     try {
         // bypass problem service(s)
         if(['integrations', 'groupsmigration'].includes(serviceName)){
@@ -95,13 +95,16 @@ async function processService(serviceName, serviceCategory, serviceData, outputD
         debug ? logger.debug('populating paths..') : null;
         openApiDoc['paths'] = populatePaths({}, serviceData.resources, paramRefList, debug);
 
+        // Include version with name (only if not preferred)
+        let serviceNameVersioned = serviceVersion === undefined ? `${serviceName}` : `${serviceName}-${serviceVersion}`
+
         // tag operations
         debug ? logger.debug('tagging operations..') : null;
-        openApiDoc = tagOperations(openApiDoc, serviceName);
+        openApiDoc = tagOperations(openApiDoc, serviceNameVersioned);
 
         // write out openapi doc as yaml
         const openApiDocYaml = yaml.dump(openApiDoc);
-        await writeFile(path.join(outputDir, serviceCategory, serviceName, `${serviceName}.yaml`), openApiDocYaml, debug);
+        await writeFile(path.join(outputDir, serviceCategory, serviceName, `${serviceNameVersioned}.yaml`), openApiDocYaml, debug);
 
         return
     } catch (err) {
@@ -188,7 +191,7 @@ export async function generateSpecs(options, rootDir) {
     
     // lets go
     for(let service of services){
-        logger.info(`processing ${service.name}...`);
+        logger.info(`processing ${service.name} ${service.version}...`);
         // get category for service
         let svcCategory = 'lostandfound';
         Object.keys(serviceCategories).forEach(cat => {
@@ -197,12 +200,13 @@ export async function generateSpecs(options, rootDir) {
             }
         });
         svcCategory == 'lostandfound' ? logger.warn(`service ${service.name} not found in any category`) : null;
+        const svcVersion = preferred ? undefined : service.version;
         debug ? logger.debug(`service category: ${svcCategory}`) : null;
         debug ? logger.debug(`getting data for ${service.name} from : ${service.discoveryRestUrl}`) : null;
         try {       
             const svcResp = await fetch(service.discoveryRestUrl);
             const svcData = await svcResp.json();
-            await processService(service.name, svcCategory, svcData, outputDir, debug)
+            await processService(service.name, svcCategory, svcVersion, svcData, outputDir, debug)
         } catch (err) {
             logger.error(err);
         }

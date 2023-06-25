@@ -13,11 +13,16 @@ export async function writeFile(path, data, debug){
 
 export async function createDir(dir, debug){
     debug ? logger.debug(`creating ${dir}...`): null;
-    try {
-        fs.mkdirSync(dir);
-        return true;
-    } catch (err) {
-        logger.error(err);
+
+    if (!fs.existsSync(dir)) {
+        try {
+            fs.mkdirSync(dir);
+            return true;
+        } catch (err) {
+            logger.error(err);
+        }
+    } else {
+        return true
     }
 }
 
